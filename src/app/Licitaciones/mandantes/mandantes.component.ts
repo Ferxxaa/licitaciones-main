@@ -64,7 +64,7 @@ export class MandantesComponent implements OnInit {
 
   guardarEdicionEjecutivo() {
     if (!this.editEjecutivoId) return;
-    const url = `/api/Ejecutivos/${this.editEjecutivoId}`;
+    const url = `${this.urlBase}Ejecutivos/${this.editEjecutivoId}`;
     this.http.put<any>(url, this.editEjecutivoData)
       .subscribe({
         next: () => {
@@ -485,7 +485,7 @@ export class MandantesComponent implements OnInit {
     params.set('IdUsuarioRemovedor', ejecutivo.IdUsuarioRemovedor.toString());
     params.set('IdUsuarioCreador', ejecutivo.IdUsuarioCreador.toString());
 
-    this.http.post<any>('/api/Ejecutivos/', params.toString(), {
+    this.http.post<any>(`${this.urlBase}Ejecutivos/`, params.toString(), {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }
     })
       .subscribe({
