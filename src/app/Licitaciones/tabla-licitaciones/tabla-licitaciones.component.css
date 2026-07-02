@@ -766,3 +766,195 @@ table thead th {
     border-left: 1px solid #ddd !important;
     padding: 0 10px !important;
 }
+
+/* ============================================================ */
+/* Diseño compacto para la sección "Mis Tareas"                  */
+/* ============================================================ */
+
+.tareas-header {
+  background-color: #f48826 !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+}
+
+.tareas-header h2 {
+  color: #fff;
+  margin: 0;
+  font-size: 1.15em;
+  padding: 0;
+}
+
+.tareas-resumen {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.tareas-bell {
+  position: relative;
+  color: #fff;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+}
+
+.bell-alert {
+  animation: bell-shake 1.6s infinite;
+}
+
+@keyframes bell-shake {
+  0%, 100% { transform: rotate(0); }
+  10%, 30% { transform: rotate(-12deg); }
+  20%, 40% { transform: rotate(12deg); }
+  50% { transform: rotate(0); }
+}
+
+.badge-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #e53935;
+  color: #fff;
+  font-size: 0.62em;
+  font-weight: 700;
+  border-radius: 50%;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.tareas-contadores {
+  color: #fff;
+  font-size: 0.85em;
+}
+
+.tareas-body {
+  padding: 14px 16px;
+}
+
+.tareas-toolbar {
+  margin-bottom: 10px;
+}
+
+.tareas-search {
+  max-width: 280px;
+  font-size: 0.85em;
+  padding: 6px 10px;
+  height: auto;
+}
+
+.tareas-table {
+  width: 100%;
+  font-size: 0.82em;
+  margin-bottom: 8px;
+  border-collapse: collapse;
+}
+
+.tareas-table thead th {
+  background-color: #026AA7 !important;
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 0.78em;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 6px 8px !important;
+  border: none;
+  white-space: nowrap;
+}
+
+.tareas-table tbody tr {
+  height: 34px;
+  border-bottom: 1px solid #eef1f4;
+}
+
+.tareas-table tbody tr:hover {
+  background-color: #f5f9fc;
+}
+
+.tareas-table td {
+  padding: 4px 8px !important;
+  vertical-align: middle;
+  color: #333;
+}
+
+.tareas-table .col-id       { width: 60px; }
+.tareas-table .col-desc     { width: 26%; }
+.tareas-table .col-estado   { width: 90px; }
+.tareas-table .col-resp     { width: 130px; }
+.tareas-table .col-prio     { width: 70px; }
+.tareas-table .col-fecha    { width: 100px; }
+.tareas-table .col-creador  { width: 120px; }
+
+.id-cell {
+  font-weight: 700;
+  color: #026AA7;
+}
+
+.desc-cell {
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.95em;
+  cursor: default;
+}
+
+.resp-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.estado-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.estado-pendiente-pill {
+  background: #fff8e1;
+  color: #b28900;
+}
+
+.estado-completada-pill {
+  background: #e6f7ee;
+  color: #1b8a4c;
+}
+
+.estado-otro-pill {
+  background: #eceff1;
+  color: #607d8b;
+}
+
+.prioridad-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #ddd;
+}
+
+.prio-alta  { background: #e53935; }
+.prio-media { background: #fbc02d; }
+.prio-baja  { background: #43a047; }
+
+.sin-tareas {
+  padding: 18px 0;
+  color: #90a4ae;
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+.tareas-paginacion .page-link {
+  font-size: 0.8em;
+  padding: 4px 10px;
+}

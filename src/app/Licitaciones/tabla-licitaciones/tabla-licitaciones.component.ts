@@ -1379,8 +1379,12 @@ export class TablaLicitacionesComponent implements OnInit {
   listarTareas() {
     let env = environment.urlBase;
     this.http.get<mTarea[]>(env + "pMis_Tareas/GetMis_TareasByIdUsuario/IdUsuario=" + this.usuario.idUsuario).subscribe((res: mTarea[]) => {
-      // Filtrar tareas y mapear nombre del responsable y creador
-      const tareasFiltradas = res.filter(el => el.nombreTarea == this.nomlic && el.idEstadoTarea < 3);
+      // IMPORTANTE: al crear la tarea (tareas-lic.component.ts) el nombreTarea se guarda con el
+      // prefijo '[LICITACIONES] ' + Descripción. Aquí this.nomlic es SOLO la Descripción (sin prefijo),
+      // por lo que hay que agregarlo también al comparar; si no, el filtro nunca hace match y la
+      // tabla "Mis Tareas" queda vacía aunque la tarea sí se haya creado correctamente en la BD.
+      const nombreTareaEsperado = '[LICITACIONES] ' + this.nomlic;
+      const tareasFiltradas = res.filter(el => el.nombreTarea == nombreTareaEsperado && el.idEstadoTarea < 3);
       this.Tareas = tareasFiltradas.map(tarea => {
         const responsable = this.coordinadores.find(c => c.idUsuario === tarea.idUsuarioResponsable);
         const nombreResponsable = responsable ? (responsable.nombre + ' ' + responsable.paterno) : '';

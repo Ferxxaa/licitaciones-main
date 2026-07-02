@@ -384,92 +384,94 @@
                                     </div>
                                 </section>
                             </div>
+
+                            <!-- Mis Tareas: diseño compacto -->
                             <div class="col-lg-12">
                                 <section class="widget">
-                                    <header style="background-color: #f48826; display: flex; align-items: center; justify-content: space-between;">
-                                        <h2 style="color: white; margin: 0;"><strong>Mis Tareas</strong></h2>
-                                        <div style="display: flex; align-items: center; gap: 16px;">
-                                            <!-- Resumen con campana -->
-                                                            <span style="font-size: 1.6em; color: #fff; display: flex; align-items: center; position: relative; height: 32px;">
-                                                                <i class="fa fa-bell" [ngClass]="{'bell-alert': tareasPendientesCount > 0}" style="position: relative;">
-                                                                    <span *ngIf="tareasPendientesCount > 0" class="badge bg-danger" style="position: absolute; top: -10px; right: -10px; font-size: 0.9em; border-radius: 50%; min-width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; z-index:2;">{{tareasPendientesCount}}</span>
-                                                                </i>
-                                                            </span>
-                                                            <span style="color: #fff; font-size: 0.95em; min-width: 160px; display: inline-block;">
-                                                                Pendientes: <strong>{{tareasPendientesCount}}</strong> |
-                                                                Completadas: <strong style="min-width: 32px; display: inline-block; text-align: center;">{{tareasCompletadasCount}}</strong>
-                                                            </span>
+                                    <header class="tareas-header">
+                                        <h2><strong>Mis Tareas</strong></h2>
+                                        <div class="tareas-resumen">
+                                            <span class="tareas-bell">
+                                                <i class="fa fa-bell" [ngClass]="{'bell-alert': tareasPendientesCount > 0}">
+                                                    <span *ngIf="tareasPendientesCount > 0" class="badge-count">{{tareasPendientesCount}}</span>
+                                                </i>
+                                            </span>
+                                            <span class="tareas-contadores">
+                                                Pendientes: <strong>{{tareasPendientesCount}}</strong> |
+                                                Completadas: <strong>{{tareasCompletadasCount}}</strong>
+                                            </span>
                                         </div>
                                     </header>
-                                    <div class="widget-body">
-                                        <fieldset style="background: #f9f9f9; border-radius: 8px; padding: 16px;">
-                                            <legend style="font-size:1.1em; color:#026AA7; font-weight:600;">Mis Tareas</legend>
-                                            <!-- Barra de búsqueda rápida -->
-                                            <div class="mb-3" style="max-width: 350px;">
-                                                <input type="text" class="form-control" placeholder="Buscar tarea..." [(ngModel)]="tareaSearch" name="tareaSearch">
-                                            </div>
-                                                            <div class="table-responsive" style="width:100%; overflow-x:auto;">
-                                                                <table class="table table-bordered table-hover w-100" style="background: #fff; border-radius: 8px; min-width: 900px;">
-                                                                    <thead style="background-color: #026AA7; color: white; font-size: 1.05em;">
-                                                                        <tr>
-                                                                            <th class="text-center" style="min-width:100px;">Tarea</th>
-                                                                            <th class="text-center" style="min-width:180px;">Descripción</th>
-                                                                            <th class="text-center" style="min-width:90px;">Estado</th>
-                                                                            <th class="text-center" style="min-width:90px;">Responsable</th>
-                                                                            <th class="text-center" style="min-width:80px;">Prioridad</th>
-                                                                            <th class="text-center" style="min-width:110px;">Fecha Compromiso</th>
-                                                                            <th class="text-center" style="min-width:90px;">Creador</th>
-                                                                            <th class="text-center" style="min-width:110px;">Fecha Creación</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        <tr *ngFor="let Tarea of filteredTareas(); let i = index" style="vertical-align: middle; height: 38px;">
-                                                                            <td class="text-center" style="font-weight: bold;">{{Tarea.idTarea}}</td>
-                                                                            <td>
-                                                                                <textarea class="form-control" style="height: 38px; min-width: 120px; max-width: 220px; font-size: 0.92em; border: none; background: transparent; box-shadow: none; resize: none; padding: 4px 6px;" readonly title="{{Tarea.descripcionTarea}}">{{Tarea.descripcionTarea}}</textarea>
-                                                                            </td>
-                                                                            <td class="text-center">
-                                                                                                                                                                                                                                                <ng-container [ngSwitch]="Tarea.idEstadoTarea">
-                                                                                                                                                                                                                                                    <span *ngSwitchCase="1" style="text-decoration:none; background:none; color:inherit; border:none; padding:0;">Pendiente</span>
-                                                                                                                                                                                                                                                    <span *ngSwitchCase="2" style="text-decoration:none; background:none; color:inherit; border:none; padding:0;">Completada</span>
-                                                                                                                                                                                                                                                    <span *ngSwitchDefault style="text-decoration:none; background:none; color:inherit; border:none; padding:0;">Otro</span>
-                                                                                                                                                                                                                                                </ng-container>
-                                                                            </td>
-                                                                            <td class="text-center">{{Tarea.responsableNombre || Tarea.nombreResponsable}}</td>
-                                                                                                                                                        <td class="text-center">
-                                                                                                                                                                                                                                                                                                                                <span [ngStyle]="{
-                                                                                                                                                                                                                                                                                                                                    'display': 'inline-block',
-                                                                                                                                                                                                                                                                                                                                    'width': '32px',
-                                                                                                                                                                                                                                                                                                                                    'height': '32px',
-                                                                                                                                                                                                                                                                                                                                    'border-radius': '50%',
-                                                                                                                                                                                                                                                                                                                                    'background': Tarea.prioridad === 'Alta' ? '#e53935' : (Tarea.prioridad === 'Media' ? '#fbc02d' : (Tarea.prioridad === 'Baja' ? '#43a047' : '#bdbdbd')),
-                                                                                                                                                                                                                                                                                                                                    'border': '2px solid #fff',
-                                                                                                                                                                                                                                                                                                                                    'vertical-align': 'middle',
-                                                                                                                                                                                                                                                                                                                                    'margin-right': '0'
-                                                                                                                                                                                                                                                                                                                                }" title="{{Tarea.prioridad}}"></span>
-                                                                                                                                                        </td>
-                                                                            <td class="text-center">{{Tarea.fechaCompromiso || Tarea.fechaTerminoProgramado | date:'dd/MM/yyyy'}}</td>
-                                                                            <td class="text-center">{{Tarea.creadorNombre || Tarea.nombreCreador || Tarea.idUsuarioCreador}}</td>
-                                                                            <td class="text-center">{{Tarea.fechaCreacion | date:'dd/MM/yyyy'}}</td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                            <!-- Paginación -->
-                                            <nav *ngIf="filteredTareas().length > tareasPageSize" aria-label="Paginación de tareas">
-                                                <ul class="pagination justify-content-center">
-                                                    <li class="page-item" [class.disabled]="tareasCurrentPage === 1">
-                                                        <button class="page-link" (click)="prevTareasPage()">Anterior</button>
-                                                    </li>
-                                                    <li class="page-item disabled">
-                                                        <span class="page-link">Página {{tareasCurrentPage}} de {{tareasTotalPages}}</span>
-                                                    </li>
-                                                    <li class="page-item" [class.disabled]="tareasCurrentPage === tareasTotalPages">
-                                                        <button class="page-link" (click)="nextTareasPage()">Siguiente</button>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </fieldset>
+                                    <div class="widget-body tareas-body">
+                                        <div class="tareas-toolbar">
+                                            <input type="text" class="form-control tareas-search" placeholder="Buscar tarea..." [(ngModel)]="tareaSearch" name="tareaSearch">
+                                        </div>
+
+                                        <div class="table-responsive">
+                                            <table class="table table-hover tareas-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center col-id">Tarea</th>
+                                                        <th class="col-desc">Descripción</th>
+                                                        <th class="text-center col-estado">Estado</th>
+                                                        <th class="text-center col-resp">Responsable</th>
+                                                        <th class="text-center col-prio">Prioridad</th>
+                                                        <th class="text-center col-fecha">F. Compromiso</th>
+                                                        <th class="text-center col-creador">Creador</th>
+                                                        <th class="text-center col-fecha">F. Creación</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let Tarea of filteredTareas(); let i = index">
+                                                        <td class="text-center id-cell">{{Tarea.idTarea}}</td>
+                                                        <td class="desc-cell" title="{{Tarea.descripcionTarea}}">
+                                                            {{Tarea.descripcionTarea}}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span class="estado-pill" [ngClass]="{
+                                                                'estado-pendiente-pill': Tarea.idEstadoTarea === 1,
+                                                                'estado-completada-pill': Tarea.idEstadoTarea === 2,
+                                                                'estado-otro-pill': Tarea.idEstadoTarea !== 1 && Tarea.idEstadoTarea !== 2
+                                                            }">
+                                                                <ng-container [ngSwitch]="Tarea.idEstadoTarea">
+                                                                    <span *ngSwitchCase="1">Pendiente</span>
+                                                                    <span *ngSwitchCase="2">Completada</span>
+                                                                    <span *ngSwitchDefault>Otro</span>
+                                                                </ng-container>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center resp-cell">{{Tarea.responsableNombre || Tarea.nombreResponsable}}</td>
+                                                        <td class="text-center">
+                                                            <span class="prioridad-dot" [ngClass]="{
+                                                                'prio-alta': Tarea.prioridad === 'Alta',
+                                                                'prio-media': Tarea.prioridad === 'Media',
+                                                                'prio-baja': Tarea.prioridad === 'Baja'
+                                                            }" title="{{Tarea.prioridad}}"></span>
+                                                        </td>
+                                                        <td class="text-center">{{Tarea.fechaCompromiso || Tarea.fechaTerminoProgramado | date:'dd/MM/yyyy'}}</td>
+                                                        <td class="text-center">{{Tarea.creadorNombre || Tarea.nombreCreador || Tarea.idUsuarioCreador}}</td>
+                                                        <td class="text-center">{{Tarea.fechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                                    </tr>
+                                                    <tr *ngIf="filteredTareas().length === 0">
+                                                        <td colspan="8" class="text-center sin-tareas">No hay tareas para mostrar</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <nav *ngIf="filteredTareasRaw().length > tareasPageSize" aria-label="Paginación de tareas" class="tareas-paginacion">
+                                            <ul class="pagination pagination-sm justify-content-center">
+                                                <li class="page-item" [class.disabled]="tareasCurrentPage === 1">
+                                                    <button class="page-link" (click)="prevTareasPage()">Anterior</button>
+                                                </li>
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">Página {{tareasCurrentPage}} de {{tareasTotalPages}}</span>
+                                                </li>
+                                                <li class="page-item" [class.disabled]="tareasCurrentPage === tareasTotalPages">
+                                                    <button class="page-link" (click)="nextTareasPage()">Siguiente</button>
+                                                </li>
+                                            </ul>
+                                        </nav>
                                     </div>
                                 </section>
                             </div>
