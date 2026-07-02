@@ -1,0 +1,137 @@
+<!-- Contenedor principal que incluye notificaciones y usuario en línea -->
+<div class="user-notifications-container">
+    <!-- Campanita de notificaciones -->
+    <div class="notifications-container">
+        <div class="notification-badge" title="Notificaciones" (click)="toggleNotificaciones()">
+            <span class="badge bg-danger" *ngIf="conteoNotificaciones > 0">{{conteoNotificaciones}}</span>
+            <i class="fa fa-bell" 
+               [ngClass]="{'bell-alert': conteoNotificaciones > 0, 'bell-normal': conteoNotificaciones === 0}"></i>
+        </div>
+        
+        <!-- Dropdown de notificaciones -->
+        <div class="notifications-dropdown" *ngIf="mostrarNotificaciones" (click)="$event.stopPropagation()">
+            <div class="notifications-header">
+                <h4>Notificaciones</h4>
+                <div class="notifications-actions">
+                    <button class="btn-icon" (click)="actualizarNotificaciones()" title="Actualizar">
+                        <i class="fa fa-refresh"></i>
+                    </button>
+                    <button class="btn-icon" (click)="marcarTodasComoLeidas()" title="Marcar todas como leídas">
+                        <i class="fa fa-check"></i>
+                    </button>
+                    <button class="btn-icon" (click)="verTodasLasNotificaciones()" title="Ver todas las notificaciones">
+                        <i class="fa fa-list"></i>
+                    </button>
+                    <button class="btn-icon" (click)="mostrarNotificaciones = false" title="Cerrar">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="notifications-list" *ngIf="notificaciones.length > 0">
+                <div class="notification-item" 
+                     *ngFor="let notificacion of notificaciones" 
+                     (click)="abrirNotificacion(notificacion)"
+                     role="button"
+                     tabindex="0">
+                    
+                    <div class="notification-icon">
+                        <i class="fa" [ngClass]="obtenerIconoTipo(notificacion.tipo)" 
+                           [style.color]="obtenerColorPrioridad(notificacion.prioridad)"></i>
+                    </div>
+                    
+                    <div class="notification-content">
+                        <div class="notification-title">{{notificacion.titulo}}</div>
+                        <div class="notification-description">{{notificacion.descripcion}}</div>
+                        <div class="notification-date">
+                            <i class="fa fa-clock-o"></i>
+                            <span>{{notificacion.fechaCreacion | date:'dd/MM HH:mm'}}</span>
+                            <span *ngIf="notificacion.fechaVencimiento" class="vencimiento">
+                                | Vence: {{notificacion.fechaVencimiento | date:'dd/MM/yyyy'}}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-status">
+                        <div class="priority-indicator" [style.background-color]="obtenerColorPrioridad(notificacion.prioridad)"></div>
+                        <button class="btn-mark-read" 
+                                *ngIf="!notificacion.leida" 
+                                (click)="$event.stopPropagation(); marcarComoLeida(notificacion)"
+                                title="Marcar como leída">
+                            <i class="fa fa-circle"></i>
+                        </button>
+                        <i class="fa fa-check-circle text-success" *ngIf="notificacion.leida" title="Leída"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="no-notifications" *ngIf="notificaciones.length === 0">
+                <i class="fa fa-bell-slash"></i>
+                <p>No tienes notificaciones</p>
+            </div>
+
+            <!-- Botón Ver Todas al final del dropdown -->
+            <div class="notifications-footer">
+                <button class="btn btn-primary btn-sm w-100" 
+                        (click)="verTodasLasNotificaciones()" 
+                        title="Ver todas las notificaciones">
+                    <i class="fa fa-list"></i> Ver todas las notificaciones
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Usuario integrado en el navbar -->
+    <a href="#" class="nav-link user-nav-link" id="user-dropdown" 
+       (click)="toggleUserMenu($event)" 
+       [attr.aria-expanded]="mostrarMenuUsuario">
+        <span class="thumb-sm avatar">
+            <img class="img-circle" src="http://trazas-nbi.com/Imagenes/TimbreN.jpg" alt="Trazas">
+        </span>
+        <span class="user-name">{{usuario.nombreUsuario}}</span>
+        <i class="fa fa-chevron-down user-arrow" [class.rotated]="mostrarMenuUsuario"></i>
+    </a>
+</div>
+
+<!-- Dropdown menu -->
+<div class="dropdown-menu dropdown-menu-right animated fadeInUp" 
+     [class.show]="mostrarMenuUsuario" 
+     aria-labelledby="user-dropdown"
+     (click)="$event.stopPropagation()">
+    <div class="card notifications">
+        <header class="card-header">
+            <div class="text-center mb-2">
+                <strong>Datos de Usuario</strong>
+            </div>
+        </header>
+    <form class="list-group" (ngSubmit)="guardarDatosUsuario()" (click)="$event.stopPropagation()">
+            <div class="list-group-item">
+                <span class="info-label">Nombre:</span>
+                <input type="text" class="form-control form-control-sm info-value" [(ngModel)]="usuario.nombreUsuario" name="nombreUsuario" placeholder="Nombre" style="max-width:120px; display:inline-block; margin-left:8px;">
+            </div>
+            <div class="list-group-item">
+                <span class="info-label">Cargo:</span>
+                <input type="text" class="form-control form-control-sm info-value" [(ngModel)]="usuario.cargo" name="cargo" placeholder="Cargo" style="max-width:120px; display:inline-block; margin-left:8px;">
+            </div>
+            <div class="list-group-item">
+                <span class="info-label">Fecha:</span>
+                <span class="info-value">{{date | date:'yyyy-MM-dd'}}</span>
+            </div>
+            <div class="list-group-item">
+                <span class="info-label">Sponsor:</span>
+                <select class="form-control form-control-sm sponsor-select" [(ngModel)]="usuario.sponsor" name="sponsor" style="max-width:120px; display:inline-block; margin-left:8px;">
+                    <option value="">Seleccionar...</option>
+                    <option *ngFor="let s of sponsors" [value]="s">{{s}}</option>
+                </select>
+            </div>
+            <div class="list-group-item text-center">
+                <button type="submit" class="btn btn-primary btn-sm" style="margin-top:4px;">Guardar</button>
+            </div>
+        </form>
+        <div class="card-footer text-center">
+            <button class="btn btn-danger btn-sm logout-btn" (click)="CerrarSesion()">
+                <i class="fa fa-sign-out"></i> Cerrar Sesión
+            </button>
+        </div>
+    </div>
+</div>

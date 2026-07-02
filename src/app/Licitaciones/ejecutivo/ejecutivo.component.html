@@ -1,0 +1,222 @@
+<app-main></app-main>
+
+<div class="content-wrap">
+  <main id="content" role="main"class="content">
+      <br>
+      <div class="row">
+          <div class="col-lg-12">
+              <section class="widget">
+                  <header style="background-color: #f48826">
+                      <h2 style="color: white;">
+                          <strong>Administracion de Ejecutivos</strong>
+                      </h2>
+                  </header>
+                  <div class="widget-body">
+                    <fieldset>
+                      <legend></legend>
+                                            <div class="card mb-3" style="background: #f9f9f9; border: 1.5px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); padding: 18px 24px;">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-4">
+                                                        <label for="normal-field" class="form-control-label h4" style="font-weight: 500; font-size: 1.15rem; color: #333;">Seleccione un mandante:</label>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <select id="drdMandantes" class="dropdown-toggle select2-chosen-2 form-control" [(ngModel)]="drdMandantes" name="drdMandantes" (change)="BuscaEjecutivos()" style="font-size: 1.05rem;">
+                                                            <option value=0 selected>--- Seleccione una opción ---</option>
+                                                            <option *ngFor="let Mandante of Mandantes" [value]="Mandante.IdMandante">{{Mandante.NombreMandante}}</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                      <br>
+                      <form #form="ngForm" (ngSubmit)="Agregar(form)">
+                        <div class="borde" *ngIf="SelectMandante">
+                          <div class="form-group row">
+                            <label for="normal-field" class="col-md-2 form-control-label h4 title">Ejecutivos</label>
+                          </div>
+                          <table class="table table-bordered table-striped table-hover no-footer">
+                              <thead>
+                                <tr>
+                                    <td>Id Ejecutivo</td>
+                                    <td>Nombre Ejecutivo</td>
+                                    <td>Telefono</td>
+                                    <td>Celular</td>
+                                    <td>Correo</td>
+                                    <td>Fecha Creación</td>
+                                    <td>Acciones</td>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr style="background-color: #f8f9fa;">
+                                  <td><i class="fa fa-plus-circle" style="color: #28a745;"></i> <small><strong>Nuevo</strong></small></td>
+                                    <td>
+                                      <input type="text" name="txtNombreEjecutivo" id="txtNombreEjecutivo" class="form-control" ngModel placeholder="Nombre Ejecutivo" (click)="Clean()" (keyup)="Clean()">
+                                      <h6 style="color:red;">{{error[0]}}</h6>
+                                    </td>
+                                    <td>
+                                      <input type="text" name="txtTelefono" id="txtTelefono" class="form-control" ngModel placeholder="Teléfono" (click)="Clean()" (keyup)="Clean()">
+                                      <h6 style="color:red;">{{error[1]}}</h6>
+                                    </td>
+                                    <td>
+                                      <input type="text" name="txtCelular" id="txtCelular" class="form-control" ngModel placeholder="Celular" (click)="Clean()" (keyup)="Clean()">
+                                      <h6 style="color:red;">{{error[2]}}</h6>
+                                    </td>
+                                    <td>
+                                      <input type="text" name="txtCorreo" id="txtCorreo" class="form-control" ngModel placeholder="Correo Electrónico" (click)="Clean()" (keyup)="Clean()">
+                                      <h6 style="color:red;">{{error[3]}}</h6>
+                                    </td>
+                                  <td><small class="text-muted">Fecha automática</small></td>
+                                  <td>
+                                    <button type="submit" class="btn btn-success btn-sm" title="Agregar Ejecutivo">
+                                      <i class="fa fa-plus"></i>
+                                    </button>
+                                  </td>
+                                </tr>
+                                <tr *ngFor="let Ejecutivo of ejecutivosOrdenados; let i = index">
+                                    <td>{{Ejecutivo.IdEjecutivos}}</td>
+                                    <td>{{Ejecutivo.NombreEjecutivo}}</td>
+                                    <td>{{Ejecutivo.Telefono}}</td>
+                                    <td>{{Ejecutivo.Celular}}</td>
+                                    <td>{{Ejecutivo.Correo}}</td>
+                                    <td>{{Ejecutivo.FechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                    <td>
+                                        <a (click)="Editar(i)" class="blue"><div class="news-list"><span class="icon" data-toggle="tooltip" title="Editar"><i class="fa fa-pencil icono"></i></span></div></a>
+                                        <a (click)="Confirmacion(i)" class="drop"><div class="news-list"><span class="icon" data-toggle="tooltip" title="Eliminar"><i class="fa fa-times-circle icono"></i></span></div></a>
+                                    </td>
+                                </tr>
+                              </tbody>
+                          </table>
+                          <div class="loader animated fadeIn handle" *ngIf="LoadingTabla">
+                                <span class="spinner">
+                                    <i class="fa fa-spinner fa-spin"></i>
+                                </span>
+                            </div>
+                        </div>
+                      </form>
+                    </fieldset>
+                  </div>
+                <div class="loader animated fadeIn handle" *ngIf="Loading" style="position: absolute;">
+                    <span class="spinner">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </span>
+                </div>
+              </section>
+          </div>
+      </div>
+  </main>
+
+
+  <!-- Modal de Edición -->
+  <div *ngIf="Editor" class="modal show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Ejecutivo</h5>
+                    <button type="button" class="close" aria-label="Close" (click)="OcultarPopUp()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form #EForm="ngForm" (ngSubmit)="Actualizar(EForm)">
+                        <fieldset>
+                            <legend *ngIf=false></legend>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Nombre Ejecutivo:</label>
+                                <div class="col-md-5">
+                                    <input type="text" id="txtEditEjecutivoEdit" class="form-control" [(ngModel)]="EditNombreEjecutivo" name="txtEditEjecutivoEdit">
+                                    <h6 style="color:red;">{{error[0]}}</h6>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Telefono:</label>
+                                <div class="col-md-5">
+                                    <input type="text" id="txtEditTelefono" class="form-control" [(ngModel)]="EditTelefono" name="txtEditTelefono">
+                                    <h6 style="color:red;">{{error[1]}}</h6>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Celular:</label>
+                                <div class="col-md-5">
+                                    <input type="text" id="txtEditCelular" class="form-control" [(ngModel)]="EditCelular" name="txtEditCelular">
+                                    <h6 style="color:red;">{{error[2]}}</h6>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Correo:</label>
+                                <div class="col-md-5">
+                                    <input type="text" id="txtEditCorreo" class="form-control" [(ngModel)]="EditCorreo" name="txtEditCorreo">
+                                    <h6 style="color:red;">{{error[3]}}</h6>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="col-md-offset-4 col-md-8">
+                                    <button ID="btnEditarEjecutivo" type="submit" class="btn btn-success">Editar Ejecutivo</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="OcultarPopUp()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Confirm Eliminar -->
+    <div class="modal fade" id="Confirm" tabindex="-1" role="dialog" aria-labelledby="ConfirmLongTitle" aria-hidden="true">    
+        <div class="modal-dialog" role="document">
+            <span class="widget-icon">
+                    <i class="fa fa-circle" style="position:absolute;color:white;top: 5px;left: 5px;"></i>
+                    <i class="glyphicon glyphicon-remove-sign"></i>
+                </span>
+                <section class="widget widget-card ">
+                    <div class="widget-body clearfix">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3 class="no-margin">¿Esta seguro de eliminar este elemento?</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="modal-footer" style="background-color: #eeeeee;" >
+                        <div class="col-xs-offset-4 col-md-2">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="Eliminar()">Eliminar</button>
+                        </div>
+                        <div class="col-xs-2">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="OcultarConfirmacion()">Cancelar</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+    <!-- Mensajes -->
+    <div class="modal fade" id="Mensaje" tabindex="-1" role="dialog" aria-labelledby="MensajeLongTitle" aria-hidden="true">    
+        <div class="modal-dialog" role="document">
+            <span class="widget-icon">
+                    <i class="fa fa-circle" style="position:absolute;color:white;top: 5px;left: 5px;"></i>
+                    <i class="glyphicon glyphicon-ok-sign"style="color:green"></i>
+                </span>
+                <section class="widget widget-card ">
+                    <div class="widget-body clearfix">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3 class="no-margin">{{msg}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="modal-footer" style="background-color: #eeeeee;" >
+                        <div class="col-xs-offset-4 col-xs-2 ">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="OcultarMensaje()">Aceptar</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+</div>

@@ -1,0 +1,578 @@
+<app-main></app-main>
+
+<div class="content-wrap">
+    <main id="content" role="main" class="content">
+        <div class="container-fluid">
+            
+            <div class="row titulo">
+                <div class="col-12 d-flex justify-content-between align-items-center">
+                    <div class="col-10">
+                        <h4><b><span>{{nomlic}}</span></b></h4>
+                    </div>
+                    <div class="col-2 text-right">
+                        <a (click)="MisLicitaciones()" class="btn btn-inverse">Volver</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row cuerpo" id="bgRow">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="TabControl" data-toggle="tab" role="tab" style="cursor: pointer;"
+                                (click)="PestHito()"><b>Control</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="TabBitacora" data-toggle="tab" role="tab" style="cursor: pointer;"
+                                (click)="PestGestion()"><b>Bitacora</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="TabTarea" data-toggle="tab" role="tab" style="cursor: pointer;"
+                                (click)="PestTareas()"><b>Tareas</b></a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content mt-4" id="myTabContent">
+                        <!-- TAB CONTROL -->
+                        <div class="row" *ngIf="rowHitos">
+                            <!-- Hitos -->
+                            <div class="col-lg-6">
+                                <section class="widget">
+                                    <header style="background-color: #f48826">
+                                        <h2 style="color: white;">
+                                            <strong>Hitos</strong>
+                                        </h2>
+                                    </header>
+                                    <div class="widget-body">
+                                        <form #HForm="ngForm" (ngSubmit)="Guardar(HForm)">
+                                            <fieldset>
+                                                <legend></legend>
+                                                <div class="form-group row">
+                                                    <label for="normal-field" class="col-md-3 form-control-label h4">Estado:</label>
+                                                    <div class="col-md-5">
+                                                        <select id="drdEstado" class="dropdown-toggle select2-chosen-2 form-control"
+                                                            [(ngModel)]="drdEstado" name="drdEstado">
+                                                            <option *ngFor="let Estado of Estados" value={{Estado.IdEstado}}>{{Estado.NombreEstado}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-4 text-right">
+                                                        <i _ngcontent-c8="" class="glyphicon glyphicon-plus click text-success" (click)="addHito = true"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-striped table-hover no-footer">
+                                                            <thead style="background-color: #026AA7 !important; color: white !important;">
+                                                                <tr>
+                                                                    <th>Nombre Hito</th>
+                                                                    <th>Fecha Compromiso</th>
+                                                                    <th>Cumplido</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr *ngFor="let Hito of Hitos; let i = index">
+                                                                    <td>{{Hito.NombreHito}}</td>
+                                                                    <td class="align-center">
+                                                                        <!-- Editar fecha cuando está Pendiente -->
+                                                                        <div id="datetimepicker1" class="input-group date" (click)="Calendar()"
+                                                                            *ngIf="Hito.Estado=='Pendiente'">
+                                                                            <input id="txtCaledario{{i}}" name="txtCaledario{{i}}"
+                                                                                type="text" class="form-control" value="{{Hito.FechaCompromiso | date:'dd/MM/yyyy'}}"
+                                                                                (change)="AsignarFecha(i)" />
+                                                                            <span class="input-group-addon">
+                                                                                <span class="fa fa-calendar"></span>
+                                                                            </span>
+                                                                        </div>
+                                                                        <!-- Solo lectura cuando está Terminado -->
+                                                                        <span id="spanCaledario{{i}}" *ngIf="Hito.Estado=='Terminado'">
+                                                                            {{Hito.FechaCompromiso | date:'dd/MM/yyyy'}}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td class="align-center">
+                                                                        <!-- Estado Pendiente - Botón para completar -->
+                                                                        <div *ngIf="Hito.Estado=='Pendiente'" class="d-flex align-items-center justify-content-center">
+                                                                            <span style="font-size: 20px; color: #ffc107; margin-right: 8px;">
+                                                                                ⏰
+                                                                            </span>
+                                                                            <button type="button" 
+                                                                                    class="btn btn-sm btn-success" 
+                                                                                    (click)="Completado(i)"
+                                                                                    title="Marcar como completado"
+                                                                                    style="padding: 4px 8px; border-radius: 15px; font-size: 11px;">
+                                                                                <i class="fa fa-check"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                        
+                                                                        <!-- Estado Completado - Click para deshacer -->
+                                                                        <div *ngIf="Hito.Estado=='Terminado'" class="d-flex align-items-center justify-content-center">
+                                                                            <span style="font-size: 24px; color: #28a745; cursor: pointer;" 
+                                                                                  (click)="Descompletar(i)"
+                                                                                  title="Click para deshacer">
+                                                                                ✅
+                                                                            </span>
+                                                                        </div>
+                                                                        
+                                                                        <!-- Estado En Progreso (si existe) -->
+                                                                        <div *ngIf="Hito.Estado!='Pendiente' && Hito.Estado!='Terminado'" class="d-flex align-items-center justify-content-center">
+                                                                            <span class="badge" 
+                                                                                  style="background-color: #007bff; color: white; padding: 6px 12px; border-radius: 15px; font-size: 12px;">
+                                                                                <i class="fa fa-cog fa-spin" style="margin-right: 5px;"></i>
+                                                                                En Progreso
+                                                                            </span>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="loader animated fadeIn handle" *ngIf="LoadingTabla[0]">
+                                                        <span class="spinner">
+                                                            <i class="fa fa-spinner fa-spin"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                            <div class="form-actions">
+                                                <div class="row">
+                                                    <div class="col-md-offset-4 col-md-8">
+                                                        <button ID="btnGuardarEstado" class="btn btn-success">Guardar Estado</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="loader animated fadeIn handle" *ngIf="Loading[0]" style="position: absolute;z-index: 2;">
+                                        <span class="spinner">
+                                            <i class="fa fa-spinner fa-spin"></i>
+                                        </span>
+                                    </div>
+                                </section>
+                            </div>
+                            
+                            <!-- Ofertas -->
+                            <div class="col-lg-6">
+                                <section class="widget">
+                                    <header style="background-color: #f48826">
+                                        <h2 style="color: white;">
+                                            <strong>Ofertas</strong>
+                                        </h2>
+                                    </header>
+                                    <div class="widget-body">
+                                        <fieldset>
+                                            <legend></legend>
+                                            
+                                            <!-- Mostrar Monto Oferta Inicial (solo lectura) -->
+                                            <div class="form-group row" *ngIf="txtOferta && txtOferta > 0">
+                                                <label class="col-md-4 form-control-label h5"><strong>Monto Oferta Inicial:</strong></label>
+                                                <div class="col-md-4">
+                                                    <h4 class="text-primary">${{txtOferta | number:0}}</h4>
+                                                </div>
+                                                <div class="col-md-4" *ngIf="Licitacion.FechaCreacion">
+                                                    <small class="text-muted">{{Licitacion.FechaCreacion | date:'dd/MM/yyyy'}}</small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Separador solo si hay oferta inicial -->
+                                            <hr *ngIf="txtOferta && txtOferta > 0">
+
+                                            <!-- Formulario para agregar Última Oferta Económica -->
+                                            <form #OForm="ngForm" (ngSubmit)="AgregarOferta(OForm)">
+                                                <div class="form-group row">
+                                                    <label for="normal-field" class="col-md-4 form-control-label h5">
+                                                        <strong style="color: #28a745;">
+                                                            <i class=""></i> Última Oferta Económica:
+                                                        </strong>
+                                                    </label>
+                                                    <div class="col-md-5">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" style="background-color: #28a745; color: white;">
+                                                                    <i class="fa fa-dollar-sign"></i>
+                                                                </span>
+                                                            </div>
+                                                            <input class="form-control" 
+                                                                   id="txtContraOferta" 
+                                                                   name="txtContraOferta"
+                                                                   [(ngModel)]="txtContraOferta" 
+                                                                   placeholder="Ingrese última oferta" 
+                                                                   style="border-color: #28a745;"
+                                                                   (click)="CleanContraoferta()" 
+                                                                   (keyup)="CleanContraoferta()" />
+                                                        </div>
+                                                        <h6 style="color:red;">{{errorContraOferta}}</h6>
+                                                    </div>
+                                                    <div class="col-md-offset-1 col-md-2">
+                                                        <a (click)="AgregarOferta()" class="btn btn-success">
+                                                            <i class="fa fa-plus"></i> Agregar Oferta
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </fieldset>
+
+                                        <!-- Lista de Ofertas Económicas -->
+                                        <div class="table-responsive" *ngIf="Ofertas && Ofertas.length > 0">
+                                            <h5 class="mb-3">
+                                                <strong style="color: #026AA7;">
+                                                    <i class="fa fa-chart-line"></i> Historial de Ofertas Económicas (Orden Cronológico)
+                                                </strong>
+                                            </h5>
+                                            <table class="table table-bordered table-striped table-hover no-footer">
+                                                <thead style="background-color: #026AA7 !important; color: white !important;">
+                                                    <tr>
+                                                        <th width="15%" class="text-center"><i class="fa fa-hashtag"></i> ID </th>
+                                                        <th width="50%" class="text-center">
+                                                            <i class="fa fa-money"></i> Monto Oferta
+                                                        </th>
+                                                        <th width="35%" class="text-center">
+                                                            <i class="fa fa-calendar"></i> Fecha
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let Oferta of OfertasOrdenadas; let i = index"
+                                                        [style.background-color]="i === OfertasOrdenadas.length - 1 ? '#d4edda' : ''"
+                                                        [style.border-color]="i === OfertasOrdenadas.length - 1 ? '#28a745' : ''"
+                                                        [style.border-width]="i === OfertasOrdenadas.length - 1 ? '2px' : '1px'">
+                                                        <td class="text-center" [style.font-weight]="i === OfertasOrdenadas.length - 1 ? 'bold' : 'normal'">
+                                                            <span class="badge" 
+                                                                  [style.background-color]="i === OfertasOrdenadas.length - 1 ? '#28a745' : '#6c757d'"
+                                                                  style="color: white;">
+                                                                {{i + 1}}
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-right" [style.font-weight]="i === OfertasOrdenadas.length - 1 ? 'bold' : 'normal'">
+                                                            <strong style="font-size: 1.1em; color: #28a745;">
+                                                                ${{Oferta.ValorContraoferta | number:0}}
+                                                            </strong>
+                                                            <span *ngIf="i === OfertasOrdenadas.length - 1" 
+                                                                  class="badge ml-2" 
+                                                                  style="background-color: #28a745; color: white; font-size: 0.75em;">
+                                                                <i class="fa fa-star"></i> Última Oferta Económica
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center" [style.font-weight]="i === OfertasOrdenadas.length - 1 ? 'bold' : 'normal'">
+                                                            <i class="fa fa-clock-o text-muted"></i>
+                                                            {{Oferta.FechaCreacion | date:'dd/MM/yyyy HH:mm'}}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Mensaje cuando no hay ofertas -->
+                                        <div *ngIf="!Ofertas || Ofertas.length === 0" class="alert alert-info">
+                                            <i class="fa fa-info-circle"></i> No se han registrado ofertas económicas para esta licitación.
+                                        </div>
+
+                                        <!-- Mensaje cuando no hay oferta inicial -->
+                                        <div *ngIf="!txtOferta || txtOferta <= 0" class="alert alert-warning">
+                                            <i class="fa fa-exclamation-triangle"></i> El monto inicial se debe establecer en "Agregar Licitación".
+                                        </div>
+
+                                        <div class="loader animated fadeIn handle" *ngIf="LoadingTabla[1]">
+                                            <span class="spinner">
+                                                <i class="fa fa-spinner fa-spin"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="loader animated fadeIn handle" *ngIf="Loading[1]" style="position: absolute;z-index: 2;">
+                                        <span class="spinner">
+                                            <i class="fa fa-spinner fa-spin"></i>
+                                        </span>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                        
+                        <!-- TAB GESTION -->
+                        <div class="row" *ngIf="rowGestion">
+                            <!-- Bitacora -->
+                            <div class="col-lg-6">
+                                <section class="widget">
+                                    <header style="background-color: #f48826; padding: 8px 15px;">
+                                        <h2 style="color: white; margin: 0; font-size: 18px;">
+                                            <strong>Bitacora</strong>
+                                        </h2>
+                                    </header>
+                                    <div class="widget-body" style="padding: 15px;">
+                                        <form #BForm="ngForm" (ngSubmit)="GuardarComentario(BForm)">
+                                            <fieldset>
+                                                <div class="form-group row" style="margin-bottom: 10px;">
+                                                    <label for="normal-field" class="col-md-3 form-control-label" style="font-size: 14px; font-weight: 600; padding-top: 8px;">Bitacora:</label>
+                                                    <div class="col-md-9">
+                                                        <textarea style="height: 120px; font-size: 13px;" class="form-control" id="txtBitacora" name="txtBitacora"
+                                                            [(ngModel)]="txtBitacora" (click)="CleanComentario()" (keyup)="CleanComentario()"></textarea>
+                                                        <h6 style="color:red; margin-top: 4px; margin-bottom: 0; font-size: 12px;">{{errorComentario}}</h6>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row" style="margin-bottom: 10px;">
+                                                    <div class="col-md-offset-3 col-md-9">
+                                                        <div class="fileinput fileinput-new input-group" data-provides="fileinput">
+                                                            <div class="form-control" data-trigger="fileinput" style="font-size: 13px; padding: 6px 12px;">
+                                                                <i class="glyphicon glyphicon-file fileinput-exists"></i>
+                                                                <span class="fileinput-filename" id="NombreArch"></span>
+                                                            </div>
+                                                            <span class="input-group-addon btn btn-secondary btn-file" style="padding: 6px 12px; font-size: 13px;">
+                                                                <span class="fileinput-new">Adjuntar</span>
+                                                                <span class="fileinput-exists">Change</span>
+                                                                <input id="fileupload1" type="file" name="fileupload1" (change)="NombreArchivo()">
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                            <div class="form-actions" style="margin-top: 15px; margin-bottom: 0;">
+                                                <div class="row">
+                                                    <div class="col-md-offset-4 col-md-8">
+                                                        <button ID="btnAgregarBitacora" class="btn btn-success" style="padding: 8px 16px; font-size: 13px;">
+                                                            <i class="fa fa-plus"></i> Agregar Bitacora
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="loader animated fadeIn handle" *ngIf="Loading[2]" style="position: absolute;z-index: 2;">
+                                        <span class="spinner">
+                                            <i class="fa fa-spinner fa-spin"></i>
+                                        </span>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="col-lg-6">
+                                <app-lista-bitacora *ngIf="cargandoLic" [usuario]="usuario" [Licitacion]="Licitacion"></app-lista-bitacora>
+                            </div>
+                        </div>
+                        
+                        <!-- TAB TAREAS -->
+                        <div class="row" *ngIf="rowTareas">
+                            <div class="col-lg-6">
+                                <section class="widget">
+                                    <header style="background-color: #f48826">
+                                        <h2 style="color: white;">
+                                            <strong>Tareas</strong>
+                                        </h2>
+                                    </header>
+                                    <div class="widget-body">
+                                        <app-tareas-lic></app-tareas-lic>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="col-lg-6">
+                                <section class="widget">
+                                    <header style="background-color: #f48826">
+                                        <h2 style="color: white;">
+                                            <strong>Mis Tareas</strong>
+                                        </h2>
+                                    </header>
+                                    <div class="widget-body">
+                                        <fieldset>
+                                            <legend></legend>
+                                        </fieldset>
+                                        <table class="table table-bordered table-striped table-hover no-footer">
+                                            <thead>
+                                                <tr>
+                                                    <td>Tarea</td>
+                                                    <td>Descripción</td>
+                                                    <td>Estado</td>
+                                                    <td>Responsable</td>
+                                                    <td class="align-center">Prioridad</td>
+                                                    <td>Fecha Compromiso</td>
+                                                    <td>Creador</td>
+                                                    <td>Fecha Creación</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!---->
+                                            </tbody>
+                                        </table>
+                                        <!---->
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                                            </p>
+                                        </div>
+                                        
+                                        <div class="table-responsive" *ngIf="Tareas && Tareas.length > 0" style="border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                            <table class="table table-hover no-footer" style="margin-bottom: 0; background: white;">
+                                                <thead style="background: linear-gradient(90deg, #026AA7 0%, #0277bd 100%); color: white;">
+                                                    <tr>
+                                                        <th width="15%" class="text-center"><i class="fa fa-hashtag"></i> ID </th>
+                                                        <th style="border: none; font-weight: 600; font-size: 13px; padding: 12px 8px;">
+                                                            <i class="fa fa-file-text-o" style="margin-right: 5px; opacity: 0.8;"></i>Descripción
+                                                        </th>
+                                                        <th style="border: none; font-weight: 600; font-size: 13px; padding: 12px 8px;">
+                                                            <i class="fa fa-flag" style="margin-right: 5px; opacity: 0.8;"></i>Estado
+                                                        </th>
+                                                        <th style="border: none; font-weight: 600; font-size: 13px; padding: 12px 8px;">
+                                                            <i class="fa fa-user" style="margin-right: 5px; opacity: 0.8;"></i>Responsable
+                                                        </th>
+                                                        <th style="border: none; font-weight: 600; font-size: 13px; padding: 12px 8px; text-align: center;">
+                                                            <i class="fa fa-exclamation-triangle" style="margin-right: 5px; opacity: 0.8;"></i>Prioridad
+                                                        </th>
+                                                        <th style="border: none; font-weight: 600; font-size: 13px; padding: 12px 8px;">
+                                                            <i class="fa fa-calendar" style="margin-right: 5px; opacity: 0.8;"></i>F. Compromiso
+                                                        </th>
+                                                        <th style="border: none; font-weight: 600; font-size: 13px; padding: 12px 8px;">
+                                                            <i class="fa fa-user-plus" style="margin-right: 5px; opacity: 0.8;"></i>Creador
+                                                        </th>
+                                                        <th style="border: none; font-weight: 600; font-size: 13px; padding: 12px 8px;">
+                                                            <i class="fa fa-clock-o" style="margin-right: 5px; opacity: 0.8;"></i>F. Creación
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let Tarea of Tareas; let i = index" 
+                                                        style="transition: all 0.2s ease; cursor: pointer;"
+                                                        (mouseover)="$event.target.style.backgroundColor='#f5f5f5'"
+                                                        (mouseout)="$event.target.style.backgroundColor='white'">
+                                                        <td style="padding: 12px 8px; border-color: #e0e0e0; vertical-align: middle;">
+                                                            <span class="badge" style="background-color: #e3f2fd; color: #1565c0; padding: 4px 8px; border-radius: 12px; font-weight: 600; font-size: 11px;">
+                                                                #{{Tarea.idTarea}}
+                                                            </span>
+                                                        </td>
+                                                        <td style="padding: 12px 8px; border-color: #e0e0e0; max-width: 200px;">
+                                                            <div [innerHTML]="Tarea.descripcionTarea" 
+                                                                 class="description-cell"
+                                                                 style="font-size: 13px; line-height: 1.4; color: #424242; 
+                                                                        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                                                                 [title]="Tarea.descripcionTarea">
+                                                            </div>
+                                                        </td>
+                                                        <td style="padding: 12px 8px; border-color: #e0e0e0; vertical-align: middle;">
+                                                            <span class="badge" 
+                                                                  [ngStyle]="{
+                                                                    'background-color': Tarea.nombreEstadoTarea === 'Completada' ? '#4caf50' : 
+                                                                                       Tarea.nombreEstadoTarea === 'En Proceso' ? '#ff9800' : 
+                                                                                       Tarea.nombreEstadoTarea === 'Pendiente' ? '#f44336' : '#9e9e9e',
+                                                                    'color': 'white',
+                                                                    'padding': '4px 8px',
+                                                                    'border-radius': '12px',
+                                                                    'font-size': '11px',
+                                                                    'font-weight': '600'
+                                                                  }">
+                                                                {{Tarea.nombreEstadoTarea}}
+                                                            </span>
+                                                        </td>
+                                                        <td style="padding: 12px 8px; border-color: #e0e0e0; vertical-align: middle;">
+                                                            <div style="display: flex; align-items: center;">
+                                                                <div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                                                           display: flex; align-items: center; justify-content: center; margin-right: 8px;">
+                                                                    <i class="fa fa-user" style="color: white; font-size: 10px;"></i>
+                                                                </div>
+                                                                <span style="font-size: 12px; font-weight: 500; color: #424242;">
+                                                                    {{Tarea.UsuarioResponsable}}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td style="padding: 12px 8px; border-color: #e0e0e0; text-align: center; vertical-align: middle;">
+                                                            <div style="display: flex; align-items: center; justify-content: center;">
+                                                                <i class="fa fa-circle" 
+                                                                   style="font-size: 14px; margin-right: 5px;"
+                                                                   [ngStyle]="{
+                                                                     'color': Tarea.prioridad == 'Alta' ? '#f44336' : 
+                                                                             Tarea.prioridad == 'Media' ? '#ff9800' : 
+                                                                             Tarea.prioridad == 'Baja' ? '#4caf50' : '#9e9e9e'
+                                                                   }" 
+                                                                   [title]="'Prioridad ' + Tarea.prioridad">
+                                                                </i>
+                                                                <span style="font-size: 11px; font-weight: 600; color: #424242;">
+                                                                    {{Tarea.prioridad}}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td style="padding: 12px 8px; border-color: #e0e0e0; vertical-align: middle;">
+                                                            <div style="display: flex; align-items: center;">
+                                                                <i class="fa fa-calendar-o" style="color: #757575; margin-right: 6px; font-size: 12px;"></i>
+                                                                <span style="font-size: 12px; color: #424242;">
+                                                                    {{Tarea.fechaTerminoProgramado | date:'dd/MM/yyyy'}}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td style="padding: 12px 8px; border-color: #e0e0e0; vertical-align: middle;">
+                                                            <span style="font-size: 12px; color: #757575;">
+                                                                {{Tarea.UsuarioCreador}}
+                                                            </span>
+                                                        </td>
+                                                        <td style="padding: 12px 8px; border-color: #e0e0e0; vertical-align: middle;">
+                                                            <div style="display: flex; align-items: center;">
+                                                                <i class="fa fa-clock-o" style="color: #757575; margin-right: 6px; font-size: 12px;"></i>
+                                                                <span style="font-size: 12px; color: #757575;">
+                                                                    {{Tarea.fechaCreacion | date:'dd/MM/yyyy'}}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        
+                                        <div class="loader animated fadeIn handle" *ngIf="LoadingTabla[3]">
+                                            <span class="spinner">
+                                                <i class="fa fa-spinner fa-spin"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mensajes -->
+    <div class="modal fade" id="Mensaje" tabindex="-1" role="dialog" aria-labelledby="MensajeLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <span class="widget-icon">
+                <i class="fa fa-circle" style="position:absolute;color:white;top: 5px;left: 5px;"></i>
+                <i class="glyphicon glyphicon-ok-sign" style="color:green"></i>
+            </span>
+            <section class="widget widget-card ">
+                <div class="widget-body clearfix">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="no-margin">{{msg}}</h3>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer" style="background-color: #eeeeee;">
+                    <div class="col-xs-offset-4 col-xs-2 ">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="OcultarMensaje()">Aceptar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Mensajes Error -->
+    <div class="modal fade" id="MensajeError" tabindex="-1" role="dialog" aria-labelledby="MensajeLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <span class="widget-icon">
+                <i class="fa fa-circle" style="position:absolute;color:white;top: 5px;left: 5px;"></i>
+                <i class="glyphicon glyphicon-remove-sign" style="color:red"></i>
+            </span>
+            <section class="widget widget-card ">
+                <div class="widget-body clearfix">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="no-margin">{{msg}}</h3>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer" style="background-color: #eeeeee;">
+                    <div class="col-xs-offset-4 col-xs-2 ">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="OcultarMensajeError()">Aceptar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<app-add-hito [licitacion]="Licitacion" (cerrar)="cerrarPopUp()" *ngIf="addHito"></app-add-hito>

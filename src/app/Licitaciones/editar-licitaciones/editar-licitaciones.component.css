@@ -1,0 +1,100 @@
+.tabla-licitaciones thead tr {
+    background-color: #026AA7 !important;
+    color: white !important;
+    text-align: center;
+    font-weight: bold;
+}
+
+.tabla-licitaciones thead th {
+    background-color: #026AA7 !important;
+    color: white !important;
+}
+
+.tabla-licitaciones tbody tr,
+.tabla-licitaciones tbody td,
+.tabla-licitaciones tbody th {
+    height: 19px !important;
+    min-height: 19px !important;
+    max-height: 19px !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    line-height: 19px !important;
+    font-size: 12px !important;
+    font-family: "Open Sans", sans-serif !important;
+    color: #000000 !important;
+    vertical-align: middle !important;
+    box-sizing: border-box;
+}
+
+.tabla-licitaciones thead tr,
+.tabla-licitaciones thead th {
+    height: 20px !important;
+    min-height: 20px !important;
+    max-height: 20px !important;
+    font-size: 12px !important;
+    font-family: "Open Sans", sans-serif !important;
+    vertical-align: middle !important;
+    box-sizing: border-box;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    line-height: 20px !important;
+}
+
+.tabla-licitaciones .align-center {
+    text-align: center;
+}
+
+.tabla-licitaciones .news-list .icon {
+    font-size: 1.2em;
+}
+
+/* Estilos para modo selección de licitaciones hijas */
+.table-warning {
+    background-color: #fff3cd !important;
+}
+
+.btn-group .btn {
+    margin-right: 5px;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+.modo-seleccion-header {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+}
+
+.checkbox-seleccion {
+    transform: scale(1.2);
+    margin: 0;
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 10;
+    cursor: pointer !important;
+}
+
+.fila-seleccionada {
+    background-color: #fff3cd !important;
+    border-left: 3px solid #ffc107 !important;
+}
+
+/* Asegurar que las celdas de checkbox sean clickeables */
+td.text-center {
+    pointer-events: auto !important;
+}
+
+td.text-center input[type="checkbox"] {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* Fila resaltada al pasar el mouse por encima */
+.tabla-licitaciones tbody tr:hover,
+.tabla-licitaciones tbody tr:hover td {
+    background-color: #fffde7 !important;
+    transition: background-color 0.15s ease;
+}

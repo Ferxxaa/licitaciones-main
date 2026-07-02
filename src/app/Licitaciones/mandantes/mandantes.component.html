@@ -1,0 +1,312 @@
+<app-main></app-main>
+
+<div class="content-wrap">
+  <main id="content" role="main"class="content">
+      <br>
+      <div class="row">
+          <div class="col-lg-12">
+              <section class="widget">
+                  <header style="background-color: #f48826; border: none; border-top: none; border-bottom: none; border-left: none; border-right: none;">
+                      <h2 style="color: white;">
+                          <strong>Administracion de Mandantes</strong>
+                      </h2>
+                  </header>
+                  <div class="widget-body">
+                                            <!-- Sección alineada horizontalmente -->
+                                            <!-- Sección alineada verticalmente -->
+                                            <div style="padding: 24px; max-width: 1300px; margin: 0 auto;">
+                                                <div style="width: 100%; max-width: 1300px; margin: 14px auto; display: flex; flex-direction: column; align-items: flex-start;">
+                                                    <h4 style="color: #000000; font-family: 'Roboto', sans-serif; font-size: 1.7em; font-weight: bold; margin-bottom: 16px;">
+                                                        <i class="fa fa-user-plus mr-2"></i> Crear Nuevo Mandante
+                                                    </h4>
+                                                        <form #CForm="ngForm" (ngSubmit)="Agregar(CForm)" style="width: 100%; max-width: 1000px; margin-left: -12px;">
+                                                            <div class="form-group mb-2 w-100" style="display: flex; align-items: center; gap: 8px;">
+                                                                <div style="flex: 1; min-width: 0;">
+                                                                    <label for="normal-field" class="form-control-label h5 mb-1" style="display:block; text-align:left; padding-bottom: 0; margin-bottom: 0;">Nombre Mandante:</label>
+                                                                    <input type="text" id="txtMandante" class="form-control" ngModel name="txtMandante" placeholder="Nombre Mandante" (click)="Clean()" (keyup)="Clean()" style="width: 100%;">
+                                                                    <h6 style="color:red;">{{error}}</h6>
+                                                                </div>
+                                                                <button ID="btnCrearArea" class="btn btn-success" style="height: 38px; min-width: 120px; margin-top: 15px;">Crear Mandante</button>
+                                                            </div>
+                                                        </form>
+                                                        <div class="form-group mb-0 w-100" style="max-width: 1000px; margin-left: -12px; margin-top: 18px;">
+                                                            <label for="mandante-search" class="form-control-label h5 mb-1" style="display:block; text-align:left;">Buscar Mandante:</label>
+                                                            <input type="text" id="mandante-search" class="form-control" [(ngModel)]="mandanteSearch" name="mandanteSearch" placeholder="Ingrese nombre para filtrar...">
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div style="width: 100%; display: flex; justify-content: center;">
+                                                    <table class="table table-bordered table-striped table-hover no-footer compact-table" style="max-width: 1300px; margin: 0 auto;">
+                                                        <thead>
+                                                            <tr>
+                                                                <td style="width: 80px;">Id Mandante</td>
+                                                                <td>Nombre Mandante</td>
+                                                                <td>Fecha Creación</td>
+                                                                <td style="width: 100px;">Acciones</td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <ng-container *ngFor="let mandante of pagedMandantes; let i = index">
+                                                                <tr>
+                                                                    <td>{{mandante.IdMandante}}</td>
+                                                                    <td>
+                                                                        <span (click)="mostrarEjecutivos(mandante.IdMandante)" style="cursor:pointer; color:#007bff; text-decoration:underline;">
+                                                                            {{mandante.NombreMandante}}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td class="center">{{mandante.FechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                                                    <td>
+                                                                        <button type="button" class="btn btn-link p-1 blue" (click)="Editar((currentPage - 1) * pageSize + i)" data-toggle="tooltip" title="Editar" style="border: none; background: none;">
+                                                                            <i class="fa fa-pencil icono"></i>
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-link p-1 drop" (click)="Confirmacion((currentPage - 1) * pageSize + i)" data-toggle="tooltip" title="Eliminar" style="border: none; background: none; margin-left: 5px;">
+                                                                            <i class="fa fa-times-circle icono"></i>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr *ngIf="mandanteExpandido === mandante.IdMandante">
+                                                                    <td colspan="4">
+                                                                        <div *ngIf="loadingEjecutivos" class="text-center">
+                                                                            <i class="fa fa-spinner fa-spin"></i> Cargando ejecutivos...
+                                                                        </div>
+                                                                        <div *ngIf="!loadingEjecutivos">
+                                                                            <h5>Ejecutivos de {{mandante.NombreMandante}}</h5>
+                                                                            <form #EjeForm="ngForm" (ngSubmit)="agregarEjecutivo(EjeForm)" class="mb-2 form-agregar-ejecutivo">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-3">
+                                                                                        <input type="text" class="form-control" placeholder="Nombre Ejecutivo" name="NombreEjecutivo" [(ngModel)]="nuevoEjecutivo.NombreEjecutivo" (input)="limpiarErrorEjecutivoCampo(0)">
+                                                                                        <div *ngIf="errorEjecutivoCampos[0]" style="color:red; font-size:0.9em;">{{errorEjecutivoCampos[0]}}</div>
+                                                                                    </div>
+                                                                                    <div class="col-md-2">
+                                                                                        <input type="text" class="form-control" placeholder="Teléfono" name="Telefono" [(ngModel)]="nuevoEjecutivo.Telefono" (input)="limpiarErrorEjecutivoCampo(1)">
+                                                                                        <div *ngIf="errorEjecutivoCampos[1]" style="color:red; font-size:0.9em;">{{errorEjecutivoCampos[1]}}</div>
+                                                                                    </div>
+                                                                                    <div class="col-md-2">
+                                                                                        <input type="text" class="form-control" placeholder="Celular" name="Celular" [(ngModel)]="nuevoEjecutivo.Celular" (input)="limpiarErrorEjecutivoCampo(2)">
+                                                                                        <div *ngIf="errorEjecutivoCampos[2]" style="color:red; font-size:0.9em;">{{errorEjecutivoCampos[2]}}</div>
+                                                                                    </div>
+                                                                                    <div class="col-md-3">
+                                                                                        <input type="text" class="form-control" placeholder="Correo" name="Correo" [(ngModel)]="nuevoEjecutivo.Correo" (input)="limpiarErrorEjecutivoCampo(3)">
+                                                                                        <div *ngIf="errorEjecutivoCampos[3]" style="color:red; font-size:0.9em;">{{errorEjecutivoCampos[3]}}</div>
+                                                                                    </div>
+                                                                                    <div class="col-md-2">
+                                                                                        <button type="submit" class="btn btn-success btn-agregar-ejecutivo">Agregar Ejecutivo</button>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div *ngIf="errorEjecutivo" style="color:red;">{{errorEjecutivo}}</div>
+                                                                            </form>
+                                                                            <div style="overflow-x:auto;">
+                                                                                <table class="table table-sm table-bordered ejecutivos-table compact-table">
+                                                                                    <thead>
+                                                                                        <tr style="background:#f5f6fa;">
+                                                                                            <th style="color:#222; font-weight:600;">Id</th>
+                                                                                            <th style="color:#222; font-weight:600;">Nombre</th>
+                                                                                            <th style="color:#222; font-weight:600;">Teléfono</th>
+                                                                                            <th style="color:#222; font-weight:600;">Celular</th>
+                                                                                            <th style="color:#222; font-weight:600;">Correo</th>
+                                                                                            <th style="color:#222; font-weight:600;">Fecha Creación</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        <tr *ngFor="let eje of ejecutivosMandante">
+                                                                                            <td>{{eje.IdEjecutivos}}</td>
+                                                                                            <td *ngIf="editEjecutivoId !== eje.IdEjecutivos">{{eje.NombreEjecutivo}}</td>
+                                                                                            <td *ngIf="editEjecutivoId === eje.IdEjecutivos">
+                                                                                                <input [(ngModel)]="editEjecutivoData.NombreEjecutivo" name="editNombreEjecutivo" class="form-control form-control-sm" />
+                                                                                            </td>
+                                                                                            <td *ngIf="editEjecutivoId !== eje.IdEjecutivos">{{eje.Telefono}}</td>
+                                                                                            <td *ngIf="editEjecutivoId === eje.IdEjecutivos">
+                                                                                                <input [(ngModel)]="editEjecutivoData.Telefono" name="editTelefono" class="form-control form-control-sm" />
+                                                                                            </td>
+                                                                                            <td *ngIf="editEjecutivoId !== eje.IdEjecutivos">{{eje.Celular}}</td>
+                                                                                            <td *ngIf="editEjecutivoId === eje.IdEjecutivos">
+                                                                                                <input [(ngModel)]="editEjecutivoData.Celular" name="editCelular" class="form-control form-control-sm" />
+                                                                                            </td>
+                                                                                            <td *ngIf="editEjecutivoId !== eje.IdEjecutivos">{{eje.Correo}}</td>
+                                                                                            <td *ngIf="editEjecutivoId === eje.IdEjecutivos">
+                                                                                                <input [(ngModel)]="editEjecutivoData.Correo" name="editCorreo" class="form-control form-control-sm" />
+                                                                                            </td>
+                                                                                            <td>{{eje.FechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                                                                            <td>
+                                                                                                <ng-container *ngIf="editEjecutivoId !== eje.IdEjecutivos">
+                                                                                                    <button class="btn btn-link p-1" (click)="editarEjecutivo(eje)">
+                                                                                                        <i class="fa fa-pencil"></i>
+                                                                                                    </button>
+                                                                                                    <button class="btn btn-link p-1" (click)="eliminarEjecutivo(eje)">
+                                                                                                        <i class="fa fa-trash"></i>
+                                                                                                    </button>
+                                                                                                </ng-container>
+                                                                                                <ng-container *ngIf="editEjecutivoId === eje.IdEjecutivos">
+                                                                                                    <button class="btn btn-success btn-sm" (click)="guardarEdicionEjecutivo()">
+                                                                                                        <i class="fa fa-check"></i>
+                                                                                                    </button>
+                                                                                                    <button class="btn btn-secondary btn-sm" (click)="cancelarEdicionEjecutivo()">
+                                                                                                        <i class="fa fa-times"></i>
+                                                                                                    </button>
+                                                                                                </ng-container>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        <tr *ngIf="ejecutivosMandante.length === 0">
+                                                                                            <td colspan="6" class="text-center">No hay ejecutivos para este mandante.</td>
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </ng-container>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                            <div class="loader animated fadeIn handle" *ngIf="LoadingTabla">
+                                <span class="spinner">
+                                    <i class="fa fa-spinner fa-spin"></i>
+                                </span>
+                            </div>
+                            <div class="w-100 d-flex justify-content-center" style="margin-top: 10px;">
+                                <div class="d-flex align-items-center" style="gap: 8px;">
+                                    <button class="btn btn-sm btn-secondary" (click)="prevPage()" [disabled]="currentPage === 1">Anterior</button>
+                                    <span style="margin: 0 8px; font-size: 0.95em;">Página {{currentPage}} de {{totalPages}}</span>
+                                    <button class="btn btn-sm btn-secondary" (click)="nextPage()" [disabled]="currentPage === totalPages">Siguiente</button>
+                                </div>
+                            </div>
+                  </div>
+                  <div class="loader animated fadeIn handle" *ngIf="Loading" style="position: absolute;">
+                        <span class="spinner">
+                            <i class="fa fa-spinner fa-spin"></i>
+                        </span>
+                    </div>
+              <!-- cierre section eliminado -->
+          <!-- cierre div principal eliminado -->
+    <!-- cierre div principal eliminado -->
+      
+    <!-- cierre main eliminado -->
+
+    <!-- Modal -->
+    <div class="modal fade" 
+         id="exampleModalLong" 
+         tabindex="-1" 
+         role="dialog" 
+         aria-labelledby="exampleModalLongTitle" 
+         [attr.aria-hidden]="!Editor" 
+         [class.show]="Editor" 
+         [style.display]="Editor ? 'block' : 'none'">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="height: 50px;">
+                    <div class="form-group row">
+                        <div class="col-md-11">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Editar Mandante</h5>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="close" aria-label="Close" (click)="OcultarPopUp()">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <form #EForm="ngForm" (ngSubmit)="Actualizar(EForm)">
+                        <fieldset>
+                            <legend *ngIf=false></legend>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Nombre Mandante:</label>
+                                <div class="col-md-5">
+                                    <input type="text" id="txtMandanteEdit" class="form-control" [(ngModel)]="EditNombreMandante" name="txtMandanteEdit">
+                                    <h6 style="color:red;">{{errorEdit}}</h6>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="col-md-offset-4 col-md-8">
+                                    <button ID="btnEditarLicitacion" class="btn btn-success" >Editar Licitacion</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="OcultarPopUp()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Eliminar -->
+    <div class="modal fade" 
+         id="Confirm" 
+         tabindex="-1" 
+         role="dialog" 
+         aria-labelledby="ConfirmLongTitle" 
+         [attr.aria-hidden]="IndexEliminar < 0" 
+         [class.show]="IndexEliminar >= 0" 
+         [style.display]="IndexEliminar >= 0 ? 'block' : 'none'">    
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="ConfirmLongTitle">
+                        <i class="fa fa-exclamation-triangle mr-2"></i>
+                        Confirmar Eliminación
+                    </h5>
+                    <button type="button" class="close text-white" aria-label="Close" (click)="OcultarConfirmacion()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <i class="fa fa-question-circle fa-3x text-warning mb-3"></i>
+                        <h4>¿Está seguro de eliminar este elemento?</h4>
+                        <p class="text-muted">Esta acción no se puede deshacer.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" (click)="Eliminar()">
+                        <i class="fa fa-trash mr-1"></i>Eliminar
+                    </button>
+                    <button type="button" class="btn btn-secondary ml-2" (click)="OcultarConfirmacion()">
+                        <i class="fa fa-times mr-1"></i>Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    <div class="modal fade" 
+         id="Mensaje" 
+         tabindex="-1" 
+         role="dialog" 
+         aria-labelledby="MensajeLongTitle" 
+         [attr.aria-hidden]="!msg || msg.length === 0" 
+         [class.show]="msg && msg.length > 0" 
+         [style.display]="msg && msg.length > 0 ? 'block' : 'none'">    
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="MensajeLongTitle">
+                        <i class="fa fa-check-circle mr-2"></i>
+                        Mensaje
+                    </h5>
+                    <button type="button" class="close text-white" aria-label="Close" (click)="OcultarMensaje()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <i class="fa fa-check-circle fa-3x text-success mb-3"></i>
+                        <h4>{{msg}}</h4>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" (click)="OcultarMensaje()">
+                        <i class="fa fa-check mr-1"></i>Aceptar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- cierre div final eliminado -->

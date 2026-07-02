@@ -1,0 +1,215 @@
+.icon i {
+    color: white !important;
+    font-size: 1.2em !important;
+}
+
+.sidebar-nav-title {
+    color: white !important;
+}
+
+li a {
+    color: white !important;
+}
+
+.sidebar-nav>li ul {
+    /* background-color: #26b809 !important; */
+    /* background-color: #4f5a5f !important; */
+    background-color: #6e7178 !important;
+}
+
+/* Menu enhancements for better user experience */
+.sidebar-nav a {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.sidebar-nav a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(2px);
+}
+
+.sidebar-nav a:focus {
+    outline: 2px solid #4a4a4a;
+    outline-offset: 2px;
+}
+
+/* Indicador visual naranja oscuro para todos los elementos durante animación */
+.sidebar-nav a.animating {
+    pointer-events: none;
+    background-color: rgba(204, 102, 0, 0) !important; /* Naranja oscuro con transparencia */
+    border-left: 4px solid #cc660000; /* Borde naranja oscuro */
+}
+
+.sidebar-nav a.animating::after {
+    content: "●";
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #e7e7e7; /* Naranja oscuro */
+    font-size: 8px;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+/* Estado activo permanente para página actual */
+.sidebar-nav a.active {
+    background-color: rgba(113, 113, 113, 0.4) !important; /* Naranja más intenso */
+    border-left: 4px solid #0b0b0b00;
+    color: #f2f2f2 !important;
+    font-weight: 600;
+}
+
+.sidebar-nav a.active::after {
+    content: "●";
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ffffff00;
+    font-size: 8px;
+    /* Sin animación para estado activo */
+}
+
+.sidebar-nav a.active .icon i {
+    color: #ffffffe8 !important;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.4; transform: translateY(-50%) scale(0.8); }
+    50% { opacity: 1; transform: translateY(-50%) scale(1.2); }
+}
+
+/* Aplicar el mismo estilo a los elementos de collapse */
+.sidebar-nav a[data-toggle="collapse"].animating {
+    background-color: rgba(204, 102, 0, 0) !important;
+    border-left: 4px solid #cc660000;
+}
+
+/* Improved collapse animations - más suaves */
+.collapse {
+    transition: all 0.25s ease-in-out;
+    overflow: hidden;
+}
+
+.collapse:not(.show) {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.collapse.show {
+    max-height: 500px; /* Altura máxima suficiente para el contenido */
+    opacity: 1;
+}
+
+/* Auto-close menu behavior */
+.sidebar-nav li {
+    position: relative;
+}
+
+/* Active state for expanded menus - fondo negro cuando se abre un submenú */
+.sidebar-nav a[aria-expanded="true"] {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.sidebar-nav a[aria-expanded="true"] .icon i {
+    color: #ffffff !important;
+}
+
+/* Loading state indicator - naranja oscuro */
+.menu-loading {
+    position: relative;
+}
+
+.menu-loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #cc6600;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translateY(-50%);
+}
+
+@keyframes spin {
+    0% { transform: translateY(-50%) rotate(0deg); }
+    100% { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* Improved accessibility for screen readers */
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Aplicar tipografía SOLO a: Licitaciones / Proyectos / Tareas / Finanzas (y sus submenús) */
+.nav-section-typo,
+#ulMenuLicitaciones,
+#ulMenuProyectos,
+#ulMenuPrincipal,
+#ulMenuFinanzas,
+#ulMenuLicitaciones a,
+#ulMenuProyectos a,
+#ulMenuPrincipal a,
+#ulMenuFinanzas a,
+#ulMenuLicitaciones .menu-text,
+#ulMenuProyectos .menu-text,
+#ulMenuPrincipal .menu-text,
+#ulMenuFinanzas .menu-text {
+    font-family: 'Open Sans', sans-serif !important;
+    font-weight: 400 !important;
+    color: #ffffff !important;
+}
+
+/* Ítems de menú dentro de cada bloque (primer nivel del ul) */
+#ulMenuLicitaciones > li > a,
+#ulMenuProyectos > li > a,
+#ulMenuFinanzas > li > a,
+#ulMenuPrincipal > li > a,
+#ulMenuLicitaciones > li > a .menu-text,
+#ulMenuProyectos > li > a .menu-text,
+#ulMenuFinanzas > li > a .menu-text,
+#ulMenuPrincipal > li > a .menu-text {
+    font-size: 13px !important;
+}
+
+.nav-section-typo {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+/* Submenús: padding según especificación */
+#ulMenuLicitaciones ul li a,
+#ulMenuProyectos ul li a,
+#ulMenuFinanzas ul li a {
+    padding: 5px 0px 5px 40px !important;
+    font-size: 13px !important;
+}
+
+/* En submenús el texto suele estar en span.menu-text */
+#ulMenuLicitaciones ul li a .menu-text,
+#ulMenuProyectos ul li a .menu-text,
+#ulMenuFinanzas ul li a .menu-text {
+    font-size: 13px !important;
+}
+
+/* Tareas: sus ítems son el contenido del bloque */
+#ulMenuPrincipal li a,
+#ulMenuPrincipal li a .menu-text {
+    font-size: 13px !important;
+}

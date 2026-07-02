@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "http://trazas-nbi.com:1234",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

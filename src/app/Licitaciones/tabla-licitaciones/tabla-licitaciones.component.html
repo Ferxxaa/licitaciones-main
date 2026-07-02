@@ -1,0 +1,534 @@
+<app-main></app-main>
+<div class="content-wrap">
+    <main id="content" role="main" class="content">
+        <div class="container-fluid">
+            
+            <div class="row titulo">
+                <div class="col-12 d-flex justify-content-between align-items-center">
+                    <div class="col-10">
+                        <h4><b><span>{{nomlic}}</span></b></h4>
+                    </div>
+                    <div class="col-2 text-right">
+                        <a (click)="MisLicitaciones()" class="btn btn-inverse">Volver</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row cuerpo" id="bgRow">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="TabControl" data-toggle="tab" role="tab" style="cursor: pointer;"
+                                (click)="PestHito()"><b>Control</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="TabBitacora" data-toggle="tab" role="tab" style="cursor: pointer;"
+                                (click)="PestGestion()"><b>Bitacora</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="TabTarea" data-toggle="tab" role="tab" style="cursor: pointer;"
+                                (click)="PestTareas()"><b>Tareas</b></a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content mt-4" id="myTabContent">
+                        <!-- TAB CONTROL -->
+                        <div class="row" *ngIf="rowHitos">
+                            <!-- Hitos -->
+                            <div class="col-lg-6">
+                                <section class="widget">
+                                    <header style="background-color: #f48826">
+                                        <h2 style="color: white;">
+                                            <strong>Hitos</strong>
+                                        </h2>
+                                    </header>
+                                    <div class="widget-body">
+                                        <form #HForm="ngForm" (ngSubmit)="Guardar(HForm)">
+                                            <fieldset>
+                                                <legend></legend>
+                                                <div class="form-group row">
+                                                    <label for="normal-field" class="col-md-3 form-control-label h4">Estado:</label>
+                                                    <div class="col-md-5">
+                                                        <select id="drdEstado" class="dropdown-toggle select2-chosen-2 form-control"
+                                                            [(ngModel)]="drdEstado" name="drdEstado">
+                                                            <option *ngFor="let Estado of Estados" [ngValue]="+Estado.IdEstado">{{Estado.NombreEstado}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-4 text-right">
+                                                        <button type="button" class="btn btn-success btn-sm" (click)="addHito = true">
+                                                            <i class="fa fa-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-striped table-hover no-footer compact-table">
+                                                            <thead style="background-color: #026AA7 !important; color: white !important;">
+                                                                <tr>
+                                                                    <th>Nombre Hito</th>
+                                                                    <th>Fecha Compromiso</th>
+                                                                    <th>Cumplido</th>
+                                                                    <th>Acciones</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr *ngFor="let Hito of pagedHitos; let i = index" class="compact-row" style="vertical-align: middle; height: 22px;">
+                                                                    <td style="padding: 2px 6px; font-size: 0.92em;">{{Hito.NombreHito}}</td>
+                                                                    <td class="align-center" style="padding: 2px 6px; font-size: 0.92em;">
+                                                                        <div class="input-group"
+                                                                            *ngIf="Hito.Estado=='Pendiente'">
+                                                                            <input id="txtCaledario{{i}}" name="txtCaledario{{i}}"
+                                                                                type="date" class="form-control compact-input"
+                                                                                [(ngModel)]="Hito.FechaCompromisoInput"
+                                                                                [ngModelOptions]="{standalone: true}"
+                                                                                (change)="onFechaCompromisoInputChange(i, Hito.FechaCompromisoInput)"
+                                                                                style="height: 20px; padding: 1px 3px; font-size: 0.88em;" />
+                                                                        </div>
+                                                                        <span id="spanCaledario{{i}}" *ngIf="Hito.Estado=='Terminado'">{{Hito.FechaCompromiso | date:'dd/MM/yyyy'}}</span>
+                                                                    </td>
+                                                                    <td class="align-center" style="padding: 2px 6px; font-size: 0.92em;">
+                                                                        <!-- Estado Pendiente - Círculo gris clickeable -->
+                                                                        <div *ngIf="Hito.Estado=='Pendiente'" 
+                                                                             class="d-flex align-items-center justify-content-center hito-pendiente"
+                                                                             (click)="Completado(i)"
+                                                                             title="Clic para marcar como completado">
+                                                                            <span style="font-size: 24px; color: #6c757d;">
+                                                                                ⚪
+                                                                            </span>
+                                                                        </div>
+                                                                        <!-- Estado Completado - Click para deshacer -->
+                                                                        <div *ngIf="Hito.Estado=='Terminado'" 
+                                                                             class="d-flex align-items-center justify-content-center hito-completado"
+                                                                             title="Click para deshacer"
+                                                                             (click)="Descompletar(i)"
+                                                                             style="cursor: pointer;">
+                                                                            <span style="font-size: 24px;">
+                                                                                ✅
+                                                                            </span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="align-center" style="padding: 2px 6px; font-size: 0.92em;">
+                                                                        <div class="d-flex align-items-center justify-content-center gap-2" style="gap: 4px;">
+                                                                            <!-- Botón Editar -->
+                                        <button type="button" 
+                                            class="btn btn-sm btn-primary compact-btn" 
+                                            (click)="EditarHito(i)"
+                                            title="Editar hito"
+                                            style="padding: 2px 6px; border-radius: 4px; font-size: 0.92em;">
+                                                                                <i class="fa fa-edit"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        <tfoot>
+                                                            <tr *ngIf="hitosTotalPages > 1">
+                                                                <td colspan="4">
+                                                                    <div class="w-100 d-flex justify-content-center" style="margin-top: 10px;">
+                                                                        <div class="d-flex align-items-center" style="gap: 8px;">
+                                                                            <button class="btn btn-sm btn-secondary" (click)="prevHitosPage()" [disabled]="hitosCurrentPage === 1">Anterior</button>
+                                                                            <span style="margin: 0 8px; font-size: 0.95em;">Página {{hitosCurrentPage}} de {{hitosTotalPages}}</span>
+                                                                            <button class="btn btn-sm btn-secondary" (click)="nextHitosPage()" [disabled]="hitosCurrentPage === hitosTotalPages">Siguiente</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                        </table>
+                                                    </div>
+                                                    <div class="loader animated fadeIn handle" *ngIf="LoadingTabla[0]">
+                                                        <span class="spinner">
+                                                            <i class="fa fa-spinner fa-spin"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                            <div class="form-actions">
+                                                <div class="row">
+                                                    <div class="col-md-offset-4 col-md-8">
+                                                        <button ID="btnGuardarEstado" class="btn btn-success">Guardar Estado</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="loader animated fadeIn handle" *ngIf="Loading[0]" style="position: absolute;z-index: 2;">
+                                        <span class="spinner">
+                                            <i class="fa fa-spinner fa-spin"></i>
+                                        </span>
+                                    </div>
+                                </section>
+                            </div>
+                            
+                            <!-- Ofertas -->
+                            <div class="col-lg-6">
+                                <section class="widget">
+                                    <header style="background-color: #f48826">
+                                        <h2 style="color: white;">
+                                            <strong>Ofertas</strong>
+                                        </h2>
+                                    </header>
+                                    <div class="widget-body">
+                                        <fieldset>
+                                            <legend></legend>
+                                            
+                                            <!-- Mostrar Monto Oferta Inicial (solo lectura) -->
+                                            <div class="form-group row" *ngIf="txtOferta && txtOferta > 0">
+                                                <label class="col-md-4 form-control-label h5"><strong>Monto Oferta Inicial:</strong></label>
+                                                <div class="col-md-4">
+                                                    <h4 class="text-primary">${{txtOferta | number:0}}</h4>
+                                                </div>
+                                                <div class="col-md-4" *ngIf="Licitacion.FechaCreacion">
+                                                    <small class="text-muted">{{Licitacion.FechaCreacion | date:'dd/MM/yyyy'}}</small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Separador solo si hay oferta inicial -->
+                                            <hr *ngIf="txtOferta && txtOferta > 0">
+
+                                            <!-- Formulario para agregar Última Oferta Económica -->
+                                            <form #OForm="ngForm" (ngSubmit)="AgregarOferta(OForm)">
+                                                <div class="form-group row">
+                                                    <label for="normal-field" class="col-md-4 form-control-label h5">
+                                                        <strong style="color: #28a745;">
+                                                            Última Oferta Económica:
+                                                        </strong>
+                                                    </label>
+                                                    <div class="col-md-3">
+                                                        <input class="form-control text-right" 
+                                                               id="txtContraOferta" 
+                                                               name="txtContraOferta"
+                                                               [(ngModel)]="txtContraOferta" 
+                                                               placeholder="Ingrese última oferta" 
+                                                               style="border-color: #28a745;"
+                                                               (click)="CleanContraoferta()" 
+                                                               (keyup)="CleanContraoferta()" />
+                                                        <h6 style="color:red;">{{errorContraOferta}}</h6>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <select class="form-control" [(ngModel)]="monedaOferta" name="monedaOferta">
+                                                            <option value="CLP">CLP</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-offset-1 col-md-2">
+                                                        <a (click)="confirmarOferta()" class="btn btn-success btn-sm">
+                                                            <i class="fa fa-plus"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </fieldset>
+
+                                        <!-- Lista de Ofertas Económicas -->
+                                        <div class="table-responsive" *ngIf="Ofertas && Ofertas.length > 0">
+                                            <h5 class="mb-3">
+                                                <strong style="color: #026AA7;">
+                                                    <i class="fa fa-chart-line"></i> Historial de Ofertas Económicas (Orden Cronológico)
+                                                </strong>
+                                            </h5>
+                                            <table class="table table-bordered table-striped table-hover no-footer">
+                                                <thead style="background-color: #026AA7 !important; color: white !important;">
+                                                    <tr>
+                                                        <th width="15%" class="text-center">
+                                                            <i class="fa fa-hashtag"></i> #
+                                                        </th>
+                                                        <th width="35%" class="text-center">
+                                                            <i class="fa fa-money"></i> Monto Oferta
+                                                        </th>
+                                                        <th width="15%" class="text-center">
+                                                            <i class="fa fa-exchange"></i> Moneda
+                                                        </th>
+                                                        <th width="35%" class="text-center">
+                                                            <i class="fa fa-calendar"></i> Fecha
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let Oferta of ofertasPaginadas(); let i = index"
+                                                        [style.background-color]="i === 0 ? '#d4edda' : ''"
+                                                        [style.border-color]="i === 0 ? '#28a745' : ''"
+                                                        [style.border-width]="i === 0 ? '2px' : '1px'">
+                                                        <td class="text-center" [style.font-weight]="i === 0 ? 'bold' : 'normal'">
+                                                            <span class="badge" 
+                                                                  [style.background-color]="i === 0 ? '#28a745' : '#6c757d'"
+                                                                  style="color: white;">
+                                                                {{(OfertasOrdenadas.length) - (ofertasOffset() + i)}}
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center" [style.font-weight]="i === 0 ? 'bold' : 'normal'">
+                                                            <span style="color: #43a047; font-weight: bold; font-size: 1.1em;">
+                                                                ${{Oferta.ValorContraoferta | number:'1.0-0'}}
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            {{Oferta.Moneda || 'CLP'}}
+                                                        </td>
+                                                        <td class="text-center" [style.font-weight]="i === 0 ? 'bold' : 'normal'">
+                                                            <i class="fa fa-calendar text-muted"></i>
+                                                            {{Oferta.FechaCreacion | date:'dd/MM/yyyy'}}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <!-- Paginación Ofertas -->
+                                            <nav *ngIf="OfertasOrdenadas.length > ofertasPageSize" aria-label="Paginación de ofertas">
+                                                <ul class="pagination justify-content-center">
+                                                    <li class="page-item" [class.disabled]="ofertasCurrentPage === 1">
+                                                        <button class="page-link" (click)="prevOfertasPage()">Anterior</button>
+                                                    </li>
+                                                    <li class="page-item disabled">
+                                                        <span class="page-link">Página {{ofertasCurrentPage}} de {{ofertasTotalPages()}}</span>
+                                                    </li>
+                                                    <li class="page-item" [class.disabled]="ofertasCurrentPage === ofertasTotalPages()">
+                                                        <button class="page-link" (click)="nextOfertasPage()">Siguiente</button>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+
+                                        <!-- Mensaje cuando no hay ofertas -->
+                                        <div *ngIf="!Ofertas || Ofertas.length === 0" class="alert alert-info">
+                                            <i class="fa fa-info-circle"></i> No se han registrado ofertas económicas para esta licitación.
+                                        </div>
+
+                                        <!-- Mensaje cuando no hay oferta inicial -->
+                                        <div *ngIf="!txtOferta || txtOferta <= 0" class="alert alert-warning">
+                                            <i class="fa fa-exclamation-triangle"></i> El monto inicial se debe establecer en "Agregar Licitación".
+                                        </div>
+
+                                        <div class="loader animated fadeIn handle" *ngIf="LoadingTabla[1]">
+                                            <span class="spinner">
+                                                <i class="fa fa-spinner fa-spin"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="loader animated fadeIn handle" *ngIf="Loading[1]" style="position: absolute;z-index: 2;">
+                                        <span class="spinner">
+                                            <i class="fa fa-spinner fa-spin"></i>
+                                        </span>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                        
+                        <!-- TAB GESTION -->
+                        <div class="row" *ngIf="rowGestion">
+                        <!-- Bitacora -->
+                         <div class="col-lg-6">
+                         <section class="card mb-4" style="background: #f8f9fa00; border: 2px solid #ffffff; border-radius: 0px; box-shadow: 0 8px 32px rgba(255, 254, 254, 0.08);">
+                                                                                                                                            <div class="card-header" style="background: #f48826; color: #fff; border-radius: 0px;">
+                                                                                                                                                <h2 style="color: white; font-family: inherit; font-weight: bold; margin: 0;">
+                                                                                                                                                    <strong>Bitacora</strong>
+                                                                                                                                                </h2>
+                                                                                                                                            </div>
+                        <div class="card-body">
+                        <form #BForm="ngForm" (ngSubmit)="GuardarComentario(BForm)">
+                        <fieldset>
+                        <div class="form-group row mb-3">
+                        <label for="txtBitacora" class="col-md-3 form-control-label h5" style="color: #222; font-weight: bold;">Bitácora:</label>
+                        <div class="col-md-9">
+                        <textarea style="height: 160px; background: #fff; border-radius: 8px;" class="form-control" id="txtBitacora" name="txtBitacora"
+                            [(ngModel)]="txtBitacora" (click)="CleanComentario()" (keyup)="CleanComentario()"></textarea>
+                             <h6 style="color:red;">{{errorComentario}}</h6>
+                         </div>
+                         </div>
+                        <div class="form-group row mb-3">
+                         <label class="col-md-3 form-control-label h5" style="color: #222; font-weight: bold;">Adjunto:</label>
+                            <div class="col-md-9 d-flex align-items-center gap-2">
+                                <div class="input-group" style="width:100%;">
+                                    <div class="form-control" style="background: #f8f9fa; border-radius: 8px;">
+                                      <i class="fa fa-paperclip text-primary"></i>
+                                        <span class="fileinput-filename" id="NombreArch"></span>
+                                          </div>
+                                            <span class="input-group-addon btn btn-outline-primary btn-file d-flex align-items-center gap-2" style="border-radius: 8px;">
+                                               <i class="fa fa-paperclip"></i>
+                                                <span class="fileinput-new">Adjuntar</span>
+                                                                                                                                                
+                                                  <input id="fileupload1" type="file" name="fileupload1" (change)="NombreArchivo()" style="opacity:0;position:absolute;left:0;top:0;width:100%;height:100%;cursor:pointer;">
+                                                    </span>
+                                                      </div>
+                                                        </div>
+                                                         </div>
+                                                          </fieldset>
+                                                           <div class="form-actions text-right mt-3">
+                                                             <button ID="btnAgregarBitacora" class="btn btn-success" style="font-size:1.08em; padding: 8px 18px; border-radius: 8px;">
+                                                               Agregar Bitácora
+                                                                </button>
+                                                                  </div>
+                                                                    </form>
+                                                                    <div class="loader animated fadeIn handle" *ngIf="Loading[2]" style="position: absolute;z-index: 2;">
+                                                                   <span class="spinner">
+                                                                  <i class="fa fa-spinner fa-spin"></i>
+                                                                 </span>
+                                                                </div>
+                                                               </div>
+                                                            </section>
+                          </div>
+                            <div class="col-lg-6 d-flex flex-column align-items-stretch" style="width:100%;">
+                                <div style="width:100%;">
+                                    <app-lista-bitacora [usuario]="usuario" [Licitacion]="Licitacion"></app-lista-bitacora>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- TAB TAREAS -->
+                        <div class="row" *ngIf="rowTareas">
+                            <!-- Formulario de asignación de tareas siempre visible -->
+                            <div class="col-lg-12">
+                                <section class="widget">
+                                    <header style="background-color: #f48826">
+                                        <h2 style="color: white;"><strong>Asignar Tarea</strong></h2>
+                                    </header>
+                                    <div class="widget-body">
+                                        <app-tareas-lic [licitacion]="Licitacion" (crearTarea)="listarTareas()"></app-tareas-lic>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="col-lg-12">
+                                <section class="widget">
+                                    <header style="background-color: #f48826; display: flex; align-items: center; justify-content: space-between;">
+                                        <h2 style="color: white; margin: 0;"><strong>Mis Tareas</strong></h2>
+                                        <div style="display: flex; align-items: center; gap: 16px;">
+                                            <!-- Resumen con campana -->
+                                                            <span style="font-size: 1.6em; color: #fff; display: flex; align-items: center; position: relative; height: 32px;">
+                                                                <i class="fa fa-bell" [ngClass]="{'bell-alert': tareasPendientesCount > 0}" style="position: relative;">
+                                                                    <span *ngIf="tareasPendientesCount > 0" class="badge bg-danger" style="position: absolute; top: -10px; right: -10px; font-size: 0.9em; border-radius: 50%; min-width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; z-index:2;">{{tareasPendientesCount}}</span>
+                                                                </i>
+                                                            </span>
+                                                            <span style="color: #fff; font-size: 0.95em; min-width: 160px; display: inline-block;">
+                                                                Pendientes: <strong>{{tareasPendientesCount}}</strong> |
+                                                                Completadas: <strong style="min-width: 32px; display: inline-block; text-align: center;">{{tareasCompletadasCount}}</strong>
+                                                            </span>
+                                        </div>
+                                    </header>
+                                    <div class="widget-body">
+                                        <fieldset style="background: #f9f9f9; border-radius: 8px; padding: 16px;">
+                                            <legend style="font-size:1.1em; color:#026AA7; font-weight:600;">Mis Tareas</legend>
+                                            <!-- Barra de búsqueda rápida -->
+                                            <div class="mb-3" style="max-width: 350px;">
+                                                <input type="text" class="form-control" placeholder="Buscar tarea..." [(ngModel)]="tareaSearch" name="tareaSearch">
+                                            </div>
+                                                            <div class="table-responsive" style="width:100%; overflow-x:auto;">
+                                                                <table class="table table-bordered table-hover w-100" style="background: #fff; border-radius: 8px; min-width: 900px;">
+                                                                    <thead style="background-color: #026AA7; color: white; font-size: 1.05em;">
+                                                                        <tr>
+                                                                            <th class="text-center" style="min-width:100px;">Tarea</th>
+                                                                            <th class="text-center" style="min-width:180px;">Descripción</th>
+                                                                            <th class="text-center" style="min-width:90px;">Estado</th>
+                                                                            <th class="text-center" style="min-width:90px;">Responsable</th>
+                                                                            <th class="text-center" style="min-width:80px;">Prioridad</th>
+                                                                            <th class="text-center" style="min-width:110px;">Fecha Compromiso</th>
+                                                                            <th class="text-center" style="min-width:90px;">Creador</th>
+                                                                            <th class="text-center" style="min-width:110px;">Fecha Creación</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr *ngFor="let Tarea of filteredTareas(); let i = index" style="vertical-align: middle; height: 38px;">
+                                                                            <td class="text-center" style="font-weight: bold;">{{Tarea.idTarea}}</td>
+                                                                            <td>
+                                                                                <textarea class="form-control" style="height: 38px; min-width: 120px; max-width: 220px; font-size: 0.92em; border: none; background: transparent; box-shadow: none; resize: none; padding: 4px 6px;" readonly title="{{Tarea.descripcionTarea}}">{{Tarea.descripcionTarea}}</textarea>
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                                                                                                                                                                                <ng-container [ngSwitch]="Tarea.idEstadoTarea">
+                                                                                                                                                                                                                                                    <span *ngSwitchCase="1" style="text-decoration:none; background:none; color:inherit; border:none; padding:0;">Pendiente</span>
+                                                                                                                                                                                                                                                    <span *ngSwitchCase="2" style="text-decoration:none; background:none; color:inherit; border:none; padding:0;">Completada</span>
+                                                                                                                                                                                                                                                    <span *ngSwitchDefault style="text-decoration:none; background:none; color:inherit; border:none; padding:0;">Otro</span>
+                                                                                                                                                                                                                                                </ng-container>
+                                                                            </td>
+                                                                            <td class="text-center">{{Tarea.responsableNombre || Tarea.nombreResponsable}}</td>
+                                                                                                                                                        <td class="text-center">
+                                                                                                                                                                                                                                                                                                                                <span [ngStyle]="{
+                                                                                                                                                                                                                                                                                                                                    'display': 'inline-block',
+                                                                                                                                                                                                                                                                                                                                    'width': '32px',
+                                                                                                                                                                                                                                                                                                                                    'height': '32px',
+                                                                                                                                                                                                                                                                                                                                    'border-radius': '50%',
+                                                                                                                                                                                                                                                                                                                                    'background': Tarea.prioridad === 'Alta' ? '#e53935' : (Tarea.prioridad === 'Media' ? '#fbc02d' : (Tarea.prioridad === 'Baja' ? '#43a047' : '#bdbdbd')),
+                                                                                                                                                                                                                                                                                                                                    'border': '2px solid #fff',
+                                                                                                                                                                                                                                                                                                                                    'vertical-align': 'middle',
+                                                                                                                                                                                                                                                                                                                                    'margin-right': '0'
+                                                                                                                                                                                                                                                                                                                                }" title="{{Tarea.prioridad}}"></span>
+                                                                                                                                                        </td>
+                                                                            <td class="text-center">{{Tarea.fechaCompromiso || Tarea.fechaTerminoProgramado | date:'dd/MM/yyyy'}}</td>
+                                                                            <td class="text-center">{{Tarea.creadorNombre || Tarea.nombreCreador || Tarea.idUsuarioCreador}}</td>
+                                                                            <td class="text-center">{{Tarea.fechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                            <!-- Paginación -->
+                                            <nav *ngIf="filteredTareas().length > tareasPageSize" aria-label="Paginación de tareas">
+                                                <ul class="pagination justify-content-center">
+                                                    <li class="page-item" [class.disabled]="tareasCurrentPage === 1">
+                                                        <button class="page-link" (click)="prevTareasPage()">Anterior</button>
+                                                    </li>
+                                                    <li class="page-item disabled">
+                                                        <span class="page-link">Página {{tareasCurrentPage}} de {{tareasTotalPages}}</span>
+                                                    </li>
+                                                    <li class="page-item" [class.disabled]="tareasCurrentPage === tareasTotalPages">
+                                                        <button class="page-link" (click)="nextTareasPage()">Siguiente</button>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </fieldset>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mensajes -->
+    <div class="modal fade" id="Mensaje" tabindex="-1" role="dialog" aria-labelledby="MensajeLongTitle">
+        <div class="modal-dialog" role="document">
+            <span class="widget-icon">
+                <i class="fa fa-circle" style="position:absolute;color:white;top: 5px;left: 5px;"></i>
+                <i class="glyphicon glyphicon-ok-sign" style="color:green"></i>
+            </span>
+            <section class="widget widget-card ">
+                <div class="widget-body clearfix">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="no-margin">{{msg}}</h3>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer" style="background-color: #eeeeee;">
+                    <div class="col-xs-offset-4 col-xs-2 ">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="OcultarMensaje()">Aceptar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Mensajes Error -->
+    <div class="modal fade" id="MensajeError" tabindex="-1" role="dialog" aria-labelledby="MensajeLongTitle">
+        <div class="modal-dialog" role="document">
+            <span class="widget-icon">
+                <i class="fa fa-circle" style="position:absolute;color:white;top: 5px;left: 5px;"></i>
+                <i class="glyphicon glyphicon-remove-sign" style="color:red"></i>
+            </span>
+            <section class="widget widget-card ">
+                <div class="widget-body clearfix">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="no-margin">{{msg}}</h3>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer" style="background-color: #eeeeee;">
+                    <div class="col-xs-offset-4 col-xs-2 ">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="OcultarMensajeError()">Aceptar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<app-add-hito [licitacion]="Licitacion" (cerrar)="cerrarPopUp()" *ngIf="addHito"></app-add-hito>

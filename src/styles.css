@@ -1,0 +1,616 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Import Bootstrap from CDN */
+@import url('https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+/* Import Open Sans for global typography */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
+/* Global styles for compatibility with Bootstrap theme */
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 57px; /* Ancho del menú cerrado - actualizado de 85px a 80px */
+  height: 100vh;
+  background-color: #f48826 !important;
+  z-index: 1000;
+  overflow-y: auto;
+  transition: width 0.3s ease;
+}
+
+.sidebar:hover {
+  width: 250px;
+}
+
+.js-sidebar-content {
+  padding: 0;
+}
+
+.sidebar .logo {
+  padding: 15px 10px; /* Reducido padding para estado cerrado */
+  text-align: center;
+  transition: padding 0.3s ease;
+}
+
+/* Logo cuando el sidebar está cerrado */
+.sidebar:not(:hover) .sidebar .logo {
+  padding: 10px 5px; /* Padding más pequeño cuando cerrado */
+  display: block; /* Mostrar el logo cuando cerrado */
+}
+
+/* Logo expandido cuando hover */
+.sidebar:hover .sidebar .logo {
+  padding: 20px;
+}
+
+.sidebar .logo img {
+  max-width: 150px;
+  height: auto;
+  transition: all 0.3s ease;
+}
+
+/* Logo pequeño cuando cerrado */
+.sidebar:not(:hover) .sidebar .logo img {
+  max-width: 65px; /* Logo un poco más pequeño para el nuevo ancho */
+  height: auto;
+}
+
+.sidebar-nav-title {
+  color: white !important;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 15px 20px 5px 20px;
+  margin: 0;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Hide titles when sidebar is collapsed */
+.sidebar:not(:hover) .sidebar-nav-title {
+  display: none;
+}
+
+.sidebar-nav-title:first-child {
+  border-top: none;
+}
+
+.sidebar-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 20px 0;
+}
+
+/* Agregar más espaciado entre elementos cuando está colapsado */
+.sidebar:not(:hover) .sidebar-nav {
+  padding: 10px 0 20px 0;
+}
+
+.sidebar:not(:hover) .sidebar-nav > li {
+  margin-bottom: 5px;
+}
+
+.sidebar-nav > li {
+  position: relative;
+}
+
+.sidebar-nav > li > a {
+  display: block;
+  color: white !important;
+  padding: 12px 20px;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Collapsed sidebar styles - show only icons */
+.sidebar:not(:hover) .sidebar-nav > li > a {
+  padding: 20px 15px;
+  text-align: center;
+  font-size: 0;
+  overflow: hidden;
+  margin-bottom: 10px;
+  border-bottom: none;
+}
+
+.sidebar:not(:hover) .sidebar-nav > li > a .icon {
+  float: none;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.sidebar:not(:hover) .sidebar-nav > li > a .icon i {
+  font-size: 18px !important;
+}
+
+.sidebar-nav > li > a:hover {
+  background-color: rgba(0,0,0,0.1);
+  color: white !important;
+  text-decoration: none;
+}
+
+.sidebar-nav > li > a .icon {
+  float: right;
+  margin-top: 2px;
+}
+
+.sidebar-nav > li > a .icon i {
+  color: white !important;
+  font-size: 14px;
+}
+
+/* Submenu styles */
+.sidebar-nav > li ul {
+  background-color: #6e7178 !important;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: none;
+}
+
+.sidebar-nav > li ul.show {
+  display: block;
+}
+
+/* Hide submenus when sidebar is collapsed */
+.sidebar:not(:hover) .sidebar-nav > li ul {
+  display: none !important;
+}
+
+.sidebar:not(:hover) .sidebar-nav > li ul.show {
+  display: none !important;
+}
+
+.sidebar-nav > li ul li {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.sidebar-nav > li ul li a {
+  display: block;
+  color: white !important;
+  padding: 10px 40px;
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.sidebar-nav > li ul li a:hover {
+  background-color: rgba(0,0,0,0.2);
+  color: white !important;
+  text-decoration: none;
+}
+
+/* Tipografía SOLO para: Licitaciones / Proyectos / Tareas / Finanzas (y sus submenús) */
+.nav-section-typo,
+#ulMenuLicitaciones,
+#ulMenuProyectos,
+#ulMenuPrincipal,
+#ulMenuFinanzas,
+#ulMenuLicitaciones a,
+#ulMenuProyectos a,
+#ulMenuPrincipal a,
+#ulMenuFinanzas a,
+#ulMenuLicitaciones .menu-text,
+#ulMenuProyectos .menu-text,
+#ulMenuPrincipal .menu-text,
+#ulMenuFinanzas .menu-text {
+  font-family: 'Open Sans', sans-serif !important;
+  font-weight: 400 !important;
+  color: #ffffff !important;
+}
+
+/* Títulos de sección: NO en mayúscula (como Home) */
+.nav-section-typo {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  /* Evitar que tome el 12px de .sidebar-nav-title */
+  font-size: 16px !important;
+}
+
+/* Ítems de menú dentro de cada bloque (esto es lo que llamas "sub menu" vs el título h5) */
+#ulMenuLicitaciones > li > a,
+#ulMenuProyectos > li > a,
+#ulMenuFinanzas > li > a,
+#ulMenuPrincipal > li > a,
+#ulMenuLicitaciones > li > a .menu-text,
+#ulMenuProyectos > li > a .menu-text,
+#ulMenuFinanzas > li > a .menu-text,
+#ulMenuPrincipal > li > a .menu-text {
+  font-size: 13px !important;
+}
+
+/* Íconos más pequeños SOLO para: Licitaciones / Proyectos / Tareas / Finanzas (sin tocar Home) */
+.nav-section-typo .icon,
+.nav-section-typo .icon i,
+#ulMenuLicitaciones .icon i,
+#ulMenuProyectos .icon i,
+#ulMenuPrincipal .icon i,
+#ulMenuFinanzas .icon i {
+  font-size: 16px !important;
+}
+
+/* Mantener el tamaño fijo incluso cuando el sidebar está colapsado */
+.sidebar:not(:hover) #ulMenuLicitaciones .icon i,
+.sidebar:not(:hover) #ulMenuProyectos .icon i,
+.sidebar:not(:hover) #ulMenuPrincipal .icon i,
+.sidebar:not(:hover) #ulMenuFinanzas .icon i {
+  font-size: 16px !important;
+}
+
+
+
+/* Submenús: padding según especificación */
+#ulMenuLicitaciones ul li a,
+#ulMenuProyectos ul li a,
+#ulMenuFinanzas ul li a,
+#ulMenuPrincipal li a {
+  padding: 5px 0px 5px 40px !important;
+}
+
+/* Submenús (texto) a 13px */
+#ulMenuLicitaciones ul li a,
+#ulMenuProyectos ul li a,
+#ulMenuFinanzas ul li a {
+  font-size: 13px !important;
+}
+
+/* En estos submenús el texto real está en span.menu-text: forzar 13px */
+#ulMenuLicitaciones ul li a .menu-text,
+#ulMenuProyectos ul li a .menu-text,
+#ulMenuFinanzas ul li a .menu-text {
+  font-size: 13px !important;
+}
+
+/* Tareas: sus ítems son el contenido del bloque, tratarlos como submenú (13px) */
+#ulMenuPrincipal li a,
+#ulMenuPrincipal li a .menu-text {
+  font-size: 13px !important;
+}
+
+
+/* Page controls navbar (header) */
+.page-controls {
+  margin-left: 80px; /* Actualizado de 85px a 80px */
+  background: transparent !important;
+  border-bottom: none;
+  min-height: 60px;
+  z-index: 999;
+  padding: 0;
+}
+
+.page-controls .container-fluid {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+/* Breadcrumbs and navigation */
+.navbar-dashboard {
+  background: transparent !important;
+  border-bottom: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Content area */
+.content-wrap {
+  margin-left: 65px; /* Actualizado de 85px a 80px */
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  
+}
+
+.content {
+  min-height: 100vh;
+  width: 100%;
+  
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Widget styles */
+.widget {
+      background-color: #fff;
+    /* border: 1px solid #ddd; */
+    /* border-radius: 4px; */
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.widget-card {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.widget-card:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+
+/* Calendar specific styles */
+.widget-calendar .calendar-controls {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fc-event-title {
+  font-size: 10px !important;
+}
+
+.fc-day {
+  min-height: 146px;
+}
+
+/* Tooltips */
+.tooltipHome {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltipHome .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltipHome:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Loading styles */
+.loader-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.fa-spin-fast {
+  animation: fa-spin 0.5s infinite linear;
+}
+
+/* Button styles */
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+  color: white;
+}
+
+/* Form styles */
+.form-control {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+
+.form-control:focus {
+  border-color: #f48826;
+  box-shadow: 0 0 0 0.2rem rgba(244, 136, 38, 0.25);
+}
+
+.form-control.error {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Table styles */
+.table {
+  background-color: white;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+  padding: 12px;
+}
+
+/* Modal styles */
+.modal {
+  z-index: 1050;
+}
+
+.modal-header {
+  background-color: #f48826;
+  color: white;
+}
+
+/* Page specific styles */
+.page-title {
+  font-size: 18px;
+  font-weight: 300;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Reducir tamaño de encabezados generales */
+h1 {
+  font-size: 1.8rem !important; /* ~28px en lugar de ~32px */
+}
+
+h2 {
+  font-size: 1.4rem !important; /* ~22px en lugar de ~26px */
+}
+
+h3 {
+  font-size: 1.2rem !important; /* ~19px en lugar de ~22px */
+}
+
+h4 {
+  font-size: 1rem !important; /* ~16px en lugar de ~18px */
+}
+
+h5 {
+  font-size: 0.9rem !important; /* ~14px en lugar de ~16px */
+}
+
+h6 {
+  font-size: 0.8rem !important; /* ~13px en lugar de ~14px */
+}
+
+/* Reducir específicamente los títulos de los widgets/secciones */
+.widget header h2 {
+  font-size: 1.3rem !important; /* ~21px */
+}
+
+.widget header h1 {
+  font-size: 1.6rem !important; /* ~25px */
+}
+
+/* Reducir labels de formularios */
+.form-control-label {
+  font-size: 0.9rem !important; /* ~14px */
+}
+
+/* Reducir títulos en modales */
+.modal-header h4,
+.modal-header h5 {
+  font-size: 1.1rem !important; /* ~17px */
+}
+
+/* Navigation toggle for mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    margin-left: -250px;
+  }
+  
+  .sidebar.active {
+    margin-left: 0;
+  }
+  
+  .content-wrap, .page-controls {
+    margin-left: 0;
+  }
+  
+  .page-controls {
+    width: 100%;
+  }
+}
+
+/* Progress bars */
+.progress {
+  border-radius: 4px;
+  box-shadow: none;
+  height: 20px;
+}
+
+.progress-danger .progress-bar {
+  background-color: #dc3545;
+}
+
+.progress-warning .progress-bar {
+  background-color: #ffc107;
+}
+
+.progress-success .progress-bar {
+  background-color: #28a745;
+}
+
+.progress-primary .progress-bar {
+  background-color: #007bff;
+}
+
+/* Responsive adjustments */
+.col-md-2 {
+  width: 16.6666666667%;
+}
+
+/* Additional component styles */
+.bold {
+  font-weight: bold !important;
+}
+
+.black {
+  color: black !important;
+}
+
+/* Home component specific */
+.foo {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Make sure icons are visible */
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ========================================
+   Bootstrap DateTimePicker - Global Styles
+   ======================================== */
+
+/* Asegurar que el widget del datetimepicker esté por encima de todo */
+.bootstrap-datetimepicker-widget {
+    z-index: 99999 !important;
+    position: absolute !important;
+}
+
+.bootstrap-datetimepicker-widget.dropdown-menu {
+    z-index: 99999 !important;
+    position: absolute !important;
+    display: block !important;
+}
+
+/* Asegurar que el contenedor padre permita el overflow y tenga posición relativa */
+.widget-body {
+    overflow: visible !important;
+    position: relative !important;
+}
+
+.table-responsive {
+    overflow: visible !important;
+}
+
+/* Asegurar que la celda de la tabla tenga posición relativa para el calendario */
+td {
+    position: relative !important;
+}
+
+/* El input-group debe tener posición relativa */
+.input-group.date {
+    position: relative !important;
+}

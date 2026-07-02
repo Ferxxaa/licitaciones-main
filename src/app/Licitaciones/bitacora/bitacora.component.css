@@ -1,0 +1,32 @@
+.drop:hover {
+    color: #CC0000;
+}
+.drop {
+    color: red;
+}
+.blue {
+    color: #218BC3;
+}
+.blue:hover {
+    color: blue;
+}
+
+thead tr{
+    background-color: #026AA7;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.widget .loader{
+    position: relative;
+    background-color: white;
+}
+
+tbody tr{
+    cursor: pointer;
+}
+
+tbody tr:hover{
+    background-color: rgb(232, 252, 255);
+}

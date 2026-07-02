@@ -1,0 +1,460 @@
+<app-header></app-header>
+<app-nav></app-nav>
+<div class="content-wrap">
+    <main id="content" role="main" class="content">
+        <br>
+            <!-- Filtro para gráfico circular y su tabla -->
+            
+        
+
+<!-- Bloque centrado para Distribución por Estado (Gráfico Circular y Estadísticas) -->
+<div style="width: 95%; margin: 0 auto 32px auto; border: none; box-shadow: none; border-radius: 0;">
+    <section class="widget" style="width: 100%; margin: 0; border: none; box-shadow: none; border-radius: 0;">
+                <div style="padding: 0;">
+                    <header style="background: #f2f2f2; box-shadow: none; border: none; border-radius: 0; display: flex; align-items: center; justify-content: space-between; padding: 8px 0px; margin: 0px 0; width: 100%;">
+                        <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+                            <div style="display: flex; align-items: center;">
+                                <h4 style="color: #222; margin: 0;">
+                                    <i class="fa fa-pie-chart mr-2"></i>
+                                    <strong style="display: block; width: 100%; font-size: 1.5rem; color: #222; font-weight: 600; border-bottom: 1.5px solid #bbb; padding-bottom: 4px; font-family: 'Segoe UI',Arial,sans-serif; letter-spacing: 0.2px;">Distribución por Estado</strong>
+                                </h4>
+                                <small style="color: #888; margin-left: 12px; font-size: 1rem;"> Porcentaje total de licitaciones por categoría </small>
+                            </div>
+                            <div style="display: flex; align-items: center; min-width: 320px; justify-content: flex-end;">
+                                <label for="circularFilter" style="font-weight: 500; margin-right: 8px;">Filtrar por años:</label>
+                                <select id="circularFilter" [(ngModel)]="circularFilter" (change)="onCircularFilterChange()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #e9ecef;">
+                                    <option value="5">Últimos 5 años</option>
+                                    <option value="15">Últimos 15 años</option>
+                                    <option value="20">Últimos 20 años</option>
+                                    <option value="all">Todos</option>
+                                </select>
+                            </div>
+                        </div>
+                    </header>
+                </div>
+        <div class="widget-body" style="box-shadow: none; border: none; border-radius: 0;">
+            <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 32px; width: 100%;">
+                <!-- Gráfico circular a la izquierda -->
+                        <div style="flex: 0 0 340px; min-width: 260px; max-width: 400px; background: transparent; box-shadow: none; border: none;">
+                            <div id="morris3" style="width: 100%; height: 260px; min-width: 220px; min-height: 120px; cursor:pointer; margin: 0 auto; display: block; background: transparent; box-shadow: none; border: none;"></div>
+                        </div>
+                <!-- Tabla siempre visible a la derecha -->
+                <div style="flex: 1 1 400px; min-width: 260px;">
+                    <table class="table table-sm mb-3" style="width: 700px; min-width: 450px; max-width: 900px; margin: 0 auto; border-radius: 0; box-shadow: none; border: none; font-size: 1.35rem;">
+                        <thead>
+                            <tr>
+                                <th>Categoría</th>
+                                <th>Cantidad</th>
+                                <th>Porcentaje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Adjudicadas</td>
+                                <td>{{filteredGlobalTotals.Adjudicada}}</td>
+                                <td style="color:#888;">{{((filteredGlobalTotals.Adjudicada / (filteredGlobalTotals.Adjudicada + filteredGlobalTotals.Perdida + (filteredGlobalTotals.Otros || 0) + (filteredGlobalTotals.Entregada || 0))) * 100) | number:'1.0-2'}}%</td>
+                            </tr>
+                            <tr>
+                                <td>Perdidas</td>
+                                <td>{{filteredGlobalTotals.Perdida}}</td>
+                                <td>{{((filteredGlobalTotals.Perdida / (filteredGlobalTotals.Adjudicada + filteredGlobalTotals.Perdida + (filteredGlobalTotals.Otros || 0) + (filteredGlobalTotals.Entregada || 0))) * 100) | number:'1.0-2'}}%</td>
+                            </tr>
+                            <tr>
+                                <td>Otros</td>
+                                <td>{{(filteredGlobalTotals.Otros || 0) + (filteredGlobalTotals.Entregada || 0)}}</td>
+                                <td>{{((((filteredGlobalTotals.Otros || 0) + (filteredGlobalTotals.Entregada || 0)) / (filteredGlobalTotals.Adjudicada + filteredGlobalTotals.Perdida + (filteredGlobalTotals.Otros || 0) + (filteredGlobalTotals.Entregada || 0))) * 100) | number:'1.0-2'}}%</td>
+                            </tr>
+                            <tr style="font-weight:bold; background:#f5f6fa;">
+                                <td>Total</td>
+                                <td>{{filteredGlobalTotals.Adjudicada + filteredGlobalTotals.Perdida + (filteredGlobalTotals.Otros || 0) + (filteredGlobalTotals.Entregada || 0)}}</td>
+                                <td>100%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- ...existing code... -->
+            <!-- Bloque de estadísticas globales eliminado -->
+            <div class="text-center mt-3">
+                <small class="text-muted">
+                    <i class="fa fa-info-circle mr-1"></i>
+                    Pase el cursor sobre el gráfico para ver detalles y porcentajes. <br>
+                </small>
+            </div>
+        </div>
+    <!-- /section widget end -->
+<!-- /div block end -->
+
+<!-- Bloque centrado para Evolución Temporal por Estado (Gráfico de Líneas y Tabla) -->
+<div style="width: 100%; margin: 0 auto 32px auto; border: none; box-shadow: none; border-radius: 0;">
+    <section class="widget" style="width: 100%; margin: 0; border: none; box-shadow: none; border-radius: 0;">
+    <header style="background: #f2f2f2; box-shadow: none; border: none; border-radius: 0; display: flex; align-items: center; justify-content: space-between; padding: 8px 0px; margin: 15px 0px; width: 100%;">
+            <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+                <div style="display: flex; align-items: center;">
+                    <h4 style="color: #222; margin: 0;">
+                        <i class="fa fa-line-chart mr-2"></i>
+                        <strong style="display: block; width: 100%; font-size: 1.5rem; color: #222; font-weight: 600; border-bottom: 1.5px solid #bbb; padding-bottom: 4px; font-family: 'Segoe UI',Arial,sans-serif; letter-spacing: 0.2px;">Evolución Temporal por Estado</strong>
+                    </h4>
+                    
+                </div>
+                <div style="display: flex; align-items: center; min-width: 320px; justify-content: flex-end;">
+                    <label for="yearFilter" style="font-weight: 500; margin-right: 8px;">Filtrar por años:</label>
+                    <select id="yearFilter" [(ngModel)]="yearFilter" (change)="onYearFilterChange()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #e9ecef;">
+                        <option value="all">Todos</option>
+                        <option value="3">Últimos 3 años</option>
+                        <option value="5">Últimos 5 años</option>
+                        <option value="10">Últimos 10 años</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+    <div class="widget-body" style="text-align: center; box-shadow: none; border: none; border-radius: 0;">
+    <!-- Gráfico de barras por año para Distribución por Estado -->
+    <div style="margin: 0 auto 32px auto; max-width: 1100px;">
+        <h5 style="font-weight:600; color:#222; margin-bottom:12px; text-align:center; font-size:1.15rem;">
+            <i class="fa fa-bar-chart mr-2"></i>Distribución por Estado por Año
+        </h5>
+    <canvas id="barChartEstadosAnual" style="width:1080px;height:140px;margin:0px auto;display:block;box-sizing:border-box;"></canvas>
+    </div>
+            <canvas id="evolucionTemporalChart" style="width: 1080px; height: 270px; margin: 0px auto; display: block; box-sizing: border-box;" width="1350" height="340"></canvas>
+                                                <div style="color:#888; font-size:0.95rem; margin:8px auto 10px auto; text-align:center; max-width:900px;">
+                                                    <span>
+                            <span style="display:inline-flex;align-items:center;font-weight:600; color:#7CFC98;">
+                                <span style="display:inline-block;width:14px;height:14px;background:#7CFC98;border-radius:3px;margin-right:5px;"></span><span style="color:#7CFC98;">Adjudicación: {{getTotalAdjudicada()}}</span>
+                            </span>
+                                                        <span style="color:#888;"> | </span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                                <span style="display:inline-block;width:14px;height:14px;background:#01b0f1;border-radius:3px;margin-right:5px;"></span>Entregada: {{getTotalEntregada()}}
+                                                        </span>
+                                                        <span style="color:#888;"> | </span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                                <span style="display:inline-block;width:14px;height:14px;background:#dc3545;border-radius:3px;margin-right:5px;"></span>Perdida: {{getTotalPerdida()}}
+                                                        </span>
+                                                        <span style="color:#888;"> | </span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                                <span style="display:inline-block;width:14px;height:14px;background:#888;border-radius:3px;margin-right:5px;"></span>Otros: {{getTotalOtrosLineaAgno()}}
+                                                        </span>
+                                                        <span style="color:#888;"> | </span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                                <span style="display:inline-block;width:14px;height:14px;background:#222;border-radius:3px;margin-right:5px;"></span>Total: {{getTotalLineaAgno()}}
+                                                        </span>
+                                                    </span>
+                                                </div>
+                
+            <div class="table-responsive Content-table" style="margin: 0 auto; width: 95%;">
+                <table class="table table-striped table-hover" style="margin: 0 auto; width: 95%; border-radius: 0; box-shadow: none; border: none;">
+                    <thead>
+                        <tr>
+                            <th>Año</th>
+                            <th>Adjudicada</th>
+                            <th>Entregada</th>
+                            <th>Perdida</th>
+                            <th>Otros</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let Repo of filteredTblLineaAgnoDesc; let i = index">
+                            <td>{{Repo.agno}}</td>
+                            <td>
+                                {{Repo.Adjudicada}}
+                                <span style="font-size:0.95em; color:#888;"> ({{((Repo.Adjudicada/getTotalForYear(Repo))*100) | number:'1.0-2'}}%)</span>
+                            </td>
+                            <td>
+                                {{Repo.Entregada}}
+                                <span class="text-muted" style="font-size:0.95em;"> ({{((Repo.Entregada/getTotalForYear(Repo))*100) | number:'1.0-2'}}%)</span>
+                            </td>
+                            <td>
+                                {{Repo.Perdida}}
+                                <span class="text-muted" style="font-size:0.95em;"> ({{((Repo.Perdida/getTotalForYear(Repo))*100) | number:'1.0-2'}}%)</span>
+                            </td>
+                            <td>
+                                {{Repo.Anulada + Repo.CartaExcusa + Repo.Estudio + Repo.Pendiente + Repo.Postergada}}
+                                <span class="text-muted" style="font-size:0.95em;"> ({{(((Repo.Anulada + Repo.CartaExcusa + Repo.Estudio + Repo.Pendiente + Repo.Postergada)/getTotalForYear(Repo))*100) | number:'1.0-2'}}%)</span>
+                            </td>
+                            <td>
+                                <strong>{{getTotalForYear(Repo)}}</strong>
+                                <span class="text-muted" style="font-size:0.95em;"> (100%)</span>
+                            </td>
+                        </tr>
+                        <tr style="font-weight:bold; background:#f5f6fa;">
+                            <td>Total</td>
+                            <td>{{getTotalPrincipalLineaAgno()}}</td>
+                            <td>100%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Gráfico de barras para Distribución por Estado -->
+            </div>
+        </div>
+    <!-- /section widget end -->
+<!-- /div block end -->
+
+  <div class="mb-3">
+      <h5 style="color: #222; font-weight: 500; text-align: center;">
+          <i class="fa fa-table mr-2"></i>
+          Datos Detallados por Año
+      </h5>
+      
+  </div>
+<!-- Bloque centrado para Distribución por Cliente (moved) -->
+<div style="width: 100%; margin: 0 auto 32px auto; border: none; box-shadow: none; border-radius: 0;">
+    <section class="widget" style="width: 100%; margin: 0; border: none; box-shadow: none; border-radius: 0;">
+        <header style="background: #f2f2f2; box-shadow: none; border: none; border-radius: 0; display: flex; align-items: center; justify-content: space-between; padding: 8px 16px;">
+            <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+                <div style="display: flex; align-items: center;">
+                    <h4 style="color: #222; margin: 0;">
+                        <i class="fa fa-users mr-2"></i>
+                        <strong style="display: block; width: 100%; font-size: 1.5rem; color: #222; font-weight: 600; border-bottom: 1.5px solid #bbb; padding-bottom: 4px; font-family: 'Segoe UI',Arial,sans-serif; letter-spacing: 0.2px;">Distribución por Cliente</strong>
+                    </h4>
+                </div>
+                <div style="display: flex; align-items: center; min-width: 320px; justify-content: flex-end;">
+                    <label for="clienteYearFilter" style="font-weight: 500; margin-right: 8px;">Filtrar por años:</label>
+                    <select id="clienteYearFilter" [(ngModel)]="clienteYearFilter" (change)="onClienteYearFilterChange()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #e9ecef;">
+                        <option value="all">Todos</option>
+                        <option value="3">Últimos 3 años</option>
+                        <option value="5">Últimos 5 años</option>
+                        <option value="10">Últimos 10 años</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+        <div class="widget-body" style="box-shadow: none; border: none; border-radius: 0;">
+            <div style="width: 95%; max-width: 1000px; margin: 32px auto 0 auto; display: flex; flex-direction: column; align-items: center;">
+                <div style="width: 100%; margin-bottom: 32px;">
+                    <canvas id="mandantesBarChart" style="width: 100%; min-height: 420px;"></canvas>
+                </div>
+                <div style="width: 100%;">
+                    <table class="table table-bordered table-striped table-hover mb-3" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 8px #eee; border: 1px solid #e9ecef; background: #fff; font-size: 1.08rem;">
+                        <thead class="thead-light">
+                            <tr style="background:#f5f6fa;">
+                                <th style="text-align:left;">Mandante</th>
+                                <th style="text-align:right;">Cantidad</th>
+                                <th style="text-align:right;">% sobre total</th>
+                                <th style="text-align:right; width: 120px; white-space:nowrap;">Año(s) de mayor actividad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let m of mandantesSortedPagedResumen">
+                                <td style="text-align:left; font-weight:500;">{{m.mandante}}</td>
+                                <td style="text-align:right;">{{m.cantidad}}</td>
+                                <td style="text-align:right;">{{((m.cantidad / getTotalMandantes()) * 100) | number:'1.0-2'}}%</td>
+                                <td style="text-align:right;">
+                                    <span *ngFor="let agno of getAgnosMasUsadosPorMandante(m.mandante); let last = last">
+                                        {{agno}}{{!last ? ', ' : ''}}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr style="font-weight:bold; background:#f5f6fa;">
+                                <td style="text-align:left;">Total</td>
+                                <td style="text-align:right;">{{getTotalMandantes()}}</td>
+                                <td style="text-align:right;">100%</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <nav *ngIf="mandantesTotalPages > 1" aria-label="Paginación de mandantes" style="text-align:center; margin-top:12px;">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" [class.disabled]="mandantesCurrentPage === 1">
+                                <button class="page-link" (click)="mandantesPrevPage()">Anterior</button>
+                            </li>
+                            <li class="page-item" *ngFor="let page of [].constructor(mandantesTotalPages); let i = index" [class.active]="mandantesCurrentPage === i+1">
+                                <button class="page-link" (click)="mandantesGoToPage(i+1)">{{i+1}}</button>
+                            </li>
+                            <li class="page-item" [class.disabled]="mandantesCurrentPage === mandantesTotalPages">
+                                <button class="page-link" (click)="mandantesNextPage()">Siguiente</button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div style="width: 100%; margin: 0 auto 32px auto; border: none; box-shadow: none; border-radius: 0;">
+    <section class="widget" style="width: 100%; margin: 0; border: none; box-shadow: none; border-radius: 0;">
+    <header style="background: #f2f2f2; box-shadow: none; border: none; border-radius: 0; display: flex; align-items: center; justify-content: space-between; padding: 8px 0px; margin: 15px 0px;">
+        <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+            <div style="display: flex; align-items: center;">
+                <h4 style="color: #222; margin: 0;">
+                    <i class="fa fa-building-o mr-2" style="color:#222;"></i>
+                    <strong style="display: block; width: 100%; font-size: 1.5rem; color: #222; font-weight: 600; border-bottom: 1.5px solid #bbb; padding-bottom: 4px; font-family: 'Segoe UI',Arial,sans-serif; letter-spacing: 0.2px;">Licitaciones por estado y año de área Construcción</strong>
+                </h4>
+            </div>
+            <div style="display: flex; align-items: center; min-width: 320px; justify-content: flex-end;">
+                <label for="construccionYearFilter" style="font-weight: 500; margin-right: 8px;">Filtrar por años:</label>
+                <select id="construccionYearFilter" [(ngModel)]="construccionYearFilter" (change)="onConstruccionYearFilterChange()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #e9ecef;">
+                    <option value="all">Todos</option>
+                    <option value="3">Últimos 3 años</option>
+                    <option value="5">Últimos 5 años</option>
+                    <option value="10">Últimos 10 años</option>
+                </select>
+            </div>
+        </div>
+    </header>
+    <div class="widget-body" style="text-align: center; box-shadow: none; border: none; border-radius: 0;">
+            <canvas id="chartConstruccion" style="width: 320px; height: 80px; max-width: 100vw; min-width: 220px; min-height: 80px; margin-bottom: 20px; display: block;"></canvas>
+                                                <div style="color:#888; font-size:0.95rem; margin:8px auto 10px auto; text-align:center; max-width:900px;">
+                                                    <span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                            <span style="display:inline-block;width:14px;height:14px;background:#28a745;border-radius:3px;margin-right:5px;"></span>Adjudicada: {{getTotalAdjudicadaConstruccion()}}
+                                                        </span>
+                                                        <span style="color:#888;"> | </span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                            <span style="display:inline-block;width:14px;height:14px;background:#007bff;border-radius:3px;margin-right:5px;"></span>Entregada: {{getTotalEntregadaConstruccion()}}
+                                                        </span>
+                                                        <span style="color:#888;"> | </span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                            <span style="display:inline-block;width:14px;height:14px;background:#dc3545;border-radius:3px;margin-right:5px;"></span>Perdida: {{getTotalPerdidaConstruccion()}}
+                                                        </span>
+                                                        <span style="color:#888;"> | </span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                            <span style="display:inline-block;width:14px;height:14px;background:#6c757d;border-radius:3px;margin-right:5px;"></span>Otros: {{getTotalOtrosConstruccion()}}
+                                                        </span>
+                                                        <span style="color:#888;"> | </span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                            <span style="display:inline-block;width:14px;height:14px;background:#222;border-radius:3px;margin-right:5px;"></span>Total: {{getTotalPrincipalConstruccion()}}
+                                                        </span>
+                                                    </span>
+                                                </div>
+
+            <div id="morrisArea1-info-bar" style="width:100%;margin-top:8px;min-height:32px;text-align:center;font-size:15px;color:#026AA7;background:#f5f6fa;border-radius:0;display:none;border:none;"></div>
+            <div class="table-responsive Content-table" style="margin: 0 auto; width: 95%;">
+                <table class="table table-striped table-hover" style="margin: 0 auto; width: 95%; border-radius: 0; box-shadow: none; border: none;">
+                    <thead>
+                        <tr>
+                            <th>Año</th>
+                            <th>Adjudicada</th>
+                            <th>Entregada</th>
+                            <th>Perdida</th>
+                            <th>Otros</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let Repo of filteredTblConstruccion; let h = index">
+                            <td>{{Repo.agno}}</td>
+                            <td>
+                                {{Repo.Adjudicada}}
+                                <span class="text-muted" style="font-size:0.95em;"> ({{((Repo.Adjudicada/getTotalForYear(Repo))*100) | number:'1.0-2'}}%)</span>
+                            </td>
+                            <td>
+                                {{Repo.Entregada}}
+                                <span class="text-muted" style="font-size:0.95em;"> ({{((Repo.Entregada/getTotalForYear(Repo))*100) | number:'1.0-2'}}%)</span>
+                            </td>
+                            <td>
+                                {{Repo.Perdida}}
+                                <span class="text-muted" style="font-size:0.95em;"> ({{((Repo.Perdida/getTotalForYear(Repo))*100) | number:'1.0-2'}}%)</span>
+                            </td>
+                            <td>
+                                {{Repo.Anulada + Repo.CartaExcusa + Repo.Estudio + Repo.Pendiente + Repo.Postergada}}
+                                <span class="text-muted" style="font-size:0.95em;"> ({{(((Repo.Anulada + Repo.CartaExcusa + Repo.Estudio + Repo.Pendiente + Repo.Postergada)/getTotalForYear(Repo))*100) | number:'1.0-2'}}%)</span>
+                            </td>
+                            <td><strong>{{getTotalForYear(Repo)}}</strong></td>
+                        </tr>
+                        <tr style="font-weight:bold; background:#f5f6fa;">
+                            <td>Total</td>
+                            <td>{{getTotalPrincipalConstruccion()}}</td>
+                            <td>100%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <!-- /section widget end -->
+<!-- /div block end -->
+
+<!-- Bloque centrado para Arquitectura -->
+<div style="width: 100%; margin: 0 auto 32px auto; border: none; box-shadow: none; border-radius: 0;">
+    <section class="widget" style="width: 100%; margin: 0; border: none; box-shadow: none; border-radius: 0;">
+    <header style="background: #f2f2f2; box-shadow: none; border: none; border-radius: 0; display: flex; align-items: center; justify-content: space-between; padding: 8px 16px;">
+        <div style="display: flex; align-items: center; width: 100%; justify-content: space-between;">
+            <div style="display: flex; align-items: center;">
+                <h4 style="color: #222; margin: 0;">
+                    <i class="fa fa-building-o mr-2"></i>
+                    <strong style="display: block; width: 100%; font-size: 1.5rem; color: #222; font-weight: 600; border-bottom: 1.5px solid #bbb; padding-bottom: 4px; font-family: 'Segoe UI',Arial,sans-serif; letter-spacing: 0.2px;">Licitaciones por estado y año de área Arquitectura</strong>
+                </h4>
+            </div>
+            <div style="display: flex; align-items: center; min-width: 320px; justify-content: flex-end;">
+                <label for="arquitecturaYearFilter" style="font-weight: 500; margin-right: 8px;">Filtrar por años:</label>
+                <select id="arquitecturaYearFilter" [(ngModel)]="arquitecturaYearFilter" (change)="onArquitecturaYearFilterChange()" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #e9ecef;">
+                    <option value="all">Todos</option>
+                    <option value="3">Últimos 3 años</option>
+                    <option value="5">Últimos 5 años</option>
+                    <option value="10">Últimos 10 años</option>
+                </select>
+            </div>
+        </div>
+    </header>
+    <div class="widget-body" style="text-align: center; box-shadow: none; border: none; border-radius: 0;">
+            <canvas id="chartArquitectura" style="width: 320px; height: 80px; max-width: 100vw; min-width: 220px; min-height: 80px; margin-bottom: 20px; display: block;"></canvas>
+                                                <div style="color:#888; font-size:0.95rem; margin:8px auto 10px auto; text-align:center; max-width:900px;">
+                                                    <span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                            <span style="display:inline-block;width:14px;height:14px;background:#28a745;border-radius:3px;margin-right:5px;"></span>Adjudicada: {{getTotalAdjudicadaArquitectura()}}
+                                                        </span>
+                                                        <span style="color:#888;"> | </span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                            <span style="display:inline-block;width:14px;height:14px;background:#007bff;border-radius:3px;margin-right:5px;"></span>Entregada: {{getTotalEntregadaArquitectura()}}
+                                                        </span>
+                                                        <span style="color:#888;"> | </span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                            <span style="display:inline-block;width:14px;height:14px;background:#dc3545;border-radius:3px;margin-right:5px;"></span>Perdida: {{getTotalPerdidaArquitectura()}}
+                                                        </span>
+                                                        <span style="color:#888;"> | </span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                            <span style="display:inline-block;width:14px;height:14px;background:#6c757d;border-radius:3px;margin-right:5px;"></span>Otros: {{getTotalOtrosArquitectura()}}
+                                                        </span>
+                                                        <span style="color:#888;"> | </span>
+                                                        <span style="display:inline-flex;align-items:center;font-weight:600;">
+                                                            <span style="display:inline-block;width:14px;height:14px;background:#222;border-radius:3px;margin-right:5px;"></span>Total: {{getTotalPrincipalArquitectura()}}
+                                                        </span>
+                                                    </span>
+                                                </div>
+
+            <div id="morrisArea3-info-bar" style="width:100%;margin-top:8px;min-height:32px;text-align:center;font-size:15px;color:#026AA7;background:#f5f6fa;border-radius:0;display:none;border:none;"></div>
+            <div class="table-responsive Content-table" style="margin: 0 auto; width: 95%;">
+                <table class="table table-striped table-hover" style="margin: 0 auto; width: 95%; border-radius: 0; box-shadow: none; border: none;">
+                    <thead>
+                        <tr>
+                            <th>Año</th>
+                            <th>Adjudicada</th>
+                            <th>Entregada</th>
+                            <th>Perdida</th>
+                            <th>Otros</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let Repo of filteredTblArquitectura; let h = index">
+                            <td>{{Repo.agno}}</td>
+                            <td>
+                                {{Repo.Adjudicada}}
+                                <span class="text-muted" style="font-size:0.95em;"> ({{((Repo.Adjudicada/getTotalForYear(Repo))*100) | number:'1.0-2'}}%)</span>
+                            </td>
+                            <td>
+                                {{Repo.Entregada}}
+                                <span class="text-muted" style="font-size:0.95em;"> ({{((Repo.Entregada/getTotalForYear(Repo))*100) | number:'1.0-2'}}%)</span>
+                            </td>
+                            <td>
+                                {{Repo.Perdida}}
+                                <span class="text-muted" style="font-size:0.95em;"> ({{((Repo.Perdida/getTotalForYear(Repo))*100) | number:'1.0-2'}}%)</span>
+                            </td>
+                            <td>
+                                {{Repo.Anulada + Repo.CartaExcusa + Repo.Estudio + Repo.Pendiente + Repo.Postergada}}
+                                <span class="text-muted" style="font-size:0.95em;"> ({{(((Repo.Anulada + Repo.CartaExcusa + Repo.Estudio + Repo.Pendiente + Repo.Postergada)/getTotalForYear(Repo))*100) | number:'1.0-2'}}%)</span>
+                            </td>
+                            <td><strong>{{getTotalForYear(Repo)}}</strong></td>
+                        </tr>
+                        <tr style="font-weight:bold; background:#f5f6fa;">
+                            <td>Total</td>
+                            <td>{{getTotalPrincipalArquitectura()}}</td>
+                            <td>100%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <!-- /section widget end -->
+<!-- /div block end -->

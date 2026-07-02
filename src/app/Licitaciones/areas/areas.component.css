@@ -1,0 +1,81 @@
+.drop:hover {
+    color: #CC0000;
+}
+.drop {
+    color: red;
+}
+.blue {
+    color: #218BC3;
+    cursor: pointer;
+}
+.blue:hover {
+    color: blue;
+}
+
+/* Estilos para los iconos - descomentado y mejorado */
+.icon{
+    height: auto;
+    width: 25px;
+    line-height: normal;
+    font-size: 20px;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.icono{
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Mejora para los enlaces de acción */
+.blue, .drop {
+    text-decoration: none;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.blue:hover, .drop:hover {
+    text-decoration: none;
+}
+
+thead tr{
+    background-color: #026AA7;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+tbody td {
+    height: 12px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    font-size: 0.93em;
+    vertical-align: middle;
+}
+thead tr, thead th {
+    height: 16px;
+    font-size: 0.95em;
+}
+
+/* Mejorar el espaciado del título principal */
+.widget header h2 {
+    padding: 7px 20px;
+    margin: 0;
+    font-weight: 600;
+}
+
+.error{
+    border-color: red;
+    background-color: #ffcece;
+}
+
+.center{
+    text-align: center;
+}
+
+.widget .loader{
+    position: relative;
+    background-color: white;
+}

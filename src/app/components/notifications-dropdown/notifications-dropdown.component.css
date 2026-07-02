@@ -1,0 +1,12 @@
+.notifications-dropdown { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 350px; padding: 16px; }
+.notifications-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.notifications-actions button { margin-left: 8px; }
+.no-notifications { text-align: center; color: #888; margin: 24px 0; }
+.notifications-list { max-height: 300px; overflow-y: auto; }
+.notification-item { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
+.notification-item.proyecto { background: #e3f2fd; }
+.notification-item i { margin-right: 10px; font-size: 18px; }
+.notification-title { font-weight: bold; margin-right: 8px; }
+.notification-desc { flex: 1; color: #555; }
+.notification-date { font-size: 12px; color: #999; margin-left: 8px; }
+.notifications-footer { margin-top: 12px; }

@@ -1,0 +1,29 @@
+<div class="notifications-dropdown">
+  <div class="notifications-header">
+    <h4>Notificaciones</h4>
+    <div class="notifications-actions">
+      <button title="Actualizar" class="btn-icon" (click)="refrescar()"><i class="fa fa-refresh"></i></button>
+      <button title="Marcar todas como leídas" class="btn-icon"><i class="fa fa-check"></i></button>
+      <button title="Ver todas las notificaciones" class="btn-icon"><i class="fa fa-list"></i></button>
+      <button title="Cerrar" class="btn-icon"><i class="fa fa-times"></i></button>
+    </div>
+  </div>
+  <div *ngIf="notificaciones.length === 0" class="no-notifications">
+    <i class="fa fa-bell-slash"></i>
+    <p>No tienes notificaciones</p>
+  </div>
+  <div *ngIf="notificaciones.length > 0" class="notifications-list">
+    <div *ngFor="let notif of notificaciones" class="notification-item" [ngClass]="{'proyecto': notif.datos?.origen === 'proyectos'}">
+      <i *ngIf="notif.datos?.origen === 'proyectos'" class="fa fa-folder" style="color:#1976d2"></i>
+      <i *ngIf="notif.datos?.origen !== 'proyectos'" class="fa fa-bell"></i>
+      <span class="notification-title">{{notif.titulo}}</span>
+      <span class="notification-desc">{{notif.descripcion}}</span>
+      <span class="notification-date">{{notif.fechaCreacion | date:'short'}}</span>
+    </div>
+  </div>
+  <div class="notifications-footer">
+    <button title="Ver todas las notificaciones" class="btn btn-primary btn-sm w-100">
+      <i class="fa fa-list"></i> Ver todas las notificaciones
+    </button>
+  </div>
+</div>

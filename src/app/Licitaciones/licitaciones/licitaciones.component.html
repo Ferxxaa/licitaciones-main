@@ -1,0 +1,433 @@
+<app-main></app-main>
+
+<div class="content-wrap">
+    <main id="content" role="main" class="content">
+        <br>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="widget">
+                    <header style="background-color: #f48826">
+                        <h2 style="color: white;">
+                            <strong>Administración de Licitaciones</strong>
+                        </h2>
+                    </header>
+                    <div class="widget-body">
+                                                <!-- Card de creación de licitación -->
+                                                <!-- Formulario de agregar licitación SIN card -->
+                                                        <form #CForm="ngForm" (ngSubmit)="Agregar(CForm)">
+                                                            <fieldset>
+                                                                <div class="row mb-3" style="margin-top: 32px; display: flex; flex-direction: column; gap: 0; padding-left: 16px; padding-right: 16px; box-sizing: border-box;">
+                                                                    <div class="form-group row" style="margin-bottom: 0; align-items: center; display: flex;">
+                                                                        <!-- Columna izquierda -->
+                                                                        <div style="display: flex; align-items: center; flex: 1 1 0; max-width: 50%;">
+                                                                            <label for="drdAreas" class="form-control-label h5" style="margin-bottom: 0; padding-right: 16px; text-align: right; width: 150px; min-width: 150px;">Área:</label>
+                                                                            <div style="flex:1; width:320px;">
+                                                                                <select id="drdAreas" class="form-control" [(ngModel)]="drdAreas" name="drdAreas" (click)="Clean()" (keyup)="Clean()" style="width:320px;height:38px;">
+                                                                                    <option value=0 selected>--- Seleccione una opción ---</option>
+                                                                                    <option *ngFor="let Area of Areas" value={{Area.IdArea}}>{{Area.NombreArea}}</option>
+                                                                                </select>
+                                                                                <h6 style="color:red;">{{error[2]}}</h6>
+                                                                            </div>
+                                                                        </div>
+                                                                        <!-- Columna derecha -->
+                                                                        <div style="display: flex; align-items: center; flex: 1 1 0; max-width: 50%;">
+                                                                            <label for="txtMontoInicial" class="form-control-label h5" style="margin-bottom: 0; padding-right: 16px; text-align: right; width: 150px; min-width: 150px;">Monto inicial:</label>
+                                                                            <div style="flex:1; width:320px;">
+                                                                                <input type="text" id="txtMontoInicial" class="form-control" [(ngModel)]="txtMontoInicial" name="txtMontoInicial" placeholder="Monto inicial" (click)="Clean()" (keyup)="Clean()" (keydown.enter)="$event.preventDefault()" style="width:320px;height:38px;">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group row" style="margin-bottom: 0; align-items: center; display: flex;">
+                                                                        <div style="display: flex; align-items: center; flex: 1 1 0; max-width: 50%;">
+                                                                            <label for="txtNombreLicitacion" class="form-control-label h5" style="margin-bottom: 0; padding-right: 16px; text-align: right; width: 150px; min-width: 150px;">Nombre Licitación:</label>
+                                                                            <div style="flex:1; width:320px;">
+                                                                                <input type="text" id="txtNombreLicitacion" class="form-control" [(ngModel)]="txtNombreLicitacion" name="txtNombreLicitacion" maxlength="50" placeholder="Nombre Licitación" (click)="Clean()" (keyup)="Clean()" (keydown.enter)="$event.preventDefault()" style="width:320px;height:38px;">
+                                                                                <h6 style="color:red;">{{error[0]}}</h6>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div style="display: flex; align-items: center; flex: 1 1 0; max-width: 50%;">
+                                                                            <label for="drdEjecutivos" class="form-control-label h5" style="margin-bottom: 0; padding-right: 16px; text-align: right; width: 150px; min-width: 150px;">Responsable:</label>
+                                                                            <div style="flex:1; width:320px;">
+                                                                                <select id="drdEjecutivos" class="form-control" [(ngModel)]="drdEjecutivos" name="drdEjecutivos" (click)="Clean()" (change)="Clean()" style="width:320px;height:38px;">
+                                                                                    <option value=0 selected>--- Seleccione una opción ---</option>
+                                                                                    <option *ngFor="let Ejecutivo of Ejecutivos" value={{Ejecutivo.IdEjecutivos}}>{{Ejecutivo.NombreEjecutivo}}</option>
+                                                                                </select>
+                                                                                <h6 style="color:red;">{{error[4]}}</h6>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group row" style="margin-bottom: 0; align-items: center; display: flex;">
+                                                                        <div style="display: flex; align-items: center; flex: 1 1 0;margin-top: -9px;  max-width: 50%;">
+                                                                            <label for="txtCodigoMan" class="form-control-label h5" style="margin-bottom: 0; padding-right: 16px; text-align: right; width: 150px; min-width: 150px;">Código Mandante:</label>
+                                                                            <div style="flex:1; width:320px;">
+                                                                                <input type="text" id="txtCodigoMan" class="form-control" [(ngModel)]="txtCodigoMan" name="txtCodigoMan" placeholder="Código Mandante" (click)="Clean()" (keyup)="Clean()" (keydown.enter)="$event.preventDefault()" style="width:320px;height:38px;">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div style="display: flex; align-items: center; flex: 1 1 0; max-width: 50%;">
+                                                                            <label for="drdCompetitividad" class="form-control-label h5" style="margin-bottom: 0; padding-right: 16px; text-align: right; width: 150px; min-width: 150px;">Competitividad:</label>
+                                                                            <div style="flex:1; width:320px;">
+                                                                                <select id="drdCompetitividad" class="form-control" [(ngModel)]="drdCompetitividad" name="drdCompetitividad" (click)="Clean()" (change)="Clean()" style="width:320px;height:38px;">
+                                                                                    <option value="" selected>--- Seleccione una opción ---</option>
+                                                                                    <option value="Baja">Baja</option>
+                                                                                    <option value="Media">Media</option>
+                                                                                    <option value="Alta">Alta</option>
+                                                                                </select>
+                                                                                <h6 style="color:red;">{{error[1]}}</h6>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group row" style="margin-bottom: 0; align-items: center; display: flex;">
+                                                                        <div style="display: flex; align-items: center; flex: 1 1 0; max-width: 50%;">
+                                                                            <label for="drdMandantes" class="form-control-label h5" style="margin-bottom: 0; padding-right: 16px; text-align: right; width: 150px; min-width: 150px;">Mandante:</label>
+                                                                            <div style="flex:1; width:320px;">
+                                                                                <select id="drdMandantes" class="form-control" [(ngModel)]="drdMandantes" name="drdMandantes" (change)="BuscaEjecutivosPorMandante(drdMandantes)" (click)="Clean()" (keyup)="Clean()" style="width:320px;height:38px;">
+                                                                                    <option value=0 selected>--- Seleccione una opción ---</option>
+                                                                                    <option *ngFor="let Mandante of Mandantes" value={{Mandante.IdMandante}}>{{Mandante.NombreMandante}}</option>
+                                                                                </select>
+                                                                                <h6 style="color:red;">{{error[3]}}</h6>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div style="display: flex; align-items: center; flex: 1 1 0; max-width: 50%;">
+                                                                            <label for="drdTipoLicitacion" class="form-control-label h5" style="margin-bottom: 0; padding-right: 16px; text-align: right; width: 150px; min-width: 150px;">Tipo de Licitación:</label>
+                                                                            <div style="flex:1; width:320px;">
+                                                                                <select id="drdTipoLicitacion" class="form-control" [(ngModel)]="drdTipoLicitacion" name="drdTipoLicitacion" (change)="onTipoLicitacionChange()" (click)="Clean()" (keyup)="Clean()" style="width:320px;height:38px;">
+                                                                                    <option value="normal" selected>Licitación</option>
+                                                                                    <option value="contrato_marco">Licitación C Marco</option>
+                                                                                </select>
+                                                                                <h6 style="color:red;">{{error[10]}}</h6>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="form-group row" style="margin-bottom: 0; align-items: center; display: flex;">
+                                                                        <div style="display: flex; align-items: center; flex: 1 1 0; max-width: 50%;">
+                                                                            <!-- vacío para mantener alineación -->
+                                                                        </div>
+                                                                        <div style="display: flex; align-items: center; flex: 1 1 0; max-width: 50%;">
+                                                                            <label for="drdContratoMarco" class="form-control-label h5" style="margin-bottom: 0; padding-right: 16px; text-align: right; width: 150px; min-width: 150px;">Contrato Marco:</label>
+                                                                            <div style="flex:1; width:320px;">
+                                                                                <select *ngIf="drdTipoLicitacion === 'normal'" id="drdContratoMarco" class="form-control" [(ngModel)]="drdContratoMarco" name="drdContratoMarco" style="width:320px;height:38px;">
+                                                                                    <option value="0" selected>--- Sin Contrato Marco ---</option>
+                                                                                    <option *ngFor="let contrato of ContratosMarco" [value]="contrato.id" [disabled]="txtNombreLicitacion && contrato.name === txtNombreLicitacion">
+                                                                                        📋 {{contrato.name}} ({{contrato.filename}})
+                                                                                    </option>
+                                                                                </select>
+                                                                                
+                                                                                <div *ngIf="drdTipoLicitacion === 'contrato_marco'" class="alert alert-info" style="margin-bottom: 0; padding: 8px 12px;">
+                                                                                    <i class="fa fa-info-circle"></i> <strong>Contrato Marco:</strong> Podrá tener sublicitaciones asociadas. Para crear hijas, usa el formulario y selecciona el contrato marco correspondiente.
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </fieldset>
+                                                            <div class="form-actions text-right">
+                                                                  <!-- Botón eliminado para evitar duplicidad -->
+                                                            </div>
+                                                                                    <!-- Tablas de Hitos a incorporar e incorporados -->
+                                                                                    <div class="row mb-3 align-items-start">
+                                                                                                                        <div class="col-md-6 d-flex flex-column" style="height: 100%; padding-left: 16px; padding-right: 16px; box-sizing: border-box; gap: 0;">
+                                                                                                                            <h5 class="mb-2" style="color:#026AA7;"><i class="fa fa-calendar-plus-o mr-1"></i> Hitos a incorporar</h5>
+                                                                                    <div style="max-height: 340px; overflow-y: auto; margin-top: 9px;">
+                                                                                        <table class="table table-bordered table-striped table-hover no-footer mb-0" style="font-size: 0.92em; margin-bottom: 0; width: 100%; min-width: 420px; max-width: 100%; table-layout: fixed;">
+                                                                                                                                    <thead style="position: sticky; top: 0; z-index: 2; background-color: #f8f9fa;">
+                                                                                                                                        <tr style="background-color: #f8f9fa;">
+                                                                                                                                            <th>Nombre Hito</th>
+                                                                                                                                            <th class="text-center">Calendarizado</th>
+                                                                                                                                            <th class="text-center">Acción</th>
+                                                                                                                                        </tr>
+                                                                                                                                    </thead>
+                                                                                                                                    <tbody>
+                                                                                                                                        <tr *ngFor="let Hito of HitosOrdenados; let i = index" style="height: 26px;">
+                                                                                                                                            <td style="padding: 4px 10px; vertical-align: middle;">{{Hito.NombreHito}}</td>
+                                                                                                                                            <td class="align-center" style="padding: 4px 8px; vertical-align: middle;">
+                                                                                                                                                <div class="checkbox abc-checkbox" style="margin-bottom: 0;">
+                                                                                                                                                    <input type="checkbox" [(ngModel)]="Hito.Calendarizada" [ngModelOptions]="{standalone: true}">
+                                                                                                                                                    <label style="margin-bottom: 0;"></label>
+                                                                                                                                                </div>
+                                                                                                                                            </td>
+                                                                                                                                            <td class="align-center" style="padding: 2px 6px; vertical-align: middle;">
+                                                                                                                                                <button type="button" class="btn btn-success btn-sm" (click)="AgregarHito(i)" title="Agregar hito a la licitación" style="padding: 1px 5px; font-size: 1em;">
+                                                                                                                                                    <i class="fa fa-plus"></i>
+                                                                                                                                                </button>
+                                                                                                                                            </td>
+                                                                                                                                        </tr>
+                                                                                                                                    </tbody>
+                                                                                                                                </table>
+                                                                                                                            </div>
+                                                                                                                            <div class="loader animated fadeIn handle" *ngIf="LoadingTabla[0]">
+                                                                                                                                <span class="spinner">
+                                                                                                                                    <i class="fa fa-spinner fa-spin"></i>
+                                                                                                                                </span>
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                        <div class="col-md-6 d-flex flex-column" style="height: 100%;">
+                                                                                            <h5 class="mb-2" style="color:#026AA7;"><i class="fa fa-check-square-o mr-1"></i> Hitos incorporados</h5>
+                                                                                            <table class="table table-bordered table-striped table-hover no-footer" style="margin-top: 6px; width: 100%; min-width: 420px; max-width: 100%; table-layout: fixed;">
+                                                                                                <thead>
+                                                                                                    <tr style="background-color: #f8f9fa;">
+                                                                                                        <th>Nombre Hito</th>
+                                                                                                        <th class="text-center">Calendarizado</th>
+                                                                                                        <th class="text-center">Acción</th>
+                                                                                                    </tr>
+                                                                                                </thead>
+                                                                                                <tbody>
+                                                                                                    <tr *ngFor="let HitoSelect of HitosSelect; let i = index" style="height: 12px;">
+                                                                                                        <td style="padding: 0 2px; vertical-align: middle;">{{HitoSelect.NombreHito}}</td>
+                                                                                                        <td class="align-center" style="padding: 1px 1px; vertical-align: middle;">
+                                                                                                            <div class="checkbox abc-checkbox">
+                                                                                                                <input type="checkbox" [(ngModel)]="HitoSelect.Calendarizada" [ngModelOptions]="{standalone: true}">
+                                                                                                                <label></label>
+                                                                                                            </div>
+                                                                                                        </td>
+                                                                                                        <td class="align-center" style="padding: 4px 10px; vertical-align: middle;">
+                                                                                                            <button type="button" class="btn btn-danger btn-sm" (click)="EliminarHito(i)" title="Quitar hito de la licitación" style="padding: 1px 4px; font-size: 0.95em; min-width: 24px;" *ngIf="!HitoSelect.Obligatorio">
+                                                                                                                <i class="fa fa-minus"></i> 
+                                                                                                            </button>
+                                                                                                            <span *ngIf="HitoSelect.Obligatorio" class="text-muted" title="Este hito es obligatorio y no se puede eliminar">
+                                                                                                                <i class="fa fa-lock"></i> Obligatorio
+                                                                                                            </span>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                </tbody>
+                                                                                            </table>
+                                                                                            <div class="loader animated fadeIn handle" *ngIf="LoadingTabla[1]">
+                                                                                                <span class="spinner">
+                                                                                                    <i class="fa fa-spinner fa-spin"></i>
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                                                <!-- ...existing code... -->
+                                                                                                                <div class="form-actions text-right mt-3">
+                                                                                                                    <button ID="btnCrearLicitacion" type="submit" class="btn btn-success" [disabled]="Loading">
+                                                                                                                        <i class="fa fa-check"></i> Agregar Licitación
+                                                                                                                    </button>
+                                                                                                                </div>
+                                                                                                            </form>
+                                                                                                        </div>
+                                                                                                    <!-- cierre de form-group row y card-body -->
+                                                <!-- ...existing code... -->
+                                                <!-- Card de creación de licitación (ya modernizada y corregida) -->
+                                                <!-- ...existing code... -->
+                        <!-- Tabla de licitaciones eliminada a pedido del usuario -->
+                            <!-- Fin de tabla y paginación -->
+                            <div class="loader animated fadeIn handle" *ngIf="LoadingTabla[2]">
+                                <span class="spinner">
+                                    <i class="fa fa-spinner fa-spin"></i>
+                                </span>
+                            </div>
+                    <div class="loader animated fadeIn handle" *ngIf="Loading" style="position: absolute;">
+                        <span class="spinner">
+                            <i class="fa fa-spinner fa-spin"></i>
+                        </span>
+                    </div>
+                <!-- Fin de sección principal -->
+            <!-- cierre correcto de section y div -->
+<!-- Fin de main -->
+
+    <!-- Modal de Edición -->
+    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #026AA7; color: white;">
+                    <h5 class="modal-title" id="exampleModalLongTitle">
+                        <i class="fa fa-pencil"></i> Editar Licitación
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" (click)="OcultarPopUp()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form #EForm="ngForm" (ngSubmit)="Actualizar(EForm)">
+                        <fieldset>
+                            <legend *ngIf=false></legend>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Area:</label>
+                                <div class="col-md-4">
+                                    <select id="drdAreasEdit" class="dropdown-toggle select2-chosen-2 form-control" [(ngModel)]="drdAreasEdit" name="drdAreasEdit">
+                                        <option value=0 selected>--- Seleccione una opcion ---</option>
+                                        <option *ngFor="let Area of Areas" value={{Area.IdArea}}>{{Area.NombreArea}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Tipo de Licitación:</label>
+                                <div class="col-md-4">
+                                    <select id="drdTipoLicitacionEdit" class="dropdown-toggle select2-chosen-2 form-control" 
+                                            [(ngModel)]="drdTipoLicitacionEdit" name="drdTipoLicitacionEdit" 
+                                            (change)="onTipoLicitacionChangeEdit()">
+                                        <option value="normal">Licitación Normal</option>
+                                        <option value="contrato_marco">Contrato Marco</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row" *ngIf="drdTipoLicitacionEdit === 'normal'">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Contrato Marco Padre:</label>
+                                <div class="col-md-4">
+                                    <select id="drdContratoMarcoEdit" class="dropdown-toggle select2-chosen-2 form-control" 
+                                            [(ngModel)]="drdContratoMarcoEdit" name="drdContratoMarcoEdit">
+                                        <option value="0" selected>--- Sin Contrato Marco ---</option>
+                                        <option *ngFor="let contrato of ContratosMarco" [value]="contrato.id">
+                                            📋 {{contrato.name}} ({{contrato.filename}})
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row" *ngIf="drdTipoLicitacionEdit === 'contrato_marco'">
+                                <div class="col-md-8">
+                                    <div class="alert alert-info" style="margin-bottom: 0; padding: 8px 12px;">
+                                        <i class="fa fa-info-circle"></i> 
+                                        <strong>Contrato Marco:</strong> Podrá tener licitaciones hijas asociadas
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Nombre Lictaciones:</label>
+                                <div class="col-md-4">
+                                    <input type="text" id="txtNombreLicitacionEdit" class="form-control" [(ngModel)]="txtNombreLicitacionEdit" name="txtNombreLicitacionEdit"
+                                        placeholder="Nombre Licitacion">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Codigo Mandante:</label>
+                                <div class="col-md-4">
+                                    <input type="text" id="txtCodigoManEdit" class="form-control" [(ngModel)]="txtCodigoManEdit" name="txtCodigoManEdit" placeholder="Codigo Mandante">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Monto Oficial inicial:</label>
+                                <div class="col-md-4">
+                                    <input type="text" id="txtMontoEdit" class="form-control" [(ngModel)]="txtMontoEdit" name="txtMontoEdit" placeholder="Monto Oficial inicial">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Mandante:</label>
+                                <div class="col-md-4">
+                                    <select id="drdMandantesEdit" 
+                                            class="dropdown-toggle select2-chosen-2 form-control" 
+                                            [(ngModel)]="drdMandantesEdit" 
+                                            name="drdMandantesEdit"
+                                            (change)="BuscaEjecutivosPorMandanteEdit(drdMandantesEdit, 0)">
+                                        <option value=0 selected>--- Seleccione una opcion ---</option>
+                                        <option *ngFor="let Mandante of Mandantes" value={{Mandante.IdMandante}}>{{Mandante.NombreMandante}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Responsable:</label>
+                                <div class="col-md-4">
+                                    <select id="drdEjecutivosEdit" 
+                                            class="dropdown-toggle select2-chosen-2 form-control" 
+                                            [(ngModel)]="drdEjecutivosEdit" 
+                                            name="drdEjecutivosEdit"
+                                            [disabled]="LoadingEjecutivos">
+                                        <option value=0 selected>
+                                            {{LoadingEjecutivos ? 'Cargando ejecutivos...' : '--- Seleccione una opcion ---'}}
+                                        </option>
+                                        <option *ngFor="let Ejecutivo of Ejecutivos" 
+                                                value={{Ejecutivo.IdEjecutivos}}>
+                                            {{Ejecutivo.NombreEjecutivo}}
+                                        </option>
+                                    </select>
+                                    <small class="text-muted" *ngIf="LoadingEjecutivos">
+                                        <i class="fa fa-spinner fa-spin"></i> Cargando ejecutivos...
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Superficie:</label>
+                                <div class="col-md-4">
+                                    <input type="text" id="txtSuperficieEdit" class="form-control" [(ngModel)]="txtSuperficieEdit" name="txtSuperficieEdit" placeholder="Superficie">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Competitividad:</label>
+                                <div class="col-md-4">
+                                    <select id="drdCompetitividadEdit" class="dropdown-toggle select2-chosen-2 form-control" [(ngModel)]="drdCompetitividadEdit"
+                                        name="drdCompetitividadEdit">
+                                        <option value=0 selected>--- Seleccione una opcion ---</option>
+                                        <option value="Baja">Baja</option>
+                                        <option value="Media">Media</option>
+                                        <option value="Alta">Alta</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <br>
+                            <br>
+                        </fieldset>
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <button ID="btnEditarLicitacion" type="submit" class="btn btn-success me-2" style="margin-right: 10px;">
+                                        <i class="fa fa-save"></i> Guardar Cambios
+                                    </button>
+                                    <button type="button" class="btn btn-danger me-2" (click)="mostrarConfirmacionEliminar(IndexUpdate)">
+                                        <i class="fa fa-trash"></i> Eliminar
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="OcultarPopUp()">
+                                        <i class="fa fa-times"></i> Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- Se eliminó el modal-footer duplicado ya que los botones están en el form-actions -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Confirm Eliminar -->
+    <div class="modal fade" id="Confirm" tabindex="-1" role="dialog" aria-labelledby="ConfirmLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <span class="widget-icon">
+                <i class="fa fa-circle" style="position:absolute;color:white;top: 5px;left: 5px;"></i>
+                <i class="glyphicon glyphicon-remove-sign"></i>
+            </span>
+            <section class="widget widget-card ">
+                <div class="widget-body clearfix">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="no-margin">¿Esta seguro de eliminar este elemento?</h3>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="modal-footer" style="background-color: #eeeeee;">
+                    <div class="col-xs-offset-4 col-md-2">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="Eliminar()">Eliminar</button>
+                    </div>
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="OcultarConfirmacion()">Cancelar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    <div class="modal fade" id="Mensaje" tabindex="-1" role="dialog" aria-labelledby="MensajeLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <span class="widget-icon">
+                <i class="fa fa-circle" style="position:absolute;color:white;top: 5px;left: 5px; z-index: -1"></i>
+                <i class="glyphicon glyphicon-ok-sign" style="color:green" id="IcoMensaje"></i>
+            </span>
+            <section class="widget widget-card ">
+                <div class="widget-body clearfix">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="no-margin">{{msg}}</h3>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer" style="background-color: #eeeeee;">
+                    <div class="col-xs-offset-4 col-xs-2 ">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="OcultarMensaje()">Aceptar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>

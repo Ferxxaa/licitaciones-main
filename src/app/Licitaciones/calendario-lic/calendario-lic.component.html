@@ -1,0 +1,98 @@
+<app-main></app-main>
+
+<div class="content-wrap">
+  <main id="content" role="main" class="content">
+    <br>
+    <div class="widget-body">
+      <div class="row mb-4">
+        <div class="col-xl-6">
+          <h1 class="page-title">
+            <i class="fa fa-calendar mr-2 text-primary"></i>
+            {{Fecha | date:'MMMM'}} {{Fecha | date:'yyyy'}} - 
+            <span class="text-primary">{{Fecha | date:'EEEE'}}</span>
+          </h1>
+        </div>
+        <div class="col-xl-6 text-right">
+          
+        </div>
+      </div>
+      
+      <div class="row">
+        <!-- Panel de detalles de licitaciones -->
+        <div class="col-lg-4 col-xl-4">
+          <div class="details-panel">
+            <div class="details-header">
+              <h4>
+                <i class="fa fa-list-alt mr-2"></i>
+                Detalles de Licitaciones
+              </h4>
+              <small class="text-muted">Selecciona una fecha en el calendario</small>
+            </div>
+            
+            <!-- Contenedor para los detalles -->
+            <div id="licitaciones-details" class="details-content">
+              <div class="no-selection-message">
+                <div class="text-center py-4">
+                  <i class="fa fa-calendar fa-3x text-muted mb-3"></i>
+                  <p class="text-muted">Haz clic en una fecha del calendario para ver las licitaciones programadas</p>
+                  <small class="text-muted">
+                    <i class="fa fa-info-circle"></i>
+                    Los días con licitaciones aparecerán con un punto naranja
+                  </small>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Debug info (temporal) -->
+            <div *ngIf="selectedDate" class="debug-info mt-3 p-2 bg-light rounded">
+              <small class="text-muted">
+                <strong>Debug:</strong> Fecha seleccionada: {{selectedDate | date:'dd/MM/yyyy'}}
+              </small>
+            </div>
+
+            <!-- Botón de prueba (temporal) -->
+            <div class="test-buttons mt-3">
+              <button class="btn btn-sm btn-outline-primary" (click)="testDateSelection()">
+                <i class="fa fa-play"></i> Probar selección (Hoy)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calendario -->
+        <div class="col-lg-8 col-xl-8">
+          <section class="widget widget-calendar">
+            <div class="widget-body">
+              <div class="calendar-controls mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="btn-group">
+                    <button class="btn btn-outline-primary" id="calender-prev">
+                      <i class="fa fa-angle-left"></i> Anterior
+                    </button>
+                    <button class="btn btn-outline-primary" id="calender-next">
+                      Siguiente <i class="fa fa-angle-right"></i>
+                    </button>
+                  </div>
+                  
+                  <div id="calendar-switcher" class="btn-group" data-toggle="buttons" style="display: none;">
+                    <label class="btn btn-outline-secondary active">
+                      <input type="radio" name="view" value="month"/> Mes
+                    </label>
+                    <label class="btn btn-outline-secondary">
+                      <input type="radio" name="view" value="agendaWeek"/> Semana
+                    </label>
+                    <label class="btn btn-outline-secondary">
+                      <input type="radio" name="view" value="agendaDay"/> Día
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <div id="calendar" class="calendar"></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

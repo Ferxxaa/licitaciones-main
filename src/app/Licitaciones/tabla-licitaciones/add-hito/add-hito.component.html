@@ -1,0 +1,48 @@
+<div class="popUp">
+  <div class="contenido" style="padding: 24px; max-width: 600px; margin: 0 auto;">
+    <div class="row title" style="margin-bottom: 24px;">
+      <div class="col-12">
+        <h3 style="margin: 0; font-weight: bold; color: #026AA7;">
+          <i class="fa fa-plus-circle"></i> Agregar Hitos a Licitación
+        </h3>
+      </div>
+    </div>
+    
+    <div class="row" style="margin-bottom: 20px; align-items: center;">
+      <div class="col-12">
+        <label for="drdHitos" class="form-label" style="font-weight: 600; font-size: 16px; margin-bottom: 8px; display: block;">
+          Seleccione un Hito:
+        </label>
+        <select id="drdHitos" 
+                name="drdHitos" 
+                class="form-control" 
+                [(ngModel)]="idHito"
+                style="width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+          <option value="0" selected>--- Seleccione una opción ---</option>
+          <option value="{{Hito.IdHito}}" *ngFor="let Hito of Hitos | async | eliminaActivos:HitosActivos; let i = index">
+            {{Hito.NombreHito}}
+          </option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="row" style="margin-top: 32px;">
+      <div class="col-12" style="text-align: right; display: flex; gap: 12px; justify-content: flex-end;">
+        <button type="button" 
+                class="btn btn-secondary" 
+                data-dismiss="modal" 
+                (click)="Cerrar()"
+                style="padding: 8px 20px; border-radius: 4px;">
+          <i class="fa fa-times"></i> Cancelar
+        </button>
+        <button type="button" 
+                class="btn btn-primary" 
+                data-dismiss="modal" 
+                (click)="Agregar()"
+                style="padding: 8px 20px; border-radius: 4px; background-color: #28a745; border-color: #28a745;">
+          <i class="fa fa-plus"></i> Agregar Hito
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

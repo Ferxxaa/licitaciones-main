@@ -1,0 +1,52 @@
+<!-- <app-main></app-main> -->
+
+<!-- <div class="content-wrap">
+  <main id="content" role="main"class="content">
+    <div class="row">
+        <div class="col-md-offset-11 col-md-1">
+            <a (click)="Detalle()" class="btn btn-inverse form-control">Volver</a>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-lg-12"> -->
+        <section class="widget">
+          <header style="background-color: #f48826">
+            <h2 style="color: white;">
+                <strong>Bitacora</strong>
+            </h2>
+          </header>
+          <div class="widget-body">
+            <div class="form-group row">
+              <br>
+              <table class="table table-bordered table-striped table-hover no-footer">
+                <thead>
+                  <tr>
+                    <td>Id Bitacora</td>
+                    <td>Bitacora</td>
+                    <td>Archivo adjunto</td>
+                    <td>Fecha Creación</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let Comentario of Comentarios; let i = index" (click)="Editar(Comentario)">
+                    <td>{{Comentario.IdComentario}}</td>
+                    <td>{{Comentario.Comentario}}</td>
+                    <td><a (click)="sanitize(Comentario.ArchivoAdjunto)" *ngIf="Comentario.ArchivoAdjunto">Adjunto</a></td>
+                    <td class="center">{{Comentario.FechaCreacion | date:'dd/MM/yyyy'}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="loader animated fadeIn handle" *ngIf="LoadingTabla">
+                <span class="spinner">
+                  <i class="fa fa-spinner fa-spin"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      <!-- </div>
+    </div>  
+  </main> 
+</div>   -->
+<app-edit-bitacora *ngIf="bitacoraEdit" [Bitacora]="bitacoraEdit" (cerrar)="bitacoraEdit=null"></app-edit-bitacora>

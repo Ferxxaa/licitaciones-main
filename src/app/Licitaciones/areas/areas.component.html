@@ -1,0 +1,177 @@
+<app-main></app-main>
+
+<div class="content-wrap">
+    <main id="content" role="main" class="content">
+        <br>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="widget">
+                    <header style="background-color: #f48826">
+                        <h2 style="color: white;">
+                            <strong>Administración de Areas</strong>
+                        </h2>
+                    </header>
+                    <div class="widget-body">
+                                                <!-- Sección de creación de área diferenciada -->
+                                                <div class="card mb-4" style="background: #f8f9fa00; border: none; border-radius: 12px; width: 80%; margin-left: 10%;">
+                                                    <!-- Sin encabezado azul -->
+                                                    <div class="card-body">
+                                                        <h4 style="margin-bottom: 18px; color: #222; font-weight: normal; margin-left: -36px;"><i class=""></i> Crear Nueva Área</h4>
+                                                        <form #CForm="ngForm" (ngSubmit)="Agregar(CForm)">
+                                                            <fieldset>
+                                                                    <div class="form-group row mb-3" style="align-items: center; display: flex; gap: 10px;">
+                                                                        <label for="txtArea" class="form-control-label h5" style="margin-bottom: 0; white-space: nowrap; margin-left: -18px;">Nombre Área:</label>
+                                                                        <input type="text" id="txtArea" class="form-control" style="margin-top: 0; margin-bottom: 0; width: 250px;" ngModel name="txtArea" placeholder="Nombre Área" (click)="Clean()" (keyup)="Clean()">
+                                                                        <button ID="btnCrearArea" class="btn btn-success" style="margin-left: 8px;">Crear Área</button>
+                                                                        <h6 style="color:red; margin-left: 8px;">{{error}}</h6>
+                                                                    </div>
+                                                            </fieldset>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                        <div class="form-group row">
+                                <div style="width: 80%; margin-left: 10%;">
+                                    <table class="table table-bordered table-striped table-hover no-footer" style="width: 100%; margin: 0 auto;">
+                                <thead>
+                                    <tr>
+                                        <td>Id Area</td>
+                                        <td>Nombre Area</td>
+                                        <td>Fecha Creación</td>
+                                        <td>Acciones</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let Area of Areas; let i = index">
+                                        <td>{{Area.IdArea}}</td>
+                                        <td>{{Area.NombreArea}}</td>
+                                        <td class="center">{{Area.FechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                        <td style="text-align: center;">
+                                            <a (click)="Editar(i)" class="blue" style="margin-right: 10px; cursor: pointer;" title="Editar">
+                                                <i class="fa fa-pencil icono"></i>
+                                            </a>
+                                            <a (click)="Confirmacion(i)" class="drop" style="cursor: pointer;" title="Eliminar">
+                                                <i class="fa fa-times-circle icono"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                    </table>
+                                </div>
+                            <div class="loader animated fadeIn handle" *ngIf="LoadingTabla">
+                                <span class="spinner">
+                                    <i class="fa fa-spinner fa-spin"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="loader animated fadeIn handle" *ngIf="Loading" style="position: absolute;">
+                        <span class="spinner">
+                            <i class="fa fa-spinner fa-spin"></i>
+                        </span>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true" aria-modal="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="height: 50px;">
+                    <div class="form-group row">
+                        <div class="col-md-11">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Editar Area</h5>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="OcultarPopUp()">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <form #EForm="ngForm" (ngSubmit)="Actualizar(EForm)">
+                        <fieldset>
+                            <legend *ngIf=false></legend>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Nombre Area:</label>
+                                <div class="col-md-5">
+                                    <input type="text" id="txtAreaEdit" class="form-control" [(ngModel)]="EditNombreArea" name="txtAreaEdit" (click)="CleanEdit()" (keyup)="CleanEdit()">
+                                    <h6 style="color:red;">{{errorEdit}}</h6>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="col-md-offset-4 col-md-8">
+                                    <button ID="btnEditarArea" class="btn btn-success">Editar Area</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="OcultarPopUp()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Eliminar -->
+    <div class="modal fade" id="Confirm" tabindex="-1" role="dialog" aria-labelledby="ConfirmLongTitle" aria-hidden="true" aria-modal="false">
+        <div class="modal-dialog" role="document">
+            <span class="widget-icon">
+                <i class="fa fa-circle" style="position:absolute;color:white;top: 5px;left: 5px;"></i>
+                <i class="glyphicon glyphicon-remove-sign"></i>
+            </span>
+            <section class="widget widget-card ">
+                <div class="widget-body clearfix">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="no-margin" id="ConfirmLongTitle">¿Esta seguro de eliminar este elemento?</h3>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="modal-footer" style="background-color: #eeeeee;">
+                    <div class="col-xs-offset-4 col-md-2">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="Eliminar()">Eliminar</button>
+                    </div>
+                    <div class="col-xs-2">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="OcultarConfirmacion()">Cancelar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    <div class="modal fade" id="Mensaje" tabindex="-1" role="dialog" aria-labelledby="MensajeLongTitle" aria-hidden="true" aria-modal="false">
+        <div class="modal-dialog" role="document">
+            <span class="widget-icon">
+                <i class="fa fa-circle" style="position:absolute;color:white;top: 5px;left: 5px;"></i>
+                <i class="glyphicon glyphicon-ok-sign" style="color:green"></i>
+            </span>
+            <section class="widget widget-card ">
+                <div class="widget-body clearfix">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="no-margin" id="MensajeLongTitle">{{msg}}</h3>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer" style="background-color: #eeeeee;">
+                    <div class="col-xs-offset-4 col-xs-2 ">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="OcultarMensaje()">Aceptar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+
+
+</div>

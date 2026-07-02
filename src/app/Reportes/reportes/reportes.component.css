@@ -1,0 +1,461 @@
+/* Ocultar SVG generado por Raphael/Morris.js con height=210 y width=290 */
+svg[height="210"][width="290"] {
+    display: none !important;
+}
+/* Compactar cabecera de tablas */
+.compact-report-table th,
+.compact-report-table td {
+    padding: 2px 6px !important;
+    font-size: 0.92em !important;
+    vertical-align: middle !important;
+}
+.compact-report-table thead th {
+    white-space: nowrap !important;
+}
+.compact-report-table tbody tr {
+    height: 22px !important;
+}
+.Content-table {
+    margin-bottom: 4px !important;
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0);
+    border: 1px solid #e9ecef00;
+}
+thead th {
+    background: linear-gradient(135deg, #026AA7 0%, #0F5F8A 100%);
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+    padding: 7px 4px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+tbody td {
+    padding: 6px 4px;
+    vertical-align: middle;
+    font-size: 0.82rem;
+    border-bottom: 1px solid #f1f3f4;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+tbody tr:hover {
+    background-color: #f8f9fa;
+}
+tbody tr td:first-child {
+    font-weight: bold;
+    color: #495057;
+    background-color: #f8f9fa;
+    border-right: 2px solid #026AA7;
+}
+tbody tr td:last-child {
+    font-weight: bold;
+    color: #026AA7;
+    font-size: 1rem;
+}
+@media (max-width: 768px) {
+    .Content-table {
+        max-height: 250px;
+        font-size: 0.75rem;
+    }
+    thead th {
+        padding: 6px 2px;
+        font-size: 0.75rem;
+    }
+    tbody td {
+        padding: 4px 2px;
+        font-size: 0.75rem;
+    }
+}
+/* Compactar cabecera de tablas */
+thead th {
+    background: linear-gradient(135deg, #026AA7 0%, #0F5F8A 100%);
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+    padding: 7px 4px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+thead th.minimal {
+    background: #f5f6fa;
+    color: #222;
+    text-align: center;
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 7px 4px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    text-transform: none;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+thead {
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.Content-table {
+    max-height: 400px;
+    min-height: auto;
+    height: auto;
+    overflow-y: auto;
+    overflow-x: auto;
+    
+   
+}
+
+/* Compactar filas y columnas en tablas de reportes */
+tbody td {
+    padding: 6px 4px;
+    vertical-align: middle;
+    font-size: 0.82rem;
+    border-bottom: 1px solid #f1f3f4;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+tbody tr:hover {
+    background-color: #f8f9fa;
+    transform: translateX(2px);
+    transition: all 0.2s ease;
+}
+
+/* Colores específicos para diferentes tipos de datos */
+tbody tr td:first-child {
+    font-weight: bold;
+    color: #495057;
+    background-color: #f8f9fa;
+    border-right: 2px solid #026AA7;
+}
+
+tbody tr td:last-child {
+    font-weight: bold;
+    color: #026AA7;
+    font-size: 1rem;
+}
+
+/* Mejoras para los widgets */
+.widget {
+    border-radius: 0;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+    margin-bottom: 30px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.widget:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+}
+
+.widget header {
+    border: none !important;
+    padding: 20px 25px !important;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 !important;
+}
+
+/* Encabezado minimalista */
+.widget header {
+    border: none !important;
+    padding: 18px 24px !important;
+    position: relative;
+    overflow: hidden;
+    background: #f5f6fa;
+    border-radius: 0 !important;
+}
+.widget header::before {
+    display: none;
+}
+.widget header h4 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #222;
+    text-shadow: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.widget header h4::before {
+    display: none;
+}
+.widget header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #f48826, #ff6b35, #f48826);
+    opacity: 0.8;
+}
+
+.widget header h4 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.widget header h4::before {
+    content: '\f080';
+    font-family: FontAwesome;
+    font-size: 1.1rem;
+    opacity: 0.8;
+}
+
+.widget-body {
+    padding: 25px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 0;
+}
+
+/* Fondo minimalista */
+.widget-body {
+    padding: 25px;
+    background: #fff;
+    border-radius: 0;
+}
+/* Estilos para los gráficos */
+#morris3, #morris1, [id^="morrisArea"] {
+    border-radius: 0;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 25px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    margin-bottom: 25px;
+    border: 1px solid #e9ecef;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Estilos para los gráficos minimalistas */
+#morris3, #morris1, [id^="morrisArea"] {
+    border-radius: 0;
+    background: #f5f6fa;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+    margin-bottom: 25px;
+    border: 1px solid #e9ecef;
+    position: relative;
+    overflow: hidden;
+}
+/* Efecto hover para los gráficos */
+#morris3:hover, #morris1:hover, [id^="morrisArea"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+/* Borde superior decorativo para los gráficos */
+#morris3::before, #morris1::before, [id^="morrisArea"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #026AA7, #f48826, #026AA7);
+    opacity: 0.8;
+}
+
+/* Sin borde decorativo superior */
+#morris3::before, #morris1::before, [id^="morrisArea"]::before {
+    display: none;
+}
+/* Mejora específica para el gráfico de dona (morris3) */
+#morris3 {
+    text-align: center;
+    background: #fff;
+}
+
+/* Mejora específica para el gráfico de líneas profesional (morris1) - fondo claro */
+#morris1 {
+    background: #fff;
+    color: #222;
+}
+
+/* Mejora específica para gráficos de área por área - fondo claro */
+[id^="morrisArea"] {
+    background: #fff;
+}
+
+/* Mejoras específicas para números en las tablas */
+tbody td[class*="number"] {
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Mejoras para la visualización completa de las tablas */
+.table {
+    width: 100%;
+    table-layout: auto;
+    margin-bottom: 0;
+}
+
+.Content-table td {
+    text-overflow: ellipsis;
+    overflow: visible;
+    white-space: nowrap;
+    border: none;
+    border-radius: 0 !important;
+}
+
+/* Asegurar que las tablas se vean completas */
+.widget-body .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Colores sutiles para diferentes estados */
+tbody tr td:nth-child(2) { color: #28a745; } /* Adjudicada - Verde */
+tbody tr td:nth-child(3) { color: #6c757d; } /* Anulada - Gris */
+tbody tr td:nth-child(4) { color: #ffc107; } /* Carta Excusa - Amarillo */
+tbody tr td:nth-child(5) { color: #e83e8c; } /* Entregada - Rosa */
+tbody tr td:nth-child(6) { color: #17a2b8; } /* Estudio - Cyan */
+tbody tr td:nth-child(7) { color: #fd7e14; } /* Pendiente - Naranja */
+tbody tr td:nth-child(8) { color: #dc3545; } /* Perdida - Rojo */
+tbody tr td:nth-child(9) { color: #6f42c1; } /* Postergada - Púrpura */
+
+/* Colores minimalistas para diferentes estados */
+tbody tr td:nth-child(2) { color: #3a86ff; } /* Adjudicada - Azul Apple */
+tbody tr td:nth-child(3) { color: #888; } /* Anulada - Gris */
+tbody tr td:nth-child(4) { color: #bdbdbd; } /* Carta Excusa - Gris claro */
+tbody tr td:nth-child(5) { color: #a0aec0; } /* Entregada - Gris azulado */
+tbody tr td:nth-child(6) { color: #6c757d; } /* Estudio - Gris */
+tbody tr td:nth-child(7) { color: #222; } /* Pendiente - Negro suave */
+tbody tr td:nth-child(8) { color: #ef233c; } /* Perdida - Rojo minimalista */
+tbody tr td:nth-child(9) { color: #5f5fff; } /* Postergada - Azul violeta */
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .Content-table {
+        max-height: 250px;
+        font-size: 0.75rem;
+    }
+    thead th {
+        padding: 6px 2px;
+        font-size: 0.75rem;
+    }
+    tbody td {
+        padding: 4px 2px;
+        font-size: 0.75rem;
+    }
+    .widget {
+        margin-bottom: 20px;
+    }
+    .widget header {
+        padding: 12px 14px !important;
+    }
+    .widget header h4 {
+        font-size: 1rem;
+    }
+    .widget-body {
+        padding: 10px;
+    }
+}
+
+/* Scrollbar personalizado para las tablas - estilizado pero funcional */
+.Content-table::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.Content-table::-webkit-scrollbar-thumb {
+    background: #f1f3f4;
+    border-radius: 0 !important;
+}
+
+.Content-table::-webkit-scrollbar-thumb {
+    background: #026AA7;
+    border-radius: 0 !important;
+    transition: background 0.3s ease;
+}
+
+.Content-table::-webkit-scrollbar-thumb:hover {
+    background: #024f8a;
+}
+
+.Content-table::-webkit-scrollbar-corner {
+    background: #f1f3f4;
+}
+
+/* Para navegadores que no soporten webkit-scrollbar */
+.Content-table {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #026AA7 #f1f3f4; /* Firefox */
+}
+
+/* Indicadores visuales para mejor comprensión */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(244, 136, 38, 0.05);
+}
+
+/* Minimalismo en filas alternas y hover */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f5f6fa;
+}
+.table-hover tbody tr:hover {
+    background-color: #e9ecef;
+    color: #222;
+}
+
+
+/* Mejora para el contraste */
+strong {
+    color: #026AA7;
+    font-weight: 700;
+}
+
+strong {
+    color: #222;
+    font-weight: 600;
+}
+/* Estilos adicionales para mejorar la presentación de los gráficos */
+.widget-body > div[id^="morris"] {
+    position: relative;
+    z-index: 1;
+}
+
+/* Mejora de la tipografía dentro de los gráficos */
+#morris3 text, #morris1 text, [id^="morrisArea"] text {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 500;
+}
+
+/* Estilo para los tooltips de los gráficos */
+.morris-hover {
+    background: linear-gradient(135deg, #026AA7 0%, #0F5F8A 100%) !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    color: white !important;
+    font-weight: 500 !important;
+    padding: 10px 15px !important;
+}
+
+.morris-hover-content {
+    color: white !important;
+    text-shadow: none !important;
+}
+/* Mejora del espaciado en la sección de gráficos */
+.widget-body > #morris3 + div,
+.widget-body > #morris1 + div,
+.widget-body > [id^="morrisArea"] + div {
+    margin-top: 20px;
+}

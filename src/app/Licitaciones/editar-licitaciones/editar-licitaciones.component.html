@@ -1,0 +1,290 @@
+<!-- Fin de main -->
+<!-- Modal de edición -->
+<div class="modal fade" tabindex="-1" [ngClass]="{'show': showEditModal}" [ngStyle]="{'display': showEditModal ? 'block' : 'none', 'background': showEditModal ? 'rgba(0,0,0,0.4)' : 'none'}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Licitación</h5>
+                <button type="button" class="close" (click)="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body" *ngIf="editLicitacion">
+                <form (ngSubmit)="guardarEdicion()">
+                                <div class="form-group">
+                                    <label>Nombre Licitación</label>
+                                    <input class="form-control" [(ngModel)]="editLicitacion.Descripcion" name="descripcionEdit" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>Código</label>
+                                    <input class="form-control" [(ngModel)]="editLicitacion.NumeroPropuesta" name="codigoEdit" required />
+                                </div>
+                                  <div class="form-group">
+                                   <label>Área</label>
+                                   <select [(ngModel)]="editLicitacion.IdArea" name="IdArea" class="form-control">
+                                   <option [ngValue]="0">Seleccione área</option>
+                                  <option *ngFor="let area of Areas" [ngValue]="area.IdArea">{{ area.NombreArea }}</option>
+                                       </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Mandante</label>
+                                    <select [(ngModel)]="editLicitacion.IdMandante" name="IdMandante" class="form-control">
+                                        <option [ngValue]="0">Seleccione mandante</option>
+                                        <option *ngFor="let mandante of Mandantes" [ngValue]="mandante.IdMandante">{{ mandante.NombreMandante }}</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Responsable</label>
+                                    <select [(ngModel)]="editLicitacion.IdEjecutivo" name="IdEjecutivo" class="form-control">
+                                        <option [ngValue]="0">Seleccione responsable</option>
+                                        <option *ngFor="let ejecutivo of Ejecutivos" [ngValue]="ejecutivo.IdEjecutivo">{{ ejecutivo.NombreEjecutivo }}</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Monto inicial</label>
+                                    <input type="number" class="form-control" [(ngModel)]="editLicitacion.OfertaInicial" name="montoEdit" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>Competitividad</label>
+                                    <select [(ngModel)]="editLicitacion.Competitividad" name="Competitividad" class="form-control">
+                                        <option [ngValue]="''">Sin competitividad</option>
+                                        <option ngValue="Baja">Baja</option>
+                                        <option ngValue="Media">Media</option>
+                                        <option ngValue="Alta">Alta</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                                <button type="button" class="btn btn-secondary ml-2" (click)="closeEditModal()">Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<app-main></app-main>
+
+<div class="content-wrap">
+    <main id="content" role="main" class="content">
+        <br>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="widget">
+                    <div style="background-color: #f48826; padding: 7px 0 8px 10px; margin-bottom: 0;">
+                      <h2 style="color: white; margin: 0; text-align: left; letter-spacing: 0.5px; font-weight: 600;"><strong>Editar Licitaciones</strong></h2>
+                    </div>
+                    <div class="widget-body">
+                        <div class="form-group row">
+                            <div style="display: flex; align-items: center; margin-bottom: 22px; padding-left: 18px; gap: 12px;">
+                                <div style="position: relative; width: 340px; margin-top: 18px;">
+                                    <input type="text"
+                                           class="form-control"
+                                           style="max-width: 340px; min-width: 220px; border-radius: 0px; box-shadow: none; font-size: 1.07em; padding: 8px 38px 8px 16px; border: 1px solid #d1d5db; background: #fafbfc; color: #222;"
+                                           placeholder="Buscar licitación por nombre..."
+                                           [(ngModel)]="filtroNombre"
+                                           name="filtroNombre"
+                                           autocomplete="off"
+                                           (input)="onInput($event)"
+                                           (keydown)="onKeyDown($event)"
+                                           (blur)="hideSuggestions()"
+                                    />
+                                    <!-- Botón limpiar -->
+                                    <button *ngIf="filtroNombre" type="button" (click)="clearFiltro()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #888; font-size: 1.2em; cursor: pointer; padding: 0;">
+                                        <i class="fa fa-times-circle"></i>
+                                    </button>
+                                    <!-- Spinner loading -->
+                                    <span *ngIf="loadingFiltro" style="position: absolute; left: 100%; top: 50%; transform: translateY(-50%); margin-left: 8px; color: #026AA7; font-size: 1.1em;">
+                                        <i class="fa fa-spinner fa-spin"></i>
+                                    </span>
+                                    <!-- Sugerencias autocompletar -->
+                                    <ul *ngIf="showSuggestions && filtroNombre && licitacionesFiltradas.length > 0" style="position: absolute; left: 0; top: 110%; width: 100%; background: #fff; border: 1px solid #e5e7eb; border-radius: 0 0 10px 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); z-index: 10; max-height: 180px; overflow-y: auto; margin: 0; padding: 0;">
+                                        <li *ngFor="let l of licitacionesFiltradas.slice(0,8); let idx = index"
+                                            (mousedown)="selectSuggestion(l)"
+                                            style="list-style: none; padding: 8px 16px; cursor: pointer; border-bottom: 1px solid #f3f4f6; font-size: 1.03em; color: #222; background: #fff; transition: background 0.2s;"
+                                            [ngStyle]="{ 'background': idx === suggestionIndex ? '#f3f4f6' : '#fff' }"
+                                        >
+                                            <span style="font-weight: 500;">{{l.Descripcion}}</span>
+                                            <span *ngIf="l.EsContratoMarco" class="badge badge-info ml-1" style="background-color: #e0f7fa; color: #00796b; font-size: 0.7em; margin-left: 8px;">Contrato Marco</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="table-responsive" style="overflow-x: auto; max-width: 100%; padding-left: 16px; padding-right: 16px; display: flex; justify-content: center; margin-top: 24px; margin-bottom: 12px; box-sizing: border-box; border-radius: 0; box-shadow: 0 2px 16px rgba(0,0,0,0.07);">
+                                <table class="table table-bordered table-striped table-hover no-footer tabla-licitaciones" style="margin: 0 auto; min-width: 900px; max-width: 100%; border-radius: 0; overflow: hidden;">
+                                    <thead style="font-size: 1.08em;">
+                                        <tr style="background-color: #026AA7; color: white;">
+                                            <th style="width: 70px;">Id</th>
+                                            <th style="min-width: 40px; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Nombre Licitación</th>
+                                            <th style="width: 180px;">Código</th>
+                                            <th style="min-width: 90px;">Área</th>
+                                            <th style="min-width: 110px;">Mandante</th>
+                                            <th style="min-width: 110px;">Responsable</th>
+                                            <th style="width: 110px;">Monto inicial</th>
+                                            <th style="width: 110px;">Fecha Creación</th>
+                                            <th class="text-center" style="width: 90px;">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="background: #fff;">
+                                        <ng-container *ngFor="let Licitacione of pagedLicitaciones; let i = index">
+                                            <tr style="vertical-align: middle; font-size: 1.01em; cursor: pointer;" (click)="Licitacione.EsContratoMarco ? Licitacione._expanded = !Licitacione._expanded : null">
+                                                <td>{{Licitacione.IdLicitacion}}</td>
+                                                <td>
+                                                    {{Licitacione.Descripcion.length > 50 ? (Licitacione.Descripcion | slice:0:50) + '...' : Licitacione.Descripcion}}
+                                                    <span *ngIf="Licitacione.EsContratoMarco" class="badge badge-info ml-1" style="background-color: #17a2b8; font-size: 0.7em;" title="Contrato Marco">
+                                                        <i class="fa fa-book"></i> Contrato Marco
+                                                    </span>
+                                                    <span *ngIf="!Licitacione.EsContratoMarco && Licitacione.IdContratoMarco" class="badge badge-secondary ml-1" style="background-color: #6c757d; font-size: 0.7em;" title="Licitación hija de contrato marco">
+                                                        <i class="fa fa-link"></i> Hija
+                                                    </span>
+                                                </td>
+                                                <td style="font-size: 1em; height: 40px; vertical-align: middle;">
+                                                    {{ Licitacione.NumeroPropuesta ? (Licitacione.NumeroPropuesta.length > 15 ? (Licitacione.NumeroPropuesta | slice:0:15) + '...' : Licitacione.NumeroPropuesta) : '' }}
+                                                </td>
+                                                <td>{{ getNombreArea(Licitacione.IdArea) }}</td>
+                                                <td>{{ getNombreMandante(Licitacione.IdMandante) }}</td>
+                                                <td>{{ getNombreEjecutivo(Licitacione.IdEjecutivo) }}</td>
+                                                <td style="text-align: right;">${{Licitacione.OfertaInicial ? '' : '0'}}{{Licitacione.OfertaInicial | number:0}}</td>
+                                                <td class="center">{{Licitacione.FechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                                <td class="align-center" style="padding: 1px 2px; vertical-align: middle;">
+                                                    <div style="display: flex; flex-direction: row; gap: 8px; justify-content: center; align-items: center;">
+                                                        <!-- ✅ FIX: Se pasa el objeto Licitacione directamente en lugar del índice i -->
+                                                        <a (click)="$event.stopPropagation(); Editar(Licitacione)" class="blue" title="Editar licitación" style="display: flex; align-items: center;">
+                                                            <span class="icon">
+                                                                <i class="fa fa-pencil icono"></i>
+                                                            </span>
+                                                        </a>
+                                                        <a *ngIf="!Licitacione.EsContratoMarco" (click)="$event.stopPropagation(); Confirmacion(i)" class="drop" title="Eliminar licitación" style="display: flex; align-items: center;">
+                                                            <span class="icon">
+                                                                <i class="fa fa-times-circle icono" style="color: #e74c3c;"></i>
+                                                            </span>
+                                                        </a>
+                                                        <a *ngIf="Licitacione.EsContratoMarco" (click)="$event.stopPropagation(); eliminarContratoMarcoConHijas(Licitacione)" class="drop" title="Eliminar contrato marco y sus hijas" style="display: flex; align-items: center;">
+                                                            <span class="icon">
+                                                                <i class="fa fa-trash icono" style="color: #e74c3c;"></i>
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr *ngIf="Licitacione.EsContratoMarco && Licitacione._expanded">
+                                                <td colspan="9" style="background: #f8f9fa; padding: 0 24px 0 48px;">
+                                                    <div style="padding: 8px 0;">
+                                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                                            <strong>Licitaciones hijas:</strong>
+                                                            <div>
+                                                                <button *ngIf="!modoSeleccion || contratoMarcoEnSeleccion?.IdLicitacion !== Licitacione.IdLicitacion"
+                                                                        class="btn btn-sm btn-outline-danger"
+                                                                        (click)="activarModoSeleccion(Licitacione)"
+                                                                        title="Seleccionar para eliminar">
+                                                                    <i class="fa fa-check-square-o"></i> Seleccionar
+                                                                </button>
+                                                                <div *ngIf="modoSeleccion && contratoMarcoEnSeleccion?.IdLicitacion === Licitacione.IdLicitacion" class="btn-group">
+                                                                    <button class="btn btn-sm btn-outline-primary"
+                                                                            (click)="seleccionarTodasLasHijas(Licitacione)"
+                                                                            title="Seleccionar todas">
+                                                                        <i class="fa fa-check-square"></i> Todas
+                                                                    </button>
+                                                                    <button class="btn btn-sm btn-outline-secondary"
+                                                                            (click)="deseleccionarTodasLasHijas()"
+                                                                            title="Deseleccionar todas">
+                                                                        <i class="fa fa-square-o"></i> Ninguna
+                                                                    </button>
+                                                                    <button class="btn btn-sm btn-danger"
+                                                                            (click)="eliminarLicitacionesSeleccionadas()"
+                                                                            [disabled]="licitacionesHijasSeleccionadas.size === 0"
+                                                                            title="Eliminar seleccionadas">
+                                                                        <i class="fa fa-trash"></i> Eliminar ({{licitacionesHijasSeleccionadas.size}})
+                                                                    </button>
+                                                                    <button class="btn btn-sm btn-outline-secondary"
+                                                                            (click)="cancelarSeleccion()"
+                                                                            title="Cancelar selección">
+                                                                        <i class="fa fa-times"></i> Cancelar
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <table class="table table-bordered table-sm" style="background: #fff; margin-top: 8px;">
+                                                            <thead style="background: #e3e7ea;">
+                                                                <tr>
+                                                                    <th *ngIf="modoSeleccion && contratoMarcoEnSeleccion?.IdLicitacion === Licitacione.IdLicitacion" style="width: 40px;">
+                                                                        <input type="checkbox"
+                                                                               (change)="$event.target.checked ? seleccionarTodasLasHijas(Licitacione) : deseleccionarTodasLasHijas()"
+                                                                               title="Seleccionar/Deseleccionar todas">
+                                                                    </th>
+                                                                    <th>Nombre Licitación</th>
+                                                                    <th>Código</th>
+                                                                    <th>Área</th>
+                                                                    <th>Mandante</th>
+                                                                    <th>Responsable</th>
+                                                                    <th>Monto inicial</th>
+                                                                    <th>Fecha Creación</th>
+                                                                    <th class="text-center">Acciones</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr *ngFor="let hija of getHijasContratoMarco(Licitacione); trackBy: trackByHijaId"
+                                                                    [ngClass]="{
+                                                                        'table-warning fila-seleccionada': modoSeleccion && contratoMarcoEnSeleccion?.IdLicitacion === Licitacione.IdLicitacion && isHijaSeleccionada(hija)
+                                                                    }">
+                                                                    <td *ngIf="modoSeleccion && contratoMarcoEnSeleccion?.IdLicitacion === Licitacione.IdLicitacion" class="text-center">
+                                                                        <input type="checkbox"
+                                                                               class="checkbox-seleccion"
+                                                                               [(ngModel)]="hijasSeleccionadas[hija.IdLicitacion || hija.idLicitacion]"
+                                                                               (ngModelChange)="toggleSeleccionHija(hija)"
+                                                                               title="Seleccionar para eliminar">
+                                                                    </td>
+                                                                    <td>{{hija.Descripcion}}</td>
+                                                                    <td>
+                                                                      {{ hija.NumeroPropuesta ? (hija.NumeroPropuesta.length > 15 ? (hija.NumeroPropuesta | slice:0:15) + '...' : hija.NumeroPropuesta) : '' }}
+                                                                    </td>
+                                                                    <td>{{getNombreArea(hija.IdArea)}}</td>
+                                                                    <td>{{getNombreMandante(hija.IdMandante)}}</td>
+                                                                    <td>{{getNombreEjecutivo(hija.IdEjecutivo)}}</td>
+                                                                    <td style="text-align: right;">${{hija.OfertaInicial ? '' : '0'}}{{hija.OfertaInicial | number:0}}</td>
+                                                                    <td>{{hija.FechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                                                    <td class="text-center">
+                                                                        <div *ngIf="!modoSeleccion || contratoMarcoEnSeleccion?.IdLicitacion !== Licitacione.IdLicitacion">
+                                                                            <a (click)="$event.stopPropagation(); EditarHija(hija, Licitacione)" class="blue" title="Editar hija" style="margin-right: 8px;">
+                                                                                <i class="fa fa-pencil"></i>
+                                                                            </a>
+                                                                            <a (click)="$event.stopPropagation(); EliminarHija(hija, Licitacione)" class="drop" title="Eliminar hija individual">
+                                                                                <i class="fa fa-times-circle" style="color: #e74c3c;"></i>
+                                                                            </a>
+                                                                        </div>
+                                                                        <div *ngIf="modoSeleccion && contratoMarcoEnSeleccion?.IdLicitacion === Licitacione.IdLicitacion" class="text-muted">
+                                                                            <small>Modo selección activo</small>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr *ngIf="getHijasContratoMarco(Licitacione).length === 0">
+                                                                    <td [attr.colspan]="modoSeleccion && contratoMarcoEnSeleccion?.IdLicitacion === Licitacione.IdLicitacion ? 9 : 8" class="text-muted text-center">
+                                                                        No hay licitaciones hijas.
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                    </tbody>
+                                </table>
+                                <!-- Fin de tabla -->
+                            </div>
+                            <!-- Paginación debajo de la tabla -->
+                            <div *ngIf="licitacionesTotalPages > 1" style="width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 16px;">
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <button class="btn btn-sm btn-secondary" [disabled]="licitacionesCurrentPage === 1" (click)="prevLicitacionesPage()">Anterior</button>
+                                    <span style="margin: 0 8px; font-size: 0.95em;">Página {{licitacionesCurrentPage}} de {{licitacionesTotalPages}}</span>
+                                    <button class="btn btn-sm btn-secondary" [disabled]="licitacionesCurrentPage === licitacionesTotalPages" (click)="nextLicitacionesPage()">Siguiente</button>
+                                </div>
+                            </div>
+                            <!-- Fin de tabla y paginación -->
+                            <div class="loader animated fadeIn handle" *ngIf="LoadingTabla[2]">
+                                <span class="spinner">
+                                    <i class="fa fa-spinner fa-spin"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>

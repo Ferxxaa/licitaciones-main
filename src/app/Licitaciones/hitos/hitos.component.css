@@ -1,0 +1,209 @@
+/* Estilos base mantenidos */
+.drop:hover {
+    color: #CC0000;
+}
+.drop {
+    color: red;
+}
+.blue {
+    color: #218BC3;
+}
+.blue:hover {
+    color: blue;
+}
+.green {
+    color:#64bd63;
+}
+.green:hover {
+    color:#1c4a1c;
+}
+
+/* Estilos de tabla mejorados */
+thead tr {
+    background-color: #026AA7 !important;
+}
+thead th {
+    background-color: #026AA7 !important;
+    color: white !important;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Mejorar el espaciado del título principal */
+.widget header h2 {
+    padding: 15px 20px;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Estilos de botones de acción */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.action-buttons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 8px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.action-buttons a:hover {
+    transform: scale(1.1);
+    text-decoration: none;
+}
+
+/* Estilos del modal mejorados */
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+}
+
+.modal-header h5 {
+    margin-bottom: 0;
+    font-weight: bold;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.form-control-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    transform: translateY(-1px);
+}
+
+/* Estilos existentes mantenidos */
+.align-center{
+    text-align: center;
+}
+
+.error{
+    border-color: red;
+    background-color: #ffcece;
+}
+
+.icon{
+    height: 1px;
+    width: 25px;
+    line-height:0px;
+    font-size: 20px;
+}
+
+.widget .loader{
+    position: relative;
+    background-color: white;
+}
+
+.CheckBox{
+    height: 20px;
+    width: 20px;
+    position: relative;
+    left: 22px;
+    top: 12px;
+}
+
+.dvCheck{
+    margin-top:.25rem;
+    margin-left:-1.25rem;
+}
+
+.box{
+    height:20px;
+    width:20px;
+    border: 1px solid #ddd;
+    cursor:default;
+    border-radius: 4px;
+}
+
+/* Estilos de filas de tabla */
+tbody td {
+    height: 9px;
+    padding-top: 0.5px;
+    padding-bottom: 0.5px;
+    font-size: 0.89em;
+    vertical-align: middle;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+thead tr, thead th {
+    height: 13px;
+    font-size: 0.92em;
+}
+
+/* Estilos para la tabla compacta de hitos */
+.compact-hitos-table th:nth-child(3),
+.compact-hitos-table th:nth-child(4),
+.compact-hitos-table td:nth-child(3),
+.compact-hitos-table td:nth-child(4) {
+    width: 120px !important;
+    min-width: 120px !important;
+    max-width: 120px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    font-size: 0.93em !important;
+}
+.compact-hitos-table td:nth-child(3) .dvCheck,
+.compact-hitos-table td:nth-child(4) .dvCheck {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    min-height: 24px;
+}
+.compact-hitos-table input[type='checkbox'].CheckBox {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    margin: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}

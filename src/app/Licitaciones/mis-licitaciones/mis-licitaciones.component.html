@@ -1,0 +1,406 @@
+<app-main></app-main>
+
+<div class="content-wrap">
+    <main id="content" role="main" class="content" style="margin-top: 0; padding-top: 0;">
+        <!-- <br> eliminado para subir el contenido -->
+        <div class="row" style="margin-top: 0;">
+            <div class="col-lg-12" style="padding-top: 0;">
+                <section class="widget">
+                    <div class="widget-body">
+                        <div style="background: #f8f9fa; border: none; border-radius: 0px; box-shadow: none; padding: 0;">
+                            <header style="background-color: #f48826;">
+                                <h2 style="color: white; margin: 0;">
+                                    <strong>Administración de Licitaciones</strong>
+                                </h2>
+                            </header>
+                            <div style="border-radius: 0px; padding: 16px 32px 0 32px;">
+                                <form #cform="ngForm">
+                                    <fieldset>
+                                        <div class="row mb-4">
+                                            <div class="col-md-6 d-flex flex-column" style="gap: 20px;">
+                                                <div class="d-flex align-items-center" style="width:100%">
+                                                    <label for="drdAnio" class="form-control-label h5 mb-0 me-2" style="min-width:110px; font-size:1rem;">Año:</label>
+                                                    <select id="drdAnio" class="form-control form-control-sm" style="min-width:220px; max-width:320px; font-size:0.95rem; height:32px; border:none; border-radius:0px; box-shadow:none;" [(ngModel)]="drdAnio" name="drdAnio" (change)="Buscar()">
+                                                        <option value="0" selected>Todos los años</option>
+                                                        <option *ngFor="let anio of AniosDisponibles" [value]="anio">{{anio}}</option>
+                                                    </select>
+                                                </div>
+                                                <div class="d-flex align-items-center" style="width:100%">
+                                                    <label for="drdAreas" class="form-control-label h5 mb-0 me-2" style="min-width:110px; font-size:1rem;">Área:</label>
+                                                    <select id="drdAreas" class="form-control form-control-sm" style="min-width:220px; max-width:320px; font-size:0.95rem; height:32px; border:none; border-radius:0px; box-shadow:none;" [(ngModel)]="drdAreas" name="drdAreas" (change)="Buscar()">
+                                                        <option value="0" selected>Todas las áreas</option>
+                                                        <option *ngFor="let Area of Areas" [value]="Area.IdArea">{{Area.NombreArea}}</option>
+                                                    </select>
+                                                </div>
+                                                <div class="d-flex align-items-center" style="width:100%">
+                                                    <label for="drdEstado" class="form-control-label h5 mb-0 me-2" style="min-width:110px; font-size:1rem;">Estado:</label>
+                                                    <select id="drdEstado" class="form-control form-control-sm" style="min-width:220px; max-width:320px; font-size:0.95rem; height:32px; border:none; border-radius:0px; box-shadow:none;" [(ngModel)]="drdEstado" name="drdEstado" (change)="Buscar()">
+                                                        <option value="0" selected>Todos los estados</option>
+                                                        <option *ngFor="let Estado of Estados" [value]="Estado.IdEstado">{{Estado.NombreEstado}}</option>
+                                                    </select>
+                                                </div>
+                                                <div class="d-flex align-items-center" style="width:100%">
+                                                    <label for="drdTipoLicitacion" class="form-control-label h5 mb-0 me-2" style="min-width:110px; font-size:1rem;">Tipo:</label>
+                                                    <select id="drdTipoLicitacion" class="form-control form-control-sm" style="min-width:220px; max-width:320px; font-size:0.95rem; height:32px; border:none; border-radius:0px; box-shadow:none;" [(ngModel)]="drdTipoLicitacion" name="drdTipoLicitacion" (change)="Buscar()">
+                                                        <option value="todos" selected>Todas</option>
+                                                        <option value="contrato_marco">📋 Contratos Marco</option>
+                                                        <option value="normal">📄 Licitaciones</option>
+                                                        <option value="hija">📎 SubLicitaciones</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 d-flex flex-column align-items-end" style="gap: 20px;">
+                                                <div class="d-flex align-items-center" style="width:100%">
+                                                    <label for="drdCompetitividad" class="form-control-label h5 mb-0 me-2" style="min-width:110px; font-size:1rem;">Competitividad:</label>
+                                                    <select id="drdCompetitividad" class="form-control form-control-sm" style="min-width:220px; max-width:320px; font-size:0.95rem; height:32px;margin-left: 50px; border:none; border-radius:0px; box-shadow:none;" [(ngModel)]="drdCompetitividad" name="drdCompetitividad" (change)="Buscar()">
+                                                        <option value="0" selected>Todas</option>
+                                                        <option value="Baja">Baja</option>
+                                                        <option value="Media">Media</option>
+                                                        <option value="Alta">Alta</option>
+                                                    </select>
+                                                    <button type="button" class="btn btn-sm btn-secondary ms-3" style="font-size: 0.85rem; padding: 0.25rem 0.7rem; min-width: 120px; margin-left: 16px;" (click)="LimpiarFiltros()">
+                                                        <i class="fa fa-refresh"></i> Limpiar Filtros
+                                                    </button>
+                                                </div>
+                                                <div class="d-flex align-items-center" style="width:100%">
+                                                    <label for="txtBuscarMandante" class="form-control-label h5 mb-0 me-2" style="min-width:110px; font-size:1rem;">Mandante:</label>
+                                                    <div class="position-relative" style="min-width:220px; max-width:320px;">
+                                                        <input type="text" id="txtBuscarMandante" class="form-control form-control-sm" style="font-size:0.95rem; height:32px;margin-left: 50px; border:none; border-radius:0px; box-shadow:none;" placeholder="Buscar mandante..." [(ngModel)]="buscarMandanteTexto" name="buscarMandanteTexto" (input)="filtrarMandantes()" (focus)="mostrarListaMandantes = true" autocomplete="off">
+                                                        <div *ngIf="mostrarListaMandantes && MandantesFiltrados.length > 0" class="list-group position-absolute w-100" style="z-index: 1000; max-height: 200px; overflow-y: auto; border:none; border-radius:0px; background: white;">
+                                                            <button type="button" *ngFor="let mandante of MandantesFiltrados" class="list-group-item list-group-item-action" (click)="seleccionarMandante(mandante)">{{mandante.NombreMandante}}</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-center" style="width:100%">
+                                                    <label for="flexCheckHistoricos" class="form-control-label h5 mb-0 me-2" style="min-width:110px; font-size:1rem;">Históricos:</label>
+                                                    <div style="min-width:220px; max-width:320px; display:flex; align-items:center;">
+                                                        <input class="form-check-input" type="checkbox" id="flexCheckHistoricos" style="transform: scale(1.1); margin-right:8px;margin-left: 50px;" (click)="chargeAlllicitaciones()">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                                <div class="form-group row justify-content-center">
+                                    <div class="col-md-12 d-flex justify-content-center align-items-center flex-column">
+                                        <div class="alert alert-info p-2 m-0 mt-2 w-auto text-center" *ngIf="contarFiltrosActivos() > 0">
+                                            <small>
+                                                <i class="fa fa-filter"></i> 
+                                                {{contarFiltrosActivos()}} filtro(s) aplicado(s) - 
+                                                {{Licitaciones.length}} resultado(s) encontrado(s)
+                                            </small>
+                                        </div>
+                                        
+                                        <!-- Panel de resumen por tipo de licitación -->
+                                        <div class="row mt-3 w-100" style="padding: 0 15px;">
+                                            <div class="col-md-3 mb-2">
+                                                <div class="card" style="border-left: 4px solid #f48826; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    <div class="card-body p-2">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div style="width: 100%;">
+                                                                <small class="text-muted" style="font-size: 0.85em;"><i class="fa fa-folder"></i> Contratos Marco</small>
+                                                                <h6 class="mb-0" style="font-weight: bold; color: #f48826;">{{getTotalCLPPorTipo('contrato_marco')}}</h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <div class="card" style="border-left: 4px solid #026AA7; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    <div class="card-body p-2">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div style="width: 100%;">
+                                                                <small class="text-muted" style="font-size: 0.85em;"><i class="fa fa-file-text"></i> Licitaciones</small>
+                                                                <h6 class="mb-0" style="font-weight: bold; color: #026AA7;">{{getTotalCLPPorTipo('normal')}}</h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <div class="card" style="border-left: 4px solid #6a1b9a; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                    <div class="card-body p-2">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div style="width: 100%;">
+                                                                <small class="text-muted" style="font-size: 0.85em;"><i class="fa fa-link"></i> SubLicitaciones</small>
+                                                                <h6 class="mb-0" style="font-weight: bold; color: #6a1b9a;">{{getTotalCLPPorTipo('hija')}}</h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <div class="card" style="border-left: 4px solid #1976d2; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background-color: #f5f5f5;">
+                                                    <div class="card-body p-2">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div style="width: 100%;">
+                                                                <small class="text-muted" style="font-size: 0.85em;"><i class="fa fa-list"></i> Total General</small>
+                                                                <h6 class="mb-0" style="font-weight: bold; color: #1976d2;">{{getTotalCLPPorTipo('todos')}}</h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                                    <div class="table-responsive" style="overflow-y: visible; max-height: none; min-width: 100%; width: 100%;">
+                                                                                <style>
+                                                                                    .table th, .table td {
+                                                                                        font-size: 1.08em;
+                                                                                    }
+                                                                                    .pagination, .btn, .page-link, .btn-sm, .table-responsive span, .table-responsive strong {
+                                                                                        font-size: 1.08em;
+                                                                                    }
+                                                                                </style>
+                                        <table class="table table-bordered table-striped table-hover no-footer" style="border-radius:0px;">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" style="min-width:40px; width:3%">ID</th>
+                                                    <!-- Columna Acciones eliminada -->
+                                                    <th class="text-center" style="min-width:120px; max-width:220px; width:14%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Nombre Licitación</th>
+                                                    <th class="text-center" style="min-width:70px; max-width:110px; width:8%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Código</th>
+                                                    <th class="text-center" style="min-width:80px; max-width:100px; width:7%">Oferta<br>Económica (Neto)</th>
+                                                    <th class="text-center" style="min-width:30px; max-width:40px; width:2%">Moneda</th>
+                                                    <th class="text-center" style="min-width:40px; max-width:60px; width:3%">Área</th>
+                                                    <th class="text-center" style="min-width:80px; max-width:140px; width:8%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Mandante</th>
+                                                    <th class="text-center">Responsable</th>
+                                                    <th class="text-center" style="min-width:25px; width:2%">Estado</th>
+                                                    <th class="text-center" style="min-width:60px; max-width:70px; width:4%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Competitividad</th>
+                                                    <th class="text-center" style="min-width:80px; width:7%">Fecha<br>Creación</th>
+                                                    <th class="text-center" style="min-width:120px; max-width:200px; width:12%">Fecha<br>Oferta</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <ng-container *ngFor="let Licitacione of pagedLicitaciones; let i = index">
+                                                    <tr class="valign-center"
+                                                        [ngClass]="{'hito-proximo-row': getHitoProximo(Licitacione), 'table-warning': Licitacione.EsContratoMarco}"
+                                                        (click)="Licitacione.EsContratoMarco ? onContratoMarcoRowClick(Licitacione, (currentPage - 1) * pageSize + i) : Detalle((currentPage - 1) * pageSize + i)">
+                                                        <td class="text-center" style="max-width: 40px; font-weight: bold;">
+                                                            <ng-container *ngIf="Licitacione.EsContratoMarco">
+                                                                <i class="fa" [ngClass]="expandedRows[Licitacione.IdLicitacion] ? 'fa-chevron-down' : 'fa-chevron-right'" style="cursor:pointer; margin-right: 6px;"
+                                                                   (click)="$event.stopPropagation(); toggleExpand(Licitacione.IdLicitacion)"></i>
+                                                            </ng-container>
+                                                            {{Licitacione.IdLicitacion}}
+                                                        </td>
+                                                        <!-- Columna Acciones eliminada -->
+                                                        <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 500px; font-weight: bold; cursor:pointer;">
+                                                        <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                                                <span style="display: flex; align-items: center;">{{Licitacione.Descripcion}}</span>
+                                                                <span *ngIf="Licitacione.EsContratoMarco" title="Contrato Marco"
+                                                                      style="display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%; background:#f1f3f6; color:#6c7680; font-weight:600; font-size:0.72em; text-align:center;">
+                                                                    C
+                                                                </span>
+                                                                                                                                <span *ngIf="Licitacione.EsContratoMarco && getLicitacionesHijas(Licitacione.IdLicitacion).length > 0"
+                                                                                                                                            style="margin-left:4px; background:#f48826; color:#fff; border-radius:8px; font-size:0.75em; padding:1px 7px; font-weight:500; vertical-align:middle; letter-spacing:0.5px;">
+                                                                                                                                    {{getLicitacionesHijas(Licitacione.IdLicitacion).length}}
+                                                                                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center" style="min-width:70px; max-width:110px; width:8%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{Licitacione.NumeroPropuesta}}</td>
+                                                        <td class="text-center align-middle" style="min-width:80px; max-width:100px; width:7%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                                            <ng-container *ngIf="Licitacione.ofertaEconomica as oferta">
+                                                            <div *ngIf="oferta.length > 0; else noOferta" style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px;">
+                                                                    <span style="color: #43a047; font-weight: bold; font-size: 1em;">
+                                                                        ${{formatMonto(oferta[oferta.length-1].ValorContraoferta)}}
+                                                                    </span>
+                                                                </div>
+                                                                <ng-template #noOferta>
+                                                                    <span style="color: #6c757d; font-style: italic;">
+                                                                        <i class="fa fa-exclamation-circle"></i> Sin monto
+                                                                    </span>
+                                                                </ng-template>
+                                                            </ng-container>
+                                                        </td>
+                                                        <td class="text-center align-middle">
+                                                            <ng-container *ngIf="Licitacione.ofertaEconomica as oferta">
+                                                                <span *ngIf="oferta.length > 0; else noMoneda">
+                                                                    {{oferta[oferta.length-1].Moneda || 'CLP'}}
+                                                                </span>
+                                                                <ng-template #noMoneda>
+                                                                    <span style="color: #6c757d; font-style: italic;">-</span>
+                                                                </ng-template>
+                                                            </ng-container>
+                                                        </td>
+                                                        <td style="min-width:40px; max-width:60px; width:3%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{Licitacione.NombreArea}}</td>
+                                                        <td>{{Licitacione.NombreMandante}}</td>
+                                                        <td>{{Licitacione.NombreEjecutivo}}</td>
+                                                        <td class="text-center" style="max-width: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [ngClass]="{
+                                                            'Factibilidad': Licitacione.NombreEstado=='Factibilidad', 
+                                                            'Pendiente': Licitacione.NombreEstado=='Pendiente', 
+                                                            'Entregada': Licitacione.NombreEstado=='Entregada', 
+                                                            'Estudio': Licitacione.NombreEstado=='Estudio', 
+                                                            'Aclaraciones': Licitacione.NombreEstado=='Aclaraciones', 
+                                                            'Adjudicada': Licitacione.NombreEstado=='Adjudicada', 
+                                                            'Perdida': Licitacione.NombreEstado=='Perdida', 
+                                                            'Postergada': Licitacione.NombreEstado=='Postergada', 
+                                                            'CartaExcusa': Licitacione.NombreEstado=='Carta Excusa' && historicos, 
+                                                            'Anulada': Licitacione.NombreEstado=='Anulada',
+                                                            'Preadjudicada': Licitacione.NombreEstado=='Preadjudicada',
+                                                            'ContraOferta': Licitacione.NombreEstado=='Contra Oferta',
+                                                            'Revision': Licitacione.NombreEstado=='Revision',
+                                                            'Revision1': Licitacione.NombreEstado=='Revision1',
+                                                            'Revision2': Licitacione.NombreEstado=='Revision2',
+                                                            'Revision3': Licitacione.NombreEstado=='Revision3'
+                                                        }">
+                                                            {{Licitacione.NombreEstado}}
+                                                        </td>
+<style>
+    /* Colores para los nuevos estados */
+    .Preadjudicada { background: #e0e7ff !important; color: #3730a3 !important; font-weight: bold; }
+    .ContraOferta { background: #fffde7 !important; color: #f9a825 !important; font-weight: bold; }
+    .Revision { background: #e3f2fd !important; color: #1976d2 !important; font-weight: bold; }
+    .Revision1 { background: #fce4ec !important; color: #ad1457 !important; font-weight: bold; }
+    .Revision2 { background: #f3e5f5 !important; color: #6a1b9a !important; font-weight: bold; }
+    .Revision3 { background: #e8f5e9 !important; color: #388e3c !important; font-weight: bold; }
+</style>
+                                                        <td class="align-center" style="min-width:60px; max-width:70px; width:4%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                                            <span *ngIf="Licitacione.Competitividad=='Baja'" class="circle-baja"></span>
+                                                            <span *ngIf="Licitacione.Competitividad=='Media'" class="circle-media"></span>
+                                                            <span *ngIf="Licitacione.Competitividad=='Alta'" class="circle-alta"></span>
+                                                        </td>
+                                                        <td class="align-center" style="max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{Licitacione.FechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                                        <td style="min-width:40px; max-width:60px; width:3%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                                            <ng-container *ngIf="Licitacione.fechaOferta | async as fechas">
+                                                                <ng-container *ngIf="hasHito(fechas, 'Presentación Ofertas Económicas'); else checkOfertaEconomica">
+                                                                    <span style="display: inline-block; margin-right: 8px; margin-bottom: 2px;">
+                                                                        {{getFechaHito(fechas, 'Presentación Ofertas Económicas')?.FechaCompromiso | date:'dd/MM/yyyy'}}<span *ngIf="getFechaHito(fechas, 'Presentación Ofertas Económicas')?.FechaCompromiso && (getFechaHito(fechas, 'Presentación Ofertas Económicas')?.FechaCompromiso | date:'HH:mm') !== '00:00'"> {{getFechaHito(fechas, 'Presentación Ofertas Económicas')?.FechaCompromiso | date:'HH:mm'}}</span>
+                                                                    </span>
+                                                                </ng-container>
+                                                                <ng-template #checkOfertaEconomica>
+                                                                    <ng-container *ngIf="hasHito(fechas, 'Oferta Económica'); else noPresentacion">
+                                                                        <span style="display: inline-block; margin-right: 8px; margin-bottom: 2px;">
+                                                                            {{getFechaHito(fechas, 'Oferta Económica')?.FechaCompromiso | date:'dd/MM/yyyy'}}
+                                                                            <span *ngIf="getFechaHito(fechas, 'Oferta Económica')?.FechaCompromiso">
+                                                                                {{getFechaHito(fechas, 'Oferta Económica')?.FechaCompromiso | date:'HH:mm'}}
+                                                                            </span>
+                                                                        </span>
+                                                                    </ng-container>
+                                                                    <ng-template #noPresentacion>
+                                                                        <span style="color: #6c757d; font-style: italic;">
+                                                                            <i class="fa fa-exclamation-circle"></i> Sin fecha
+                                                                        </span>
+                                                                    </ng-template>
+                                                                </ng-template>
+                                                            </ng-container>
+                                                        </td>
+                                                    </tr>
+                                                    <!-- Si el contrato marco está expandido, mostrar sus hijas -->
+                                                    <ng-container *ngIf="Licitacione.EsContratoMarco && expandedRows[Licitacione.IdLicitacion]">
+                                                        <tr *ngFor="let hija of Licitacione.licitaciones || []" style="cursor:pointer; background-color: #fff6ed;" (click)="DetallePorId(hija.IdLicitacion)">
+                                                            <td class="text-center">{{hija.IdLicitacion}}</td>
+                                                            <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 500px; font-weight: bold; cursor:pointer;">
+                                                                {{hija.Descripcion}}
+                                                            </td>
+                                                            <td class="text-center">{{hija.NumeroPropuesta}}</td>
+                                                            <td class="text-center align-middle">
+                                                                <ng-container *ngIf="hija.ofertaEconomica as oferta">
+                                                                <div *ngIf="oferta.length > 0; else noOfertaHija" style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px;">
+                                                                        <span style="color: #43a047; font-weight: bold; font-size: 1em;">
+                                                                            ${{formatMonto(oferta[oferta.length-1].ValorContraoferta)}}
+                                                                        </span>
+                                                                    </div>
+                                                                    <ng-template #noOfertaHija>
+                                                                        <span style="color: #6c757d; font-style: italic;">
+                                                                            <i class="fa fa-exclamation-circle"></i> Sin monto
+                                                                        </span>
+                                                                    </ng-template>
+                                                                </ng-container>
+                                                            </td>
+                                                            <td class="text-center align-middle">
+                                                                <ng-container *ngIf="hija.ofertaEconomica as oferta">
+                                                                    <span *ngIf="oferta.length > 0; else noMonedaHija">
+                                                                        {{oferta[oferta.length-1].Moneda || 'CLP'}}
+                                                                    </span>
+                                                                    <ng-template #noMonedaHija>
+                                                                        <span style="color: #6c757d; font-style: italic;">-</span>
+                                                                    </ng-template>
+                                                                </ng-container>
+                                                            </td>
+                                                            <td style="min-width:40px; max-width:60px; width:3%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{hija.NombreArea}}</td>
+                                                            <td>{{hija.NombreMandante}}</td>
+                                                            <td>{{hija.NombreEjecutivo}}</td>
+                                                            <td class="text-center" style="max-width: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [ngClass]="{
+                                                                'Factibilidad': hija.NombreEstado=='Factibilidad', 
+                                                                'Pendiente': hija.NombreEstado=='Pendiente', 
+                                                                'Entregada': hija.NombreEstado=='Entregada', 
+                                                                'Estudio': hija.NombreEstado=='Estudio', 
+                                                                'Aclaraciones': hija.NombreEstado=='Aclaraciones', 
+                                                                'Adjudicada': hija.NombreEstado=='Adjudicada', 
+                                                                'Perdida': hija.NombreEstado=='Perdida', 
+                                                                'Postergada': hija.NombreEstado=='Postergada', 
+                                                                'CartaExcusa': hija.NombreEstado=='Carta Excusa' && historicos, 
+                                                                'Anulada': hija.NombreEstado=='Anulada'}">
+                                                                {{hija.NombreEstado}}
+                                                            </td>
+                                                            <td class="align-center" style="min-width:60px; max-width:70px; width:4%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                                                <span *ngIf="hija.Competitividad=='Baja'" class="circle-baja"></span>
+                                                                <span *ngIf="hija.Competitividad=='Media'" class="circle-media"></span>
+                                                                <span *ngIf="hija.Competitividad=='Alta'" class="circle-alta"></span>
+                                                            </td>
+                                                            <td class="align-center" style="max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{hija.FechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                                            <td style="min-width:40px; max-width:60px; width:3%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                                                <ng-container *ngIf="hija.fechaOferta | async as fechas">
+                                                                    <ng-container *ngIf="hasHito(fechas, 'Presentación Ofertas Económicas'); else checkOfertaEconomicaHija">
+                                                                        <span style="display: inline-block; margin-right: 8px; margin-bottom: 2px;">
+                                                                            {{getFechaHito(fechas, 'Presentación Ofertas Económicas')?.FechaCompromiso | date:'dd/MM/yyyy'}}<span *ngIf="getFechaHito(fechas, 'Presentación Ofertas Económicas')?.FechaCompromiso && (getFechaHito(fechas, 'Presentación Ofertas Económicas')?.FechaCompromiso | date:'HH:mm') !== '00:00'"> {{getFechaHito(fechas, 'Presentación Ofertas Económicas')?.FechaCompromiso | date:'HH:mm'}}</span>
+                                                                        </span>
+                                                                    </ng-container>
+                                                                    <ng-template #checkOfertaEconomicaHija>
+                                                                        <ng-container *ngIf="hasHito(fechas, 'Oferta Económica'); else noPresentacionHija">
+                                                                            <span style="display: inline-block; margin-right: 8px; margin-bottom: 2px;">
+                                                                                {{getFechaHito(fechas, 'Oferta Económica')?.FechaCompromiso | date:'dd/MM/yyyy'}}
+                                                                                <span *ngIf="getFechaHito(fechas, 'Oferta Económica')?.FechaCompromiso">
+                                                                                    {{getFechaHito(fechas, 'Oferta Económica')?.FechaCompromiso | date:'HH:mm'}}
+                                                                                </span>
+                                                                            </span>
+                                                                        </ng-container>
+                                                                        <ng-template #noPresentacionHija>
+                                                                            <span style="color: #6c757d; font-style: italic;">
+                                                                                <i class="fa fa-exclamation-circle"></i> Sin fecha
+                                                                            </span>
+                                                                        </ng-template>
+                                                                    </ng-template>
+                                                                </ng-container>
+                                                            </td>
+                                                        </tr>
+                                                    </ng-container>
+                                                </ng-container>
+                                            </tbody>
+                                        </table>
+                                        <!-- Suma total alineada bajo la columna Oferta Económica (Neto) -->
+                                        <div *ngIf="drdEstado > 0 || drdCompetitividad !== '0'" style="width:100%; margin-top:8px; display: flex;">
+                                            <div style="flex: 0 0 28%;"></div>
+                                            <div style="flex: 0 0 13%; text-align:center; font-size:1.08em; color:#026AA7; font-weight:600;">
+                                                <strong>Total:</strong> ${{getTotalMontoFiltrado()}}
+                                            </div>
+                                            <div style="flex: 1 1 auto;"></div>
+                                        </div>
+                                        <div class="loader animated fadeIn handle" *ngIf="LoadingTabla">
+                                            <span class="spinner">
+                                                <i class="fa fa-spinner fa-spin"></i>
+                                            </span>
+                                        </div>
+                                        <div class="w-100 d-flex justify-content-center" style="margin-top: 32px;">
+                                            <div class="d-flex align-items-center" style="gap: 8px;">
+                                                <button class="btn btn-sm btn-secondary" (click)="prevPage()" [disabled]="currentPage === 1">Anterior</button>
+                                                <span style="margin: 0 8px; font-size: 0.95em;">Página <strong>{{currentPage}}</strong> de <strong>{{totalPages}}</strong></span>
+                                                <div class="d-flex align-items-center" style="gap: 4px;">
+                                                    <ng-container *ngFor="let i of getVisiblePages()">
+                                                        <ng-container *ngIf="i === '...'">
+                                                            <span style="padding: 0 4px; color: #888; font-size: 1.1em;">...</span>
+                                                        </ng-container>
+                                                        <ng-container *ngIf="i !== '...'">
+                                                            <button class="btn btn-sm" [ngClass]="{'btn-warning': currentPage === i, 'btn-light': currentPage !== i}" (click)="goToPage(i)">{{i}}</button>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                </div>
+                                                <button class="btn btn-sm btn-secondary" (click)="nextPage()" [disabled]="currentPage === totalPages">Siguiente</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+            </div>
+        <!-- cierre correcto de estructura principal -->

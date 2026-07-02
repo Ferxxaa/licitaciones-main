@@ -1,0 +1,59 @@
+<form #TForm="ngForm" (ngSubmit)="Agregar(TForm)">
+  <fieldset>
+      <legend></legend>
+      <div class="form-group row">
+        <div class="col-md-3 form-control-label h4">
+          Responsable: 
+        </div>
+        <div class="col-md-9">
+          <select name="drdResponsableTar" id="drdResponsableTar" class="dropdown-toggle select2-chosen-2 form-control requiered"
+              appSelectValidator [(ngModel)]="Tarea.idUsuarioResponsable">
+              <option value=0 selected>--- Seleccione una opcion ---</option>
+              <option *ngFor="let Responsable of Responsables$ | async | arrDisting:['idUsuario','nombre']" value={{Responsable.idUsuario}}>{{Responsable.nombre + '
+                '
+                + Responsable.paterno}}
+              </option>
+            </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-md-3 form-control-label h4">
+          Prioridad: 
+        </div>
+        <div class="col-md-9">
+          <select name="drdPrioridadTar" id="drdPrioridadTar" class="dropdown-toggle select2-chosen-2 form-control requiered"
+              appSelectValidator [(ngModel)]="Tarea.prioridad">
+              <option value="0" selected>--- Seleccione una opcion ---</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+            </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-md-3 form-control-label h4">
+          Área: 
+        </div>
+        <div class="col-md-9">
+          <select name="drdArea" id="drdArea" class="dropdown-toggle select2-chosen-2 form-control requiered"
+              appSelectValidator [(ngModel)]="Tarea.area">
+              <option value="0" selected>--- Seleccione una opcion ---</option>
+              <option *ngFor="let Area of Areas" value={{Area.idArea}}>{{Area.nombre}}</option>
+            </select>
+        </div>
+      </div>
+      <div class="form-group row">
+          <label for="normal-field" class="col-md-3 form-control-label h4">Tarea:</label>
+          <div class="col-md-9">
+              <textarea style="height: 200px;" class="form-control" id="txtTarea" name="txtTarea" [(ngModel)]="Tarea.descripcionTarea"></textarea>
+          </div>
+      </div>
+  </fieldset>
+  <div class="form-actions">
+      <div class="row">
+          <div class="col-md-offset-4 col-md-8">
+              <button ID="btnAgregarTarea" class="btn btn-success">Agregar Tarea</button>
+          </div>
+      </div>
+  </div>
+</form>

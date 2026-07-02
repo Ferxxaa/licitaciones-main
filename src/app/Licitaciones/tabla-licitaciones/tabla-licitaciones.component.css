@@ -1,0 +1,768 @@
+.green {
+    color: #64bd63;
+    width: auto; /* Cambiado de 10px a auto */
+}
+
+.text-right {
+    text-align: right;
+}
+
+.click {
+    cursor: pointer;
+}
+
+.punto {
+    font-size: 20px; /* Reducido de 30px para mejor legibilidad */
+    margin: 0 5px;
+}
+
+thead tr {
+    background-color: #026AA7 !important;
+    color: white !important;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Asegurar que todas las tablas tengan el color corporativo */
+table thead tr {
+    background-color: #026AA7 !important;
+    color: white !important;
+}
+
+table thead th {
+    background-color: #026AA7 !important;
+    color: white !important;
+}
+
+.table thead tr {
+    background-color: #026AA7 !important;
+    color: white !important;
+}
+
+/* Colores pasteles para estados adicionales */
+.Preadjudicada {
+    background-color: #bbfa98;
+    color: #222;
+    font-weight: bold;
+}
+.ContraOferta {
+    background-color: #ffe0f7;
+    color: #222;
+    font-weight: bold;
+}
+.Revision {
+    background-color: #e0f7fa;
+    color: #222;
+    font-weight: bold;
+}
+.Revision1 {
+    background-color: #f4e9bd;
+    color: #222;
+    font-weight: bold;
+}
+.Revision2 {
+    background-color: #f4e9bd;
+    color: #222;
+    font-weight: bold;
+}
+.Revision3 {
+    background-color: #f4e9bd;
+    color: #222;
+    font-weight: bold;
+}
+
+.table thead th {
+    background-color: #026AA7 !important;
+    color: white !important;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.titulo {
+   
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0);
+}
+
+.cuerpo {
+    position: relative;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+/* Ensure per-widget loaders don't cover the entire page */
+.widget {
+    position: relative;
+}
+
+.widget .loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 20px;
+    z-index: 10;
+}
+
+/* Compact table sizing (used in Hitos and other compact tables) */
+.compact-table > tbody > tr.compact-row,
+.compact-table > thead > tr,
+.compact-table > tfoot > tr {
+    height: 28px !important;
+    min-height: 24px !important;
+    max-height: 32px !important;
+}
+
+.compact-table td,
+.compact-table th {
+    padding: 5px 10px !important;
+    font-size: 0.97em !important;
+    line-height: 1.2 !important;
+    vertical-align: middle !important;
+}
+
+.compact-input {
+    height: 26px !important;
+    font-size: 0.95em !important;
+    padding: 3px 6px !important;
+    min-height: 22px !important;
+    max-height: 28px !important;
+}
+
+.compact-btn {
+    padding: 4px 10px !important;
+    font-size: 0.97em !important;
+    min-height: 22px !important;
+    max-height: 28px !important;
+}
+
+.error {
+    border-color: red !important;
+    background-color: #ffcece;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+}
+
+.news-list .icon {
+    line-height: 1;
+    font-size: 20px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.news-list img,
+.news-list .icon {
+    height: auto; /* Cambiado de 0 a auto */
+    width: auto;
+}
+
+.widget {
+    min-height: 500px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Mejorar el espaciado del título principal */
+.widget header h2 {
+    padding: 15px 20px;
+    margin: 0;
+    font-weight: 600;
+}
+
+.widget-body {
+    position: relative;
+    padding: 20px;
+}
+
+.form-actions {
+    margin-bottom: 20px; /* Reducido de 130px */
+    padding-top: 20px;
+}
+
+/* Mejorar las tablas */
+.table {
+    margin-bottom: 0;
+}
+
+.table td, .table th {
+    padding: 12px 8px;
+    vertical-align: middle;
+}
+
+/* Mejorar los tabs */
+.nav-tabs {
+    border-bottom: 2px solid #026AA7;
+    margin-bottom: 20px;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #666;
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: rgba(2, 106, 167, 0.1);
+    color: #026AA7;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #026AA7;
+    color: white;
+    font-weight: bold;
+}
+
+/* Mejorar los inputs y selects */
+.form-control {
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #026AA7;
+    box-shadow: 0 0 5px rgba(2, 106, 167, 0.2);
+    outline: none;
+}
+
+/* Mejorar los botones */
+.btn {
+    border-radius: 4px;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+}
+
+.btn-inverse {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.btn-inverse:hover {
+    background-color: #5a6268;
+    color: white;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .widget {
+        min-height: auto;
+        margin-bottom: 15px;
+    }
+    
+    .tabla-licitaciones .col-lg-6 {
+        margin-bottom: 20px;
+    }
+    
+    .table-responsive {
+        border: none;
+    }
+    
+    .form-group.row {
+        margin-bottom: 15px;
+    }
+    
+    .form-group.row .col-md-3,
+    .form-group.row .col-md-4,
+    .form-group.row .col-md-5,
+    .form-group.row .col-md-8,
+    .form-group.row .col-md-9 {
+        margin-bottom: 10px;
+    }
+}
+
+/* Estilos específicos para celdas */
+.description-cell {
+    max-width: 200px;
+    max-height: 60px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+/* Estilos para estados de Hitos */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.badge:hover {
+    transform: scale(1.05);
+}
+
+.btn-sm {
+    transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+    transform: scale(1.1);
+}
+
+/* Estilos específicos para círculos de estado de hitos */
+.hito-pendiente {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.hito-pendiente:hover {
+    background-color: rgba(108, 117, 125, 0.1);
+    transform: scale(1.2);
+}
+
+.hito-pendiente span {
+    transition: color 0.3s ease;
+}
+
+.hito-pendiente:hover span {
+    color: #28a745 !important;
+}
+
+.hito-completado {
+    cursor: default;
+    transition: transform 0.2s ease;
+}
+
+.hito-completado:hover {
+    transform: scale(1.1);
+}
+
+/* Estilos para botones de acción */
+.btn-sm {
+    transition: all 0.2s ease;
+    font-size: 12px;
+    min-width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Botón específico para agregar oferta - más pequeño */
+.btn-success.btn-sm {
+    font-size: 14px;
+    min-width: 32px;
+    height: 32px;
+    padding: 6px;
+    border-radius: 50%;
+}
+
+.btn-sm:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+/* Espaciado para los botones de acción */
+.gap-2 {
+    gap: 8px;
+}
+
+/* Asegurar que los botones no se deformen */
+.d-flex.gap-2 .btn {
+    flex-shrink: 0;
+}
+
+/* Hover effects para mejor UX */
+.btn-sm i {
+    font-size: 11px;
+    pointer-events: none;
+}
+
+/* Mejorar la responsividad de los botones */
+@media (max-width: 768px) {
+    .btn-sm {
+        min-width: 28px;
+        height: 28px;
+        font-size: 11px;
+        padding: 2px 4px;
+    }
+    
+    .btn-sm i {
+        font-size: 10px;
+    }
+    
+    .gap-2 {
+        gap: 4px;
+    }
+}
+
+/* Estados específicos */
+.estado-pendiente {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+    border: 1px solid #ffb300;
+}
+
+.estado-completado {
+    background-color: #28a745 !important;
+    color: white !important;
+    border: 1px solid #1e7e34;
+}
+
+.estado-progreso {
+    background-color: #007bff !important;
+    color: white !important;
+    border: 1px solid #0056b3;
+}
+
+/* Animaciones para iconos */
+.fa-spin {
+    animation: fa-spin 1s infinite linear;
+}
+
+@keyframes fa-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(359deg); }
+}
+
+/* Mejorar flexbox para alineación */
+.d-flex {
+    display: flex !important;
+}
+
+.align-items-center {
+    align-items: center !important;
+}
+
+.justify-content-center {
+    justify-content: center !important;
+}
+
+.me-2 {
+    margin-right: 0.5rem !important;
+}
+
+/* Arreglar input-group para fechas */
+.input-group {
+    display: flex;
+    width: 100%;
+}
+
+.input-group-addon {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-left: none;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+}
+
+/* Mejorar el file input */
+.fileinput {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Arreglar loaders */
+.loader {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    /* Don't block interacting with inputs if a loader gets stuck */
+    pointer-events: none;
+}
+
+.spinner {
+    font-size: 24px;
+    color: #026AA7;
+}
+
+/* Mejorar modales */
+.modal-dialog {
+    margin-top: 50px;
+}
+
+.widget-icon {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1001;
+}
+
+/* Arreglar tabs para mobile */
+@media (max-width: 576px) {
+    .nav-tabs {
+        flex-direction: column;
+    }
+    
+    .nav-tabs .nav-link {
+        margin-right: 0;
+        margin-bottom: 5px;
+        text-align: center;
+    }
+    
+    .table td {
+        font-size: 12px;
+        padding: 8px 4px;
+    }
+    
+    .description-cell {
+        max-width: 100px;
+        font-size: 11px;
+    }
+}
+
+/* ========================================
+   Estilos para Bootstrap DateTimePicker
+   ======================================== */
+
+/* Asegurar que el widget del datetimepicker se muestre correctamente */
+::ng-deep .bootstrap-datetimepicker-widget {
+    z-index: 99999 !important;
+    background-color: white !important;
+    border: 1px solid #ccc !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+    border-radius: 4px !important;
+    padding: 10px !important;
+    position: absolute !important;
+}
+
+/* Asegurar que el dropdown esté por encima de todo */
+::ng-deep .bootstrap-datetimepicker-widget.dropdown-menu {
+    z-index: 99999 !important;
+    position: absolute !important;
+}
+
+/* Encabezado del picker */
+::ng-deep .bootstrap-datetimepicker-widget .datepicker-days thead,
+::ng-deep .bootstrap-datetimepicker-widget .datepicker-months thead,
+::ng-deep .bootstrap-datetimepicker-widget .datepicker-years thead,
+::ng-deep .bootstrap-datetimepicker-widget .datepicker-decades thead {
+    background-color: #026AA7 !important;
+    color: white !important;
+}
+
+/* Botones de navegación del calendario */
+::ng-deep .bootstrap-datetimepicker-widget .picker-switch,
+::ng-deep .bootstrap-datetimepicker-widget .prev,
+::ng-deep .bootstrap-datetimepicker-widget .next {
+    color: white !important;
+    background-color: transparent !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget .prev:hover,
+::ng-deep .bootstrap-datetimepicker-widget .next:hover,
+::ng-deep .bootstrap-datetimepicker-widget .picker-switch:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Días de la semana */
+::ng-deep .bootstrap-datetimepicker-widget .dow {
+    color: white !important;
+    font-weight: bold !important;
+    background-color: #026AA7 !important;
+}
+
+/* Días del mes */
+::ng-deep .bootstrap-datetimepicker-widget .day {
+    padding: 5px !important;
+    cursor: pointer !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget .day:hover {
+    background-color: #e6f2ff !important;
+    border-radius: 4px !important;
+}
+
+/* Día seleccionado */
+::ng-deep .bootstrap-datetimepicker-widget .day.active {
+    background-color: #f48826 !important;
+    color: white !important;
+    border-radius: 4px !important;
+}
+
+/* Día actual */
+::ng-deep .bootstrap-datetimepicker-widget .day.today {
+    background-color: #ffe4b5 !important;
+    border-radius: 4px !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget .day.today:before {
+    border-bottom-color: #f48826 !important;
+}
+
+/* Días deshabilitados */
+::ng-deep .bootstrap-datetimepicker-widget .day.disabled {
+    color: #ccc !important;
+    cursor: not-allowed !important;
+}
+
+/* Selector de hora */
+::ng-deep .bootstrap-datetimepicker-widget .timepicker {
+    padding: 10px !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget .timepicker-hour,
+::ng-deep .bootstrap-datetimepicker-widget .timepicker-minute {
+    font-size: 24px !important;
+    font-weight: bold !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget .timepicker .btn {
+    color: #026AA7 !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget .timepicker .btn:hover {
+    background-color: #e6f2ff !important;
+}
+
+/* Tabla del calendario */
+::ng-deep .bootstrap-datetimepicker-widget table {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget table td,
+::ng-deep .bootstrap-datetimepicker-widget table th {
+    text-align: center !important;
+    border-radius: 4px !important;
+}
+
+/* Botones de acción */
+::ng-deep .bootstrap-datetimepicker-widget .btn[data-action] {
+    padding: 5px 10px !important;
+    margin: 2px !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget .btn[data-action="today"] {
+    background-color: #026AA7 !important;
+    color: white !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget .btn[data-action="clear"] {
+    background-color: #dc3545 !important;
+    color: white !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget .btn[data-action="close"] {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+/* Input group addon */
+.input-group-addon {
+    cursor: pointer !important;
+    background-color: #026AA7 !important;
+    color: white !important;
+    border: 1px solid #026AA7 !important;
+    border-radius: 0 4px 4px 0 !important;
+    padding: 6px 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.input-group-addon:hover {
+    background-color: #025080 !important;
+}
+
+/* Asegurar que el input group se vea bien */
+.input-group.date {
+    display: flex !important;
+    width: 100% !important;
+}
+
+.input-group.date .form-control {
+    flex: 1 !important;
+    border-radius: 4px 0 0 4px !important;
+}
+
+/* Meses y años */
+::ng-deep .bootstrap-datetimepicker-widget .month,
+::ng-deep .bootstrap-datetimepicker-widget .year,
+::ng-deep .bootstrap-datetimepicker-widget .decade {
+    padding: 10px !important;
+    cursor: pointer !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget .month:hover,
+::ng-deep .bootstrap-datetimepicker-widget .year:hover,
+::ng-deep .bootstrap-datetimepicker-widget .decade:hover {
+    background-color: #e6f2ff !important;
+    border-radius: 4px !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget .month.active,
+::ng-deep .bootstrap-datetimepicker-widget .year.active,
+::ng-deep .bootstrap-datetimepicker-widget .decade.active {
+    background-color: #f48826 !important;
+    color: white !important;
+    border-radius: 4px !important;
+}
+
+/* Vista side-by-side (fecha y hora juntas) */
+::ng-deep .bootstrap-datetimepicker-widget.timepicker-sbs {
+    width: auto !important;
+    min-width: 400px !important;
+}
+
+::ng-deep .bootstrap-datetimepicker-widget .datepicker,
+::ng-deep .bootstrap-datetimepicker-widget .timepicker {
+    width: auto !important;
+}
+
+/* Separador entre fecha y hora */
+::ng-deep .bootstrap-datetimepicker-widget .separator {
+    border-left: 1px solid #ddd !important;
+    padding: 0 10px !important;
+}

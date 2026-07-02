@@ -1,0 +1,395 @@
+<app-main></app-main>
+
+<div class="content-wrap">
+    <main id="content" role="main" class="content">
+        <div class="container-fluid">
+            
+            <div class="row titulo">
+                <div class="col-12 d-flex justify-content-between align-items-center">
+                    <div class="col-10">
+                        <h4><b><span>{{nomlic}}</span></b></h4>
+                    </div>
+                    <div class="col-2 text-right">
+                        <a (click)="MisLicitaciones()" class="btn btn-inverse">Volver</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row cuerpo" id="bgRow">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="TabControl" data-toggle="tab" role="tab" style="cursor: pointer;"
+                                (click)="PestHito()"><b>Control</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="TabBitacora" data-toggle="tab" role="tab" style="cursor: pointer;"
+                                (click)="PestGestion()"><b>Bitacora</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="TabTarea" data-toggle="tab" role="tab" style="cursor: pointer;"
+                                (click)="PestTareas()"><b>Tareas</b></a>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content mt-4" id="myTabContent">
+                        <!-- TAB CONTROL -->
+                        <div class="row" *ngIf="rowHitos">
+                            <!-- Hitos -->
+                            <div class="col-lg-6">
+                                <section class="widget">
+                                    <header style="background-color: #f48826">
+                                        <h2 style="color: white;">
+                                            <strong>Hitos</strong>
+                                        </h2>
+                                    </header>
+                                    <div class="widget-body">
+                                        <form #HForm="ngForm" (ngSubmit)="Guardar(HForm)">
+                                            <fieldset>
+                                                <legend></legend>
+                                                <div class="form-group row">
+                                                    <label for="normal-field" class="col-md-3 form-control-label h4">Estado:</label>
+                                                    <div class="col-md-5">
+                                                        <select id="drdEstado" class="dropdown-toggle select2-chosen-2 form-control"
+                                                            [(ngModel)]="drdEstado" name="drdEstado">
+                                                            <option *ngFor="let Estado of Estados" value={{Estado.IdEstado}}>{{Estado.NombreEstado}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-4 text-right">
+                                                        <i _ngcontent-c8="" class="glyphicon glyphicon-plus click text-success" (click)="addHito = true"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-striped table-hover no-footer">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Nombre Hito</th>
+                                                                    <th>Fecha Compromiso</th>
+                                                                    <th>Cumplido</th>
+                                                                    <th>Acciones</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr *ngFor="let Hito of Hitos; let i = index">
+                                                                    <td>{{Hito.NombreHito}}</td>
+                                                                    <td class="align-center">
+                                                                        <div id="datetimepicker1" class="input-group date" (click)="Calendar()"
+                                                                            *ngIf="Hito.Estado=='Pendiente'">
+                                                                            <input id="txtCaledario{{i}}" name="txtCaledario{{i}}"
+                                                                                type="text" class="form-control" value="{{Hito.FechaCompromiso | date:'dd/MM/yyyy'}}"
+                                                                                (change)="AsignarFecha(i)" />
+                                                                            <span class="input-group-addon">
+                                                                                <span class="fa fa-calendar"></span>
+                                                                            </span>
+                                                                        </div>
+                                                                        <span id="spanCaledario{{i}}" *ngIf="Hito.Estado=='Terminado'">{{Hito.FechaCompromiso
+                                                                            | date:'dd/MM/yyyy'}}</span>
+                                                                    </td>
+                                                                    <td class="align-center">
+                                                                        <a (click)="Completado(i)" *ngIf="Hito.Estado=='Pendiente'"
+                                                                            class="green">
+                                                                            <img src="/assets/GIF/checkbox.png" alt="OK" style="width: 30px;margin-left: 10px;">
+                                                                        </a>
+                                                                        <div *ngIf="Hito.Estado!='Pendiente'" class="news-list green">
+                                                                            <span class="icon"><i class="glyphicon glyphicon-ok icono"></i></span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="align-center">
+                                                                        <button type="button" class="btn btn-danger btn-sm" title="Eliminar hito" (click)="EliminarHito(i)">
+                                                                            <i class="fa fa-trash"></i>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="loader animated fadeIn handle" *ngIf="LoadingTabla[0]">
+                                                        <span class="spinner">
+                                                            <i class="fa fa-spinner fa-spin"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                            <div class="form-actions">
+                                                <div class="row">
+                                                    <div class="col-md-offset-4 col-md-8">
+                                                        <button ID="btnGuardarEstado" class="btn btn-success">Guardar Estado</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="loader animated fadeIn handle" *ngIf="Loading[0]" style="position: absolute;z-index: 2;">
+                                        <span class="spinner">
+                                            <i class="fa fa-spinner fa-spin"></i>
+                                        </span>
+                                    </div>
+                                </section>
+                            </div>
+                            
+                            <!-- Ofertas -->
+                            <div class="col-lg-6">
+                                <section class="widget">
+                                    <header style="background-color: #f48826">
+                                        <h2 style="color: white;">
+                                            <strong>Ofertas</strong>
+                                        </h2>
+                                    </header>
+                                    <div class="widget-body">
+                                        <fieldset>
+                                            <legend></legend>
+                                            <form #OGForm="ngForm" (ngSubmit)="GuardarOferta(OGForm)">
+                                                <div class="form-group row">
+                                                    <label for="normal-field" class="col-md-4 form-control-label h4">Monto Oferta
+                                                        Inicial:</label>
+                                                    <div class="col-md-5">
+                                                        <input class="form-control" id="txtOferta" name="txtOferta" [(ngModel)]="txtOferta"
+                                                            *ngIf="OcultaOferta" (click)="CleanOferta()" (keyup)="CleanOferta()"
+                                                            placeholder="Oferta Economica" />
+                                                        <h4 style="margin-top: 4px;" *ngIf="!OcultaOferta">{{txtOferta |
+                                                            number:0}}</h4>
+                                                        <h6 style="color:red;">{{errorOferta}}</h6>
+                                                    </div>
+                                                    <div class="col-md-offset-1 col-md-2">
+                                                        <a (click)="GuardarOferta(OGForm)" class="btn btn-success form-control"
+                                                            *ngIf="OcultaOferta">Guardar</a>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <form #OForm="ngForm" (ngSubmit)="AgregarOferta(OForm)">
+                                                <div class="form-group row">
+                                                    <label for="normal-field" class="col-md-4 form-control-label h4">
+                                                        <span *ngIf="Ofertas.length">Contra</span> Oferta Economica:</label>
+                                                    <div class="col-md-5">
+                                                        <input class="form-control" id="txtContraOferta" name="txtContraOferta"
+                                                            [(ngModel)]="txtContraOferta" placeholder="Oferta Economica" (click)="CleanContraoferta()"
+                                                            (keyup)="CleanContraoferta()" />
+                                                        <h6 style="color:red;">{{errorContraOferta}}</h6>
+                                                    </div>
+                                                    <div class="col-md-offset-1 col-md-2">
+                                                        <a (click)="AgregarOferta()" class="green">
+                                                            <div class="news-list"><span class="icon"><i class="glyphicon glyphicon-plus icono"></i></span></div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </fieldset>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped table-hover no-footer">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Ofertas</th>
+                                                        <th>Fecha</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let Oferta of Ofertas; let i = index">
+                                                        <td>{{Oferta.ValorContraoferta | number:0}}</td>
+                                                        <td>{{Oferta.FechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="loader animated fadeIn handle" *ngIf="LoadingTabla[1]">
+                                            <span class="spinner">
+                                                <i class="fa fa-spinner fa-spin"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="loader animated fadeIn handle" *ngIf="Loading[1]" style="position: absolute;z-index: 2;">
+                                        <span class="spinner">
+                                            <i class="fa fa-spinner fa-spin"></i>
+                                        </span>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                        
+                        <!-- TAB GESTION -->
+                        <div class="row" *ngIf="rowGestion">
+                            <!-- Bitacora -->
+                            <div class="col-lg-6">
+                                <section class="widget">
+                                    <header style="background-color: #f48826">
+                                        <h2 style="color: white;">
+                                            <strong>Bitacora</strong>
+                                        </h2>
+                                    </header>
+                                    <div class="widget-body">
+                                        <form #BForm="ngForm" (ngSubmit)="GuardarComentario(BForm)">
+                                            <fieldset>
+                                                <legend></legend>
+                                                <div class="form-group row">
+                                                    <label for="normal-field" class="col-md-3 form-control-label h4">Bitacora:</label>
+                                                    <div class="col-md-9">
+                                                        <textarea style="height: 200px;" class="form-control" id="txtBitacora" name="txtBitacora"
+                                                            [(ngModel)]="txtBitacora" (click)="CleanComentario()" (keyup)="CleanComentario()"></textarea>
+                                                        <h6 style="color:red;">{{errorComentario}}</h6>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <div class="col-md-offset-3 col-md-9">
+                                                        <div class="fileinput fileinput-new input-group" data-provides="fileinput">
+                                                            <div class="form-control" data-trigger="fileinput">
+                                                                <i class="glyphicon glyphicon-file fileinput-exists"></i>
+                                                                <span class="fileinput-filename" id="NombreArch"></span>
+                                                            </div>
+                                                            <span class="input-group-addon btn btn-secondary btn-file">
+                                                                <span class="fileinput-new">Adjuntar</span>
+                                                                <span class="fileinput-exists">Change</span>
+                                                                <input id="fileupload1" type="file" name="fileupload1" (change)="NombreArchivo()">
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                            <div class="form-actions">
+                                                <div class="row">
+                                                    <div class="col-md-offset-4 col-md-8">
+                                                        <button ID="btnAgregarBitacora" class="btn btn-success">Agregar
+                                                            Bitacora</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="loader animated fadeIn handle" *ngIf="Loading[2]" style="position: absolute;z-index: 2;">
+                                        <span class="spinner">
+                                            <i class="fa fa-spinner fa-spin"></i>
+                                        </span>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="col-lg-6">
+                                <app-lista-bitacora *ngIf="cargandoLic" [usuario]="usuario" [Licitacion]="Licitacion"></app-lista-bitacora>
+                            </div>
+                        </div>
+                        
+                        <!-- TAB TAREAS -->
+                        <div class="row" *ngIf="rowTareas">
+                            <!-- Tareas -->
+                            <div class="col-lg-6">
+                                <section class="widget">
+                                    <header style="background-color: #f48826">
+                                        <h2 style="color: white;">
+                                            <strong>Tareas</strong>
+                                        </h2>
+                                    </header>
+                                    <div class="widget-body">
+                                        <app-tareas-lic [licitacion]="Licitacion" (crearTarea)="listarTareas()"></app-tareas-lic>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="col-lg-6">
+                                <section class="widget">
+                                    <header style="background-color: #f48826">
+                                        <h2 style="color: white;">
+                                            <strong>Mis Tareas</strong>
+                                        </h2>
+                                    </header>
+                                    <div class="widget-body">
+                                        <fieldset>
+                                            <legend></legend>
+                                        </fieldset>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped table-hover no-footer">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tarea</th>
+                                                        <th>Descripción</th>
+                                                        <th>Estado</th>
+                                                        <th>Responsable</th>
+                                                        <th class="align-center">Prioridad</th>
+                                                        <th>Fecha Compromiso</th>
+                                                        <th>Creador</th>
+                                                        <th>Fecha Creación</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let Tarea of Tareas; let i = index">
+                                                        <td>{{Tarea.idTarea}}</td>
+                                                        <td>
+                                                            <div [innerHTML]="Tarea.descripcionTarea" class="description-cell"></div>
+                                                        </td>
+                                                        <td>{{Tarea.nombreEstadoTarea}}</td>
+                                                        <td>{{Tarea.UsuarioResponsable}}</td>
+                                                        <td class="align-center">
+                                                            <i class="fa fa-circle punto" style="color:red" *ngIf="Tarea.prioridad == 'Alta'" title="Prioridad Alta"></i>
+                                                            <i class="fa fa-circle punto" style="color:orange" *ngIf="Tarea.prioridad == 'Media'" title="Prioridad Media"></i>
+                                                            <i class="fa fa-circle punto" style="color:green" *ngIf="Tarea.prioridad == 'Baja'" title="Prioridad Baja"></i>
+                                                        </td>
+                                                        <td>{{Tarea.fechaTerminoProgramado | date:'dd/MM/yyyy'}}</td>
+                                                        <td>{{Tarea.UsuarioCreador}}</td>
+                                                        <td class="center">{{Tarea.fechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="loader animated fadeIn handle" *ngIf="LoadingTabla[3]">
+                                            <span class="spinner">
+                                                <i class="fa fa-spinner fa-spin"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mensajes -->
+    <div class="modal fade" id="Mensaje" tabindex="-1" role="dialog" aria-labelledby="MensajeLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <span class="widget-icon">
+                <i class="fa fa-circle" style="position:absolute;color:white;top: 5px;left: 5px;"></i>
+                <i class="glyphicon glyphicon-ok-sign" style="color:green"></i>
+            </span>
+            <section class="widget widget-card ">
+                <div class="widget-body clearfix">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="no-margin">{{msg}}</h3>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer" style="background-color: #eeeeee;">
+                    <div class="col-xs-offset-4 col-xs-2 ">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="OcultarMensaje()">Aceptar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Mensajes Error -->
+    <div class="modal fade" id="MensajeError" tabindex="-1" role="dialog" aria-labelledby="MensajeLongTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <span class="widget-icon">
+                <i class="fa fa-circle" style="position:absolute;color:white;top: 5px;left: 5px;"></i>
+                <i class="glyphicon glyphicon-remove-sign" style="color:red"></i>
+            </span>
+            <section class="widget widget-card ">
+                <div class="widget-body clearfix">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="no-margin">{{msg}}</h3>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer" style="background-color: #eeeeee;">
+                    <div class="col-xs-offset-4 col-xs-2 ">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="OcultarMensajeError()">Aceptar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<app-add-hito [licitacion]="Licitacion" (cerrar)="cerrarPopUp()" *ngIf="addHito"></app-add-hito>

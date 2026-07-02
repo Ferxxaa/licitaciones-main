@@ -1,0 +1,311 @@
+/* Botón de usuario ultra compacto */
+.nav-link.user-nav-link {
+  padding: 0 2px !important;
+  min-height: 8px;
+  height: 16px;
+  line-height: 16px;
+}
+.thumb-sm.avatar {
+  width: 5px !important;
+  height: 5px !important;
+  margin-right: 0.2px !important;
+}
+.user-name {
+  font-size: 0.38rem !important;
+  font-weight: 500;
+  margin-left: 0.2px !important;
+  padding: 0 0.2px !important;
+}
+.user-arrow {
+  font-size: 0.28em !important;
+  margin-left: 0.2px !important;
+}
+/* Nav header más pequeño y compacto */
+.navbar-header {
+  min-height: 14px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+.navbar-nav > li > a,
+.navbar-nav .nav-link {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  font-size: 0.72rem;
+  min-height: 14px;
+}
+@media (min-width: 768px) {
+  .navbar-collapse.collapse {
+    display: block !important;
+    height: auto !important;
+    padding-bottom: 0;
+    overflow: visible !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar-collapse {
+    width: auto;
+    border-top: 0;
+    box-shadow: none;
+  }
+}
+/* Menú de usuario compacto y alineado */
+.navbar-nav.pull-xs-right {
+  margin-right: 0;
+  padding-right: 0;
+}
+.dropdown-toggle-notifications {
+  padding: 4px 12px !important;
+  font-size: 1rem;
+}
+.thumb-sm.avatar {
+  width: 7px;
+  height: 7px;
+  margin-right: 0.5px;
+}
+.usuario, .user-name {
+  font-size: 0.48rem;
+  font-weight: 500;
+  margin-left: 0.5px;
+  padding: 0 0.5px;
+}
+.user-arrow {
+  font-size: 0.38em !important;
+  margin-left: 0.5px;
+}
+.dropdown-menu-right {
+  min-width: 260px;
+  padding: 10px 0;
+}
+.card.notifications {
+  box-shadow: none;
+  border-radius: 8px;
+  padding: 0 10px;
+}
+.card-header {
+  padding: 8px 0 4px 0;
+}
+.list-group-item {
+  padding: 6px 10px;
+  font-size: 0.95rem;
+}
+.card-footer {
+  padding: 8px 0;
+}
+/* Reducir el ancho del header y centrarlo */
+.container-fluid {
+  max-width: 650px;
+  margin: 0 auto;
+}
+/* Container principal */
+.container-fluid {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  max-width: none;
+  position: relative;
+  overflow: visible; /* Permitir que el dropdown se muestre fuera del contenedor */
+}
+
+.navbar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 60px; /* Aumentado para dar más espacio vertical */
+  width: 100%;
+  position: relative;
+  z-index: 1001; /* Alto z-index para estar encima de otros elementos */
+}
+
+/* Añadir un sutil overlay para darle más profundidad */
+.navbar-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%, rgba(0, 0, 0, 0.05) 100%);
+  pointer-events: none;
+}
+
+/* Override global page-controls styles */
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Ensure the header takes full width within page-controls */
+:host ::ng-deep .container-fluid {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.nav.navbar-nav {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.nav.navbar-nav.navbar-right {
+  margin-left: auto;
+  flex: 0 0 auto;
+  position: static; /* Asegurar posición estática para evitar conflictos */
+}
+
+/* Contenedor principal para distribuir el espacio */
+.navbar-header > ul:first-child {
+  flex: 0 0 auto; /* Menú izquierdo */
+}
+
+.navbar-header > ul.navbar-right:not(.hidden-md-up) {
+  flex: 0 0 auto; /* Usuario derecha */
+  margin-left: auto;
+}
+
+.navbar-brand {
+  flex: 1;
+  text-align: center;
+  margin: 0 20px;
+}
+
+.nav-item {
+  list-style: none;
+  margin: 0 5px;
+}
+
+.nav-link {
+  color: white !important;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white !important;
+}
+
+.navbar-brand {
+  color: white !important;
+  font-weight: bold;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.navbar-brand:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Efectos para los iconos */
+.nav-link i {
+  transition: transform 0.2s ease;
+}
+
+.nav-link:hover i {
+  transform: scale(1.1);
+}
+
+/* Distribución específica para pantallas grandes */
+@media (min-width: 992px) {
+  .navbar-header {
+    justify-content: flex-start;
+    gap: 20px;
+.container-fluid {
+  max-width: 320px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0;
+  position: relative;
+  overflow: visible; /* Permitir que el dropdown se muestre fuera del contenedor */
+}
+    flex: 0 0 auto;
+  }
+  
+  .nav.navbar-nav.navbar-right {
+    margin-left: auto;
+  }
+  
+  .navbar-brand.hidden-md-up {
+    display: none !important;
+  }
+}
+
+/* Estilos responsive para tablets */
+@media (max-width: 991px) and (min-width: 769px) {
+  .navbar-header {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  
+  .nav.navbar-nav {
+    flex: 0 0 auto;
+  }
+  
+  .navbar-brand {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+/* Estilos responsive para móviles */
+@media (max-width: 768px) {
+  .navbar-header {
+    flex-wrap: wrap;
+    padding: 0.25rem 0.5rem;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .nav.navbar-nav:first-child {
+    order: 1;
+    flex: 0 0 auto;
+  }
+  
+  .navbar-brand {
+    order: 2;
+    flex: 1;
+    text-align: center;
+    margin: 0 10px;
+  }
+  
+  .nav.navbar-nav.navbar-right:not(.hidden-md-up) {
+    order: 3;
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+  
+  .nav.navbar-nav.navbar-right.hidden-md-up {
+    order: 4;
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar-header {
+    min-height: 50px;
+    padding: 0.25rem;
+  }
+  
+  .nav-link {
+    padding: 6px 8px;
+  }
+  
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+  
+  .nav-item {
+    margin: 0 2px;
+  }
+}

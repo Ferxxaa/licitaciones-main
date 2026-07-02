@@ -1,0 +1,313 @@
+<app-main></app-main>
+
+<div class="content-wrap">
+    <main id="content" role="main" class="content">
+        <div class="row">
+            <div class="col-lg-12">
+                <!-- SIN card/marco azul, todo el contenido queda igual -->
+                <!-- Título principal de la sección -->
+                
+                <!-- Título de Hitos a incorporar -->
+                <div style="background-color: #f48826; padding: 7px 0 8px 32px; margin-bottom: 0;">
+                    <h2 style="color: white; font-family: 'Roboto', sans-serif; margin: 0;">
+                        <strong>Administración de Hitos</strong>
+                    </h2>
+                </div>
+                <!-- Sección de creación de hito diferenciada -->
+                <div style="padding:0px 0px 0px 8px; margin-top: -12px;">
+                    <div style="padding: 24px;">
+                        <form #form="ngForm" (ngSubmit)="Agregar(form)">
+                            <fieldset>
+                                <div class="form-group row mb-3">
+                                    <label for="txtNombreHito" class="col-md-3 form-control-label h5">Nombre Hito:</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="txtNombreHito" class="form-control" ngModel name="txtNombreHito" maxlength="50" placeholder="Nombre Hito" (click)="Clean()" (keyup)="Clean()">
+                                        <h6 style="color:red;">{{error[0]}}</h6>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-3">
+                                    <label for="chkObligatorio" class="col-md-3 form-control-label h5">Campo Obligatorio:</label>
+                                    <div class="col-md-6 d-flex align-items-center">
+                                        <input id="chkObligatorio" type="checkbox" ngModel name="chkObligatorio" style="margin-right:8px;">
+                                        <label for="chkObligatorio" style="margin-bottom:0;">Obligatorio</label>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-3">
+                                    <label for="chkCalendario" class="col-md-3 form-control-label h5">Visión en Calendario:</label>
+                                    <div class="col-md-6 d-flex align-items-center">
+                                        <input id="chkCalendario" type="checkbox" [(ngModel)]="chkCalendario" name="chkCalendario" style="margin-right:8px;">
+                                        <label for="chkCalendario" style="margin-bottom:0;">Calendarizado</label>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-3">
+                                    <label for="txtNombreCalendario" class="col-md-3 form-control-label h5">Nombre Calendario:</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="txtNombreCalendario" [disabled]="!chkCalendario" class="form-control" ngModel name="txtNombreCalendario" placeholder="Nombre Calendario" (click)="Clean()" (keyup)="Clean()">
+                                        <h6 style="color:red;">{{error[1]}}</h6>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-3">
+                                    <label for="txtColCalendario" class="col-md-3 form-control-label h5">Color Calendario:</label>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center" style="gap: 12px;">
+                                            <input type="color" 
+                                                   [(ngModel)]="clpCalendario" 
+                                                   [disabled]="!chkCalendario" 
+                                                   [ngModelOptions]="{standalone: true}"
+                                                   style="width: 50px; height: 38px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;"
+                                                   title="Seleccionar color">
+                                            <input colorPicker 
+                                                   [(ngModel)]="clpCalendario" 
+                                                   [style.background]="clpCalendario" 
+                                                   [disabled]="!chkCalendario" 
+                                                   name="txtColCalendario" 
+                                                   id="colorpickeri" 
+                                                   class="form-control" 
+                                                   placeholder="Color Calendario (ej: #FF0000)"
+                                                   style="flex: 1;">
+                                        </div>
+                                        <h6 style="color:red;">{{error[2]}}</h6>
+                                        <small class="text-muted" *ngIf="chkCalendario">
+                                            Seleccione el color usando la paleta o ingrese el código hexadecimal
+                                        </small>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <div class="form-actions text-right" style="margin-top: -40px; padding-top: 0;">
+                                <button ID="btnCrear" class="btn btn-success" style="margin-top: -40px;">Crear Hito</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="form-group row" style="width:100%; display: flex; justify-content: center;">
+                    <div class="table-responsive" style="min-width:1200px; margin-left: 32px; margin-right: auto;">
+<style>
+    .compact-hitos-table thead tr {
+        height: 18px !important;
+    }
+    .compact-hitos-table thead th {
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+        font-size: 1em;
+    }
+    .compact-hitos-table td:nth-child(5),
+    .compact-hitos-table th:nth-child(5) {
+        white-space: nowrap;
+    }
+    .compact-hitos-table td {
+        vertical-align: middle !important;
+        text-align: center;
+    }
+    .compact-hitos-table input[type='checkbox'].CheckBox {
+        width: 16px !important;
+        height: 16px !important;
+        min-width: 16px !important;
+        min-height: 16px !important;
+        margin: 0 auto !important;
+        display: block;
+        vertical-align: middle;
+    }
+    .compact-hitos-table input[type='checkbox'].CheckBox {
+        width: 16px !important;
+        height: 16px !important;
+        min-width: 16px !important;
+        min-height: 16px !important;
+        margin: 0 2px 0 2px !important;
+        vertical-align: middle;
+    }
+        .compact-hitos-table tbody tr {
+            height: 14px !important;
+        }
+        .compact-hitos-table td, .compact-hitos-table th {
+            padding-top: 0.5px !important;
+            padding-bottom: 0.5px !important;
+            font-size: 0.96em;
+        }
+</style>
+                        <table class="table table-bordered table-striped table-hover no-footer compact-hitos-table" style="width:100%; min-width:1200px;">
+                            <thead>
+                                <tr style="background-color: #026AA7; color: white;">
+                                    <th class="text-center">Hito</th>
+                                    <th style="width: 420px;">Nombre Hito</th>
+                                    <th class="text-center">Obligatorio</th>
+                                    <th class="text-center">Calendarizado</th>
+                                    <th style="width: 160px;">Nombre Calendario</th>
+                                    <th class="text-center">Color Calendario</th>
+                                    <th class="text-center">Fecha Creación</th>
+                                    <th class="text-center">Accion</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let Hito of pagedHitos; let i = index" style="height: 24px;">
+                                    <td class="text-center">{{Hito.IdHito}}</td>
+                                    <td>{{Hito.NombreHito}}</td>
+                                    <td class="text-center">
+                                        <div class="dvCheck abc-checkbox align-center">
+                                            <input type="checkbox" [(ngModel)]="Hito.Obligatoria" [ngModelOptions]="{standalone: true}" class="CheckBox" [disabled]="true">
+                                            <label ></label>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="dvCheck abc-checkbox align-center">
+                                            <input type="checkbox" [(ngModel)]="Hito.Calendarizada" [ngModelOptions]="{standalone: true}" class="CheckBox" [disabled]="true">
+                                            <label ></label>
+                                        </div>
+                                    </td>
+                                    <td>{{Hito.NombreCalendario}}</td>
+                                    <td class="text-center">
+                                        <button [ngStyle]="{'background-color': Hito.ColorCalendario}" 
+                                                class="box me-2" 
+                                                style="display: inline-block; margin-right: 8px;">
+                                        </button>
+                                        {{Hito.ColorCalendario}}
+                                    </td>
+                                    <td class="text-center">{{Hito.FechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                    <td class="text-center">
+                                        <div class="action-buttons">
+                                            <a (click)="Editar(i)" class="blue me-2" title="Editar hito">
+                                                <div class="news-list d-inline">
+                                                    <span class="icon">
+                                                        <i class="fa fa-pencil icono"></i>
+                                                    </span>
+                                                </div>
+                                            </a>
+                                            <a (click)="Confirmacion(i)" class="drop" title="Eliminar hito">
+                                                <div class="news-list d-inline">
+                                                    <span class="icon">
+                                                        <i class="fa fa-times-circle icono"></i>
+                                                    </span>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination Controls -->
+                    <div *ngIf="totalPages > 1" style="width:100%; display:flex; justify-content:center; margin-top:12px; margin-bottom:8px;">
+                        <div class="d-flex align-items-center" style="gap: 8px;">
+                            <button class="btn btn-sm btn-secondary" (click)="prevPage()" [disabled]="currentPage === 1">Anterior</button>
+                            <span style="margin: 0 8px; font-size: 0.95em;">
+                                Página {{currentPage}} de {{totalPages}}
+                            </span>
+                            <button class="btn btn-sm btn-secondary" (click)="nextPage()" [disabled]="currentPage === totalPages">Siguiente</button>
+                        </div>
+                    </div>
+                    <div class="loader animated fadeIn handle" *ngIf="LoadingTabla">
+                        <span class="spinner">
+                            <i class="fa fa-spinner fa-spin"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="loader animated fadeIn handle" *ngIf="Loading" style="position: absolute;">
+                    <span class="spinner">
+                        <i class="fa fa-spinner fa-spin"></i>
+                    </span>
+                </div>
+        </div>
+      </div>
+  </main>
+
+
+  <!-- Modal de Edición -->
+  <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #026AA7; color: white;">
+                    <h5 class="modal-title" id="exampleModalLongTitle">
+                        <i class="fa fa-pencil"></i> Editar Hito
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" (click)="OcultarPopUp()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form #EForm="ngForm" (ngSubmit)="Actualizar(EForm)">
+                        <fieldset>
+                            <legend *ngIf=false></legend>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Nombre Hito:</label>
+                                <div class="col-md-6">
+                                    <input type="text" id="txtEditNombreHito" class="form-control" [(ngModel)]="txtEditNombreHito" name="txtEditNombreHito" placeholder="Nombre Hito" (click)="Clean()" (keyup)="Clean()">
+                                    <h6 style="color:red;">{{errorEdit[0]}}</h6>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Campo Obligatorio:</label>
+                                <div class="col-md-6">
+                                    <div class="dvCheck abc-checkbox">
+                                        <input id="chkEditObligatorio" type="checkbox" [(ngModel)]="chkEditObligatorio" name="chkEditObligatorio" class="CheckBox">
+                                        <label for="chkEditObligatorio">
+                                            <span style="margin-left: 25px;">Obligatorio</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Visión en Calendario:</label>
+                                <div class="col-md-6">
+                                    <div class="dvCheck abc-checkbox">
+                                        <input id="chkEditCalendario" type="checkbox" [(ngModel)]="chkEditCalendario" name="chkEditCalendario" class="CheckBox">
+                                        <label for="chkEditCalendario">
+                                            <span style="margin-left: 25px;">Calendarizado</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Nombre Calendario:</label>
+                                <div class="col-md-6">
+                                    <input type="text" id="txtEditNombreCalendario" [disabled]="!chkEditCalendario" class="form-control" [(ngModel)]="txtEditNombreCalendario" name="txtEditNombreCalendario" placeholder="Nombre Calendario" (click)="Clean()" (keyup)="Clean()">
+                                    <h6 style="color:red;">{{errorEdit[1]}}</h6>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="normal-field" class="col-md-4 form-control-label h4">Color Calendario:</label>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center" style="gap: 12px;">
+                                        <input type="color" 
+                                               [(ngModel)]="txtEditColCalendario" 
+                                               [disabled]="!chkEditCalendario" 
+                                               [ngModelOptions]="{standalone: true}"
+                                               style="width: 50px; height: 38px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;"
+                                               title="Seleccionar color">
+                                        <input type="text" 
+                                               id="txtEditColCalendario" 
+                                               [disabled]="!chkEditCalendario" 
+                                               class="form-control" 
+                                               [(ngModel)]="txtEditColCalendario" 
+                                               name="txtEditColCalendario" 
+                                               placeholder="Color Calendario (ej: #FF0000)" 
+                                               (click)="Clean()" 
+                                               (keyup)="Clean()"
+                                               style="flex: 1;">
+                                    </div>
+                                    <h6 style="color:red;">{{errorEdit[2]}}</h6>
+                                    <small class="text-muted" *ngIf="chkEditCalendario">
+                                        Seleccione el color usando la paleta o ingrese el código hexadecimal
+                                    </small>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <button ID="btnEditarHito" type="submit" class="btn btn-success me-2" style="margin-right: 10px;">
+                                        <i class="fa fa-save"></i> Guardar Cambios
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="OcultarPopUp()">
+                                        <i class="fa fa-times"></i> Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
