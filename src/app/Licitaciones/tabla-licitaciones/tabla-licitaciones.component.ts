@@ -580,9 +580,19 @@ export class TablaLicitacionesComponent implements OnInit {
       return;
     }
 
-    (this.Hitos as any[])[realIndex].FechaCompromiso = normalized;
-    (this.Hitos as any[])[realIndex].FechaCompromisoInput = normalized;
-    this.ordenarHitosPorFecha();
+    // Capturamos la referencia al objeto hito (no el índice). El array puede
+    // reordenarse (por ejemplo si el usuario dispara otra acción mientras esta
+    // petición sigue en vuelo), pero como mutamos el objeto directamente y lo
+    // pasamos por referencia a actualizarHito, el guardado siempre corresponde
+    // al hito correcto sin importar su posición actual en this.Hitos.
+    const hito = (this.Hitos as any[])[realIndex];
+    hito.FechaCompromiso = normalized;
+    hito.FechaCompromisoInput = normalized;
+    // FIX: NO reordenar aquí. Si se reordena antes de guardar, "realIndex" deja de
+    // apuntar al hito que el usuario editó (el array cambia de posiciones) y el
+    // guardado (actualizarHito) podía terminar escribiendo sobre OTRO hito distinto.
+    // El reordenamiento visual ya ocurre dentro de actualizarHito -> onSuccess,
+    // una vez confirmado el guardado.
 
     // Guardar automáticamente cuando sea una fecha completa
     if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
@@ -594,15 +604,15 @@ export class TablaLicitacionesComponent implements OnInit {
 
     const payload = {
       fechaCompromiso: normalized,
-      horaCompromiso: this.Hitos[realIndex].HoraCompromiso || '00:00',
-      estado: this.Hitos[realIndex].Estado || 'Pendiente',
+      horaCompromiso: hito.HoraCompromiso || '00:00',
+      estado: hito.Estado || 'Pendiente',
     };
     console.log('[HITOS][FechaCompromiso][autosave] Llamando actualizarHito', {
       realIndex,
       payload,
-      hito: this.Hitos[realIndex],
+      hito,
     });
-    this.actualizarHito(realIndex, payload, { silent: true });
+    this.actualizarHito(hito, payload, { silent: true });
   }
 
   //******************************************Hitos******************************************
@@ -730,16 +740,21 @@ export class TablaLicitacionesComponent implements OnInit {
         console.error('Índice fuera de rango');
         return;
       }
+      // Capturamos la REFERENCIA al objeto hito (no el índice). Así, aunque el
+      // array se reordene mientras la petición HTTP está en vuelo, seguimos
+      // mutando y guardando exactamente el hito correcto.
+      const hito = this.Hitos[realIndex];
+
       // Este botón SOLO marca como cumplido. No debe cambiar la fecha.
       // Usamos el valor del modelo (ngModel) y no el DOM.
-      const fechaDesdeModelo = (this.Hitos as any[])[realIndex]?.FechaCompromisoInput;
-      const fechaDesdeBackend = this.formatDateForInput(this.Hitos[realIndex]?.FechaCompromiso);
+      const fechaDesdeModelo = hito?.FechaCompromisoInput;
+      const fechaDesdeBackend = this.formatDateForInput(hito?.FechaCompromiso);
       let fechaCompromiso = (fechaDesdeModelo || fechaDesdeBackend || '').toString();
       console.log('[HITOS][Completado] click', {
         indexEnPagina: i,
         realIndex,
         fechaDesdeInput: fechaCompromiso,
-        hito: this.Hitos[realIndex],
+        hito,
       });
 
       // No inventar/forzar fecha al completar: si está vacía, pedir que la seleccione.
@@ -754,15 +769,15 @@ export class TablaLicitacionesComponent implements OnInit {
       }
 
       // Optimistic UI: marcar inmediatamente como terminado.
-      this.Hitos[realIndex].Estado = 'Terminado';
+      hito.Estado = 'Terminado';
       console.log('[HITOS][Completado] Llamando actualizarHito', {
         realIndex,
         fechaCompromiso,
-        horaCompromiso: this.Hitos[realIndex].HoraCompromiso || "00:00",
+        horaCompromiso: hito.HoraCompromiso || "00:00",
       });
-      this.actualizarHito(realIndex, {
+      this.actualizarHito(hito, {
         fechaCompromiso: fechaCompromiso,
-        horaCompromiso: this.Hitos[realIndex].HoraCompromiso || "00:00",
+        horaCompromiso: hito.HoraCompromiso || "00:00",
         estado: "Terminado"
       }, { silent: true, forcePost: true, skipRefresh: true });
   }
@@ -774,11 +789,14 @@ export class TablaLicitacionesComponent implements OnInit {
         console.error('Índice fuera de rango');
         return;
       }
+      // Capturamos la referencia al objeto hito (no el índice), por la misma
+      // razón explicada en Completado().
+      const hito = this.Hitos[realIndex];
 
       console.log('[HITOS][Descompletar] click', {
         indexEnPagina: i,
         realIndex,
-        hito: this.Hitos[realIndex],
+        hito,
       });
 
       // Confirmar antes de deshacer
@@ -794,13 +812,13 @@ export class TablaLicitacionesComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           // Optimistic UI: marcar inmediatamente como pendiente
-          this.Hitos[realIndex].Estado = 'Pendiente';
+          hito.Estado = 'Pendiente';
           console.log('[HITOS][Descompletar] Llamando actualizarHito', {
             realIndex,
           });
-          this.actualizarHito(realIndex, {
-            fechaCompromiso: this.formatDateForInput(this.Hitos[realIndex].FechaCompromiso),
-            horaCompromiso: this.Hitos[realIndex].HoraCompromiso || "00:00",
+          this.actualizarHito(hito, {
+            fechaCompromiso: this.formatDateForInput(hito.FechaCompromiso),
+            horaCompromiso: hito.HoraCompromiso || "00:00",
             estado: "Pendiente"
           }, { silent: true, forcePost: true, skipRefresh: true });
         }
@@ -837,7 +855,7 @@ export class TablaLicitacionesComponent implements OnInit {
       }
     }).then((result) => {
       if (result.isConfirmed) {
-        this.actualizarHito(realIndex, result.value);
+        this.actualizarHito(hito, result.value);
       }
     });
   }
@@ -857,22 +875,22 @@ export class TablaLicitacionesComponent implements OnInit {
       cancelButtonColor: '#6c757d',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.eliminarHito(realIndex);
+        this.eliminarHito(hito);
       }
     });
   }
 
-  private actualizarHito(i: number, datos: any, options?: { silent?: boolean; forcePost?: boolean; skipRefresh?: boolean }) {
+  private actualizarHito(hito: any, datos: any, options?: { silent?: boolean; forcePost?: boolean; skipRefresh?: boolean }) {
     let loc = this;
     // En autosave (silent) evitamos bloquear toda la UI con loader.
     if (!options?.silent) {
       this.Loading[0] = true;
     }
     let pag = environment.urlBase + "HitosLicitacion/";
-    let hora = this.Hitos[i].HoraCompromiso || "00:00";
+    let hora = hito.HoraCompromiso || "00:00";
     if (datos.horaCompromiso) {
       hora = datos.horaCompromiso;
-      this.Hitos[i].HoraCompromiso = hora;
+      hito.HoraCompromiso = hora;
     }
     let fecha = datos.fechaCompromiso;
     if (hora && fecha) {
@@ -882,13 +900,13 @@ export class TablaLicitacionesComponent implements OnInit {
       }
     }
     const HitoLicitacion = {
-      IdHitoLicitacion: this.Hitos[i].IdHitoLicitacion,
-      IdHito: this.Hitos[i].IdHito,
-      IdLicitacion: this.Hitos[i].IdLicitacion,
+      IdHitoLicitacion: hito.IdHitoLicitacion,
+      IdHito: hito.IdHito,
+      IdLicitacion: hito.IdLicitacion,
       FechaCompromiso: fecha,
       Estado: datos.estado,
-      FechaCreacion: this.Hitos[i].FechaCreacion,
-      IdUsuarioCreador: this.Hitos[i].IdUsuarioCreador,
+      FechaCreacion: hito.FechaCreacion,
+      IdUsuarioCreador: hito.IdUsuarioCreador,
       Activo: true,
       HoraCompromiso: hora
     };
@@ -907,7 +925,7 @@ export class TablaLicitacionesComponent implements OnInit {
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' };
 
     console.log('[HITOS][actualizarHito] request', {
-      i,
+      hito,
       url: pag,
       datos,
       HitoLicitacion,
@@ -923,43 +941,46 @@ export class TablaLicitacionesComponent implements OnInit {
       const effectiveResult = result ?? {};
 
       // Actualizar inmediatamente el modelo local con lo que se envió.
+      // Mutamos directamente el objeto "hito" (por referencia): así no importa
+      // si mientras esta petición estaba en vuelo, this.Hitos fue reordenado
+      // por otra operación — seguimos escribiendo sobre el hito correcto.
       if (datos?.fechaCompromiso) {
         // Mantener el string que espera el backend/UI.
-        this.Hitos[i].FechaCompromiso = datos.fechaCompromiso;
-        (this.Hitos as any[])[i].FechaCompromisoInput = this.normalizeFechaCompromisoForSave(String(datos.fechaCompromiso || ''));
+        hito.FechaCompromiso = datos.fechaCompromiso;
+        hito.FechaCompromisoInput = this.normalizeFechaCompromisoForSave(String(datos.fechaCompromiso || ''));
       }
       if (datos?.estado) {
-        this.Hitos[i].Estado = String(datos.estado ?? '').trim();
+        hito.Estado = String(datos.estado ?? '').trim();
       }
       if (datos?.horaCompromiso) {
-        this.Hitos[i].HoraCompromiso = datos.horaCompromiso;
+        hito.HoraCompromiso = datos.horaCompromiso;
       }
 
       // Importante: el backend puede crear un nuevo IdHitoLicitacion en vez de actualizar.
       // Para no quedar apuntando al registro viejo, sincronizamos el ID y valores principales.
       if (effectiveResult?.IdHitoLicitacion) {
-        this.Hitos[i].IdHitoLicitacion = effectiveResult.IdHitoLicitacion;
+        hito.IdHitoLicitacion = effectiveResult.IdHitoLicitacion;
       }
       if (effectiveResult?.FechaCompromiso) {
-        this.Hitos[i].FechaCompromiso = effectiveResult.FechaCompromiso;
-        (this.Hitos as any[])[i].FechaCompromisoInput = this.normalizeFechaCompromisoForSave(String(effectiveResult.FechaCompromiso || ''));
+        hito.FechaCompromiso = effectiveResult.FechaCompromiso;
+        hito.FechaCompromisoInput = this.normalizeFechaCompromisoForSave(String(effectiveResult.FechaCompromiso || ''));
       }
       if (effectiveResult?.Estado) {
-        this.Hitos[i].Estado = String(effectiveResult.Estado ?? '').trim();
+        hito.Estado = String(effectiveResult.Estado ?? '').trim();
       }
 
       // Canonicalizar estados esperados por el template
-      const estadoFinalRaw = String(this.Hitos[i]?.Estado ?? '').trim();
+      const estadoFinalRaw = String(hito?.Estado ?? '').trim();
       const estadoFinalLower = estadoFinalRaw.toLowerCase();
       if (estadoFinalLower === 'terminado' || estadoFinalLower === 'completado') {
-        this.Hitos[i].Estado = 'Terminado';
+        hito.Estado = 'Terminado';
       } else if (estadoFinalLower === 'pendiente') {
-        this.Hitos[i].Estado = 'Pendiente';
+        hito.Estado = 'Pendiente';
       } else {
-        this.Hitos[i].Estado = estadoFinalRaw;
+        hito.Estado = estadoFinalRaw;
       }
       if (effectiveResult?.HoraCompromiso) {
-        this.Hitos[i].HoraCompromiso = effectiveResult.HoraCompromiso;
+        hito.HoraCompromiso = effectiveResult.HoraCompromiso;
       }
 
       this.ordenarHitosPorFecha();
@@ -1000,7 +1021,7 @@ export class TablaLicitacionesComponent implements OnInit {
     };
 
     // Si existe IdHitoLicitacion, preferir PUT para NO generar duplicados en el backend.
-    const existingId = Number(this.Hitos[i]?.IdHitoLicitacion || 0);
+    const existingId = Number(hito?.IdHitoLicitacion || 0);
     if (existingId > 0) {
       // En autosave o cuando se fuerce, preferimos POST porque hay backends que persisten
       // creando un nuevo registro (y el PUT puede responder 200 con body vacío sin guardar).
@@ -1030,10 +1051,10 @@ export class TablaLicitacionesComponent implements OnInit {
     this.http.post<any>(pag, params, { headers }).subscribe({ next: onSuccess, error: onError });
   }
 
-  private eliminarHito(i: number) {
+  private eliminarHito(hito: any) {
     let loc = this;
     this.Loading[0] = true;
-    let pag = environment.urlBase + "HitosLicitacion/" + this.Hitos[i].IdHitoLicitacion;
+    let pag = environment.urlBase + "HitosLicitacion/" + hito.IdHitoLicitacion;
     this.http.delete<any>(pag).subscribe({
       next: (result) => {
         loc.Loading[0] = false;
