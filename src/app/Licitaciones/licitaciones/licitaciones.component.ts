@@ -9,6 +9,7 @@ import { environment } from '../../../environments/environment';
 import { timeout, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { NotificacionesService } from '../../services/notificaciones.service';
+import { LicitacionHoraService } from '../../services/licitacion-hora.service';
 
 declare var jQuery: any;
 declare var $: any;
@@ -262,7 +263,8 @@ export class LicitacionesComponent implements OnInit {
   constructor(
     private _router: Router, 
     private http: HttpClient,
-    private notificacionesService: NotificacionesService
+    private notificacionesService: NotificacionesService,
+    private licitacionHoraService: LicitacionHoraService
   ) { 
     // Carga Estados solo si no están cargados
     this.http.get<any[]>(this.urlBase+'Estado/')
@@ -588,6 +590,8 @@ export class LicitacionesComponent implements OnInit {
             if (result && id) {
               loc.AgregaHitos(id);
               loc.GetLicitaciones();
+              // Guarda la hora de creación en Firestore (el backend no la persiste)
+              loc.licitacionHoraService.guardarHoraCreacion(id).catch(err => console.error('Error guardando hora de creación en Firestore', err));
               
               // Crear notificación automáticamente al crear una nueva licitación
               const licitacionCreada = {

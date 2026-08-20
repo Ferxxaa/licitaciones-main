@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { OfertaEconomicaService } from '../../servicios/oferta-economica.service';
+import { LicitacionHoraService } from '../../services/licitacion-hora.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MainComponent } from '../../main/main.component';
@@ -237,7 +238,8 @@ export class MisLicitacionesComponent implements OnInit {
   constructor(
     private router: Router,
     private http: HttpClient,
-    private ofertaEconomica: OfertaEconomicaService
+    private ofertaEconomica: OfertaEconomicaService,
+    private licitacionHoraService: LicitacionHoraService
   ) {
     this.historicos = false;
     this.inicializarAniosDisponibles();
@@ -455,9 +457,21 @@ export class MisLicitacionesComponent implements OnInit {
         this.ensureValidCurrentPage();
         this.GetFechaOfertaEconomica(this.Licitaciones);
         this.ordenarPorIdDesc();
+        this.cargarHorasCreacion();
         this.Loading = false;
         this.LoadingTabla = false;
     });
+  }
+
+  // Asigna la hora de creación (guardada en Firestore) a cada licitación de la lista
+  cargarHorasCreacion() {
+    this.licitacionHoraService.obtenerTodasLasHoras()
+      .then(horas => {
+        this.Licitaciones.forEach(lic => {
+          lic.HoraCreacion = horas[lic.IdLicitacion] || null;
+        });
+      })
+      .catch(err => console.error('Error obteniendo horas de creación desde Firestore', err));
   }
 
   // Función auxiliar para aplicar filtros

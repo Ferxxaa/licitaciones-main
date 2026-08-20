@@ -261,7 +261,7 @@
                                                             <span *ngIf="Licitacione.Competitividad=='Media'" class="circle-media"></span>
                                                             <span *ngIf="Licitacione.Competitividad=='Alta'" class="circle-alta"></span>
                                                         </td>
-                                                        <td class="align-center" style="max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{Licitacione.FechaCreacion | date:'dd/MM/yyyy'}}</td>
+                                                        <td class="align-center" style="max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{Licitacione.FechaCreacion | date:'dd/MM/yyyy'}} <span *ngIf="Licitacione.HoraCreacion">{{Licitacione.HoraCreacion}}</span></td>
                                                         <td style="min-width:40px; max-width:60px; width:3%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                                             <ng-container *ngIf="Licitacione.fechaOferta | async as fechas">
                                                                 <ng-container *ngIf="hasHito(fechas, 'Presentación Ofertas Económicas'); else checkOfertaEconomica">

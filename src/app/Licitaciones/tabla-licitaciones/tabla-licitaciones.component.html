@@ -83,8 +83,22 @@
                                                                                 [ngModelOptions]="{standalone: true}"
                                                                                 (change)="onFechaCompromisoInputChange(i, Hito.FechaCompromisoInput)"
                                                                                 style="height: 20px; padding: 1px 3px; font-size: 0.88em;" />
+                                                                            <input id="txtHoraCompromiso{{i}}" name="txtHoraCompromiso{{i}}"
+                                                                                type="time" class="form-control compact-input"
+                                                                                [(ngModel)]="Hito.HoraCompromiso"
+                                                                                [ngModelOptions]="{standalone: true}"
+                                                                                (change)="onHoraCompromisoInputChange(i, Hito.HoraCompromiso)"
+                                                                                style="height: 20px; padding: 1px 3px; font-size: 0.88em; margin-left: 4px;" />
                                                                         </div>
-                                                                        <span id="spanCaledario{{i}}" *ngIf="Hito.Estado=='Terminado'">{{Hito.FechaCompromiso | date:'dd/MM/yyyy'}}</span>
+                                                                        <span id="spanCaledario{{i}}" *ngIf="Hito.Estado=='Terminado'">
+                                                                            {{Hito.FechaCompromiso | date:'dd/MM/yyyy'}}
+                                                                            <input id="txtHoraCompromisoTerminado{{i}}" name="txtHoraCompromisoTerminado{{i}}"
+                                                                                type="time" class="form-control compact-input"
+                                                                                [(ngModel)]="Hito.HoraCompromiso"
+                                                                                [ngModelOptions]="{standalone: true}"
+                                                                                (change)="onHoraCompromisoInputChange(i, Hito.HoraCompromiso)"
+                                                                                style="display: inline-block; width: auto; height: 20px; padding: 1px 3px; font-size: 0.88em; margin-left: 4px;" />
+                                                                        </span>
                                                                     </td>
                                                                     <td class="align-center" style="padding: 2px 6px; font-size: 0.92em;">
                                                                         <!-- Estado Pendiente - Círculo gris clickeable -->

@@ -12,6 +12,7 @@ import { AddHitoComponent } from './add-hito/add-hito.component';
 import { sVis_UsuariosCoordinadores } from './tareas-lic/Externos/sVis_UsuariosCoordinadores.service';
 import { timeout, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { LicitacionHoraService } from '../../services/licitacion-hora.service';
 
 declare var Swal: any;
 declare var $: any;
@@ -300,7 +301,8 @@ export class TablaLicitacionesComponent implements OnInit {
     private http: HttpClient,
     private route: Router,
     private coordinadoresService: sVis_UsuariosCoordinadores,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private licitacionHoraService: LicitacionHoraService
   ) {
 
     this.rowHitos = true;
@@ -445,6 +447,7 @@ export class TablaLicitacionesComponent implements OnInit {
               hito.FechaCompromisoInput = this.normalizeFechaCompromisoForSave(String(hito.FechaCompromiso || ''));
             }
             this.ordenarHitosPorFecha();
+            this.cargarHorasHitos(idLicitacion);
             this.LoadingTabla[0] = false;
             this.Calendar();
           },
@@ -453,6 +456,20 @@ export class TablaLicitacionesComponent implements OnInit {
             this.LoadingTabla[0] = false;
           }
         })
+  }
+
+  // La hora de compromiso se guarda en Firestore (el backend no la persiste de forma confiable)
+  private cargarHorasHitos(idLicitacion: number) {
+    this.licitacionHoraService.obtenerHorasHitos(idLicitacion)
+      .then(horas => {
+        for (const hito of this.Hitos as any[]) {
+          const hora = horas[Number(hito.IdHito)];
+          if (hora) {
+            hito.HoraCompromiso = hora;
+          }
+        }
+      })
+      .catch(err => console.error('Error obteniendo horas de hitos desde Firestore', err));
   }
 
   retFecha(now) {
@@ -613,6 +630,26 @@ export class TablaLicitacionesComponent implements OnInit {
       hito,
     });
     this.actualizarHito(hito, payload, { silent: true });
+  }
+
+  onHoraCompromisoInputChange(indexEnPagina: number, rawValue: string) {
+    const realIndex = this.getRealHitoIndex(indexEnPagina);
+    if (!this.Hitos || realIndex < 0 || realIndex >= this.Hitos.length) {
+      console.warn('[HITOS][HoraCompromiso][change] Índice fuera de rango o Hitos undefined', {
+        length: this.Hitos?.length,
+        realIndex,
+      });
+      return;
+    }
+
+    const hito = (this.Hitos as any[])[realIndex];
+    const hora = rawValue || '00:00';
+    hito.HoraCompromiso = hora;
+
+    // Se guarda en Firestore (no en el backend) porque el campo HoraCompromiso
+    // del backend no persiste de forma confiable y provocaba registros duplicados.
+    this.licitacionHoraService.guardarHoraHito(hito.IdLicitacion, hito.IdHito, hora)
+      .catch(err => console.error('Error guardando hora de compromiso en Firestore', err));
   }
 
   //******************************************Hitos******************************************
@@ -835,6 +872,10 @@ export class TablaLicitacionesComponent implements OnInit {
           <label for="editFechaCompromiso" class="form-label">Fecha Compromiso:</label>
           <input type="date" id="editFechaCompromiso" class="form-control" value="${this.formatDateForInput(hito.FechaCompromiso)}">
         </div>
+        <div class="form-group mb-3">
+          <label for="editHoraCompromiso" class="form-label">Hora Compromiso:</label>
+          <input type="time" id="editHoraCompromiso" class="form-control" value="${hito.HoraCompromiso || '00:00'}">
+        </div>
       `,
       showCancelButton: true,
       confirmButtonText: '<i class="fa fa-save"></i> Guardar',
@@ -843,19 +884,22 @@ export class TablaLicitacionesComponent implements OnInit {
       cancelButtonColor: '#6c757d',
       preConfirm: () => {
         const fechaCompromiso = (document.getElementById('editFechaCompromiso') as HTMLInputElement).value;
+        const horaCompromiso = (document.getElementById('editHoraCompromiso') as HTMLInputElement).value;
         if (!fechaCompromiso) {
           Swal.showValidationMessage('La fecha compromiso es requerida');
           return false;
         }
         return {
           fechaCompromiso: fechaCompromiso,
-          horaCompromiso: hito.HoraCompromiso || '00:00', // Mantener la hora actual
+          horaCompromiso: horaCompromiso || '00:00',
           estado: hito.Estado // Mantener el estado actual, no editable
         };
       }
     }).then((result) => {
       if (result.isConfirmed) {
         this.actualizarHito(hito, result.value);
+        this.licitacionHoraService.guardarHoraHito(hito.IdLicitacion, hito.IdHito, result.value.horaCompromiso)
+          .catch(err => console.error('Error guardando hora de compromiso en Firestore', err));
       }
     });
   }
@@ -1084,8 +1128,10 @@ export class TablaLicitacionesComponent implements OnInit {
 
   private formatDateForInput(dateString: string): string {
     if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    // Reutiliza el mismo parser tolerante que el autoguardado de fecha, en vez de
+    // new Date(...).toISOString() que puede corromper el año con datos legados.
+    const normalizado = this.normalizeFechaCompromisoForSave(String(dateString));
+    return /^\d{4}-\d{2}-\d{2}$/.test(normalizado) ? normalizado : '';
   }
 
   //******************************************Oferta******************************************
