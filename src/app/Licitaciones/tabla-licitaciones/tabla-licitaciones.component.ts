@@ -13,6 +13,7 @@ import { sVis_UsuariosCoordinadores } from './tareas-lic/Externos/sVis_UsuariosC
 import { timeout, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { LicitacionHoraService } from '../../services/licitacion-hora.service';
+import { LicitacionFechaHitoService } from '../../services/licitacion-fecha-hito.service';
 
 declare var Swal: any;
 declare var $: any;
@@ -302,7 +303,8 @@ export class TablaLicitacionesComponent implements OnInit {
     private route: Router,
     private coordinadoresService: sVis_UsuariosCoordinadores,
     private ngZone: NgZone,
-    private licitacionHoraService: LicitacionHoraService
+    private licitacionHoraService: LicitacionHoraService,
+    private licitacionFechaHitoService: LicitacionFechaHitoService
   ) {
 
     this.rowHitos = true;
@@ -630,6 +632,17 @@ export class TablaLicitacionesComponent implements OnInit {
       hito,
     });
     this.actualizarHito(hito, payload, { silent: true });
+
+    // Guardar la fecha vigente en Firestore: el backend no borra los registros
+    // antiguos, así que el calendario lee la fecha real desde Firestore.
+    if (hito.IdLicitacion && hito.IdHito) {
+      this.licitacionFechaHitoService.guardarFechaHito(
+        Number(hito.IdLicitacion),
+        Number(hito.IdHito),
+        normalized,
+        hito.HoraCompromiso
+      ).catch(err => console.error('[HITOS] Error guardando fecha vigente en Firestore', err));
+    }
   }
 
   onHoraCompromisoInputChange(indexEnPagina: number, rawValue: string) {
@@ -1071,7 +1084,18 @@ export class TablaLicitacionesComponent implements OnInit {
       // creando un nuevo registro (y el PUT puede responder 200 con body vacío sin guardar).
       if (options?.silent || options?.forcePost) {
         console.log('[HITOS][actualizarHito] usando POST (append)', { existingId, forcePost: options?.forcePost ?? false });
-        this.http.post<any>(pag, params, { headers }).subscribe({ next: onSuccess, error: onError });
+        this.http.post<any>(pag, params, { headers }).subscribe({
+          next: (result) => {
+            // Este backend crea un registro NUEVO en vez de actualizar el existente
+            // (y suele responder sin body, por lo que no se puede confiar en
+            // result.IdHitoLicitacion). El registro anterior queda huérfano con la
+            // fecha vieja y el calendario muestra el hito duplicado. Solución:
+            // consultar los hitos de la licitación y eliminar los registros del
+            // mismo hito que NO coincidan con los datos recién guardados.
+            this.eliminarDuplicadosHito(hito, datos, () => onSuccess(result));
+          },
+          error: onError
+        });
         return;
       }
 
@@ -1093,6 +1117,95 @@ export class TablaLicitacionesComponent implements OnInit {
     }
 
     this.http.post<any>(pag, params, { headers }).subscribe({ next: onSuccess, error: onError });
+  }
+
+  // Elimina registros duplicados del mismo hito (mismo IdHito dentro de la
+  // licitación) que el backend deja huérfanos cuando un POST crea un registro
+  // nuevo en vez de actualizar. Conserva únicamente el registro que coincide con
+  // los datos recién guardados (fecha/hora/estado); si ninguno coincide, conserva
+  // el de mayor IdHitoLicitacion. Elimina el resto.
+  private eliminarDuplicadosHito(hito: any, datos: any, done: () => void) {
+    const idLicitacion = hito?.IdLicitacion;
+    const idHito = Number(hito?.IdHito || 0);
+    if (!idLicitacion || !idHito) {
+      done();
+      return;
+    }
+
+    const pag = environment.urlBase + "HitosLicitacion/";
+    const fechaEsperada = this.normalizeFechaCompromisoForSave(String(datos?.fechaCompromiso || hito?.FechaCompromiso || ''));
+    const estadoEsperado = String(datos?.estado ?? hito?.Estado ?? '').trim().toLowerCase();
+    const horaEsperada = String(datos?.horaCompromiso || hito?.HoraCompromiso || '').trim();
+
+    this.http.get<any[]>(environment.urlBase + 'Licitaciones/GetHitosHitosLicitacionByLicitaciones/IdLicitacion=' + idLicitacion)
+      .subscribe({
+        next: (registros) => {
+          const duplicados = (registros || []).filter(r => Number(r?.IdHito) === idHito);
+          if (duplicados.length <= 1) {
+            // El POST actualizó en el lugar (no creó duplicado): nada que limpiar.
+            done();
+            return;
+          }
+
+          // Elegir el registro a conservar: preferir el que coincida con la fecha
+          // (y estado si se conoce) recién guardada. Ese es el registro vigente.
+          const coincide = (r: any) => {
+            const fechaR = this.normalizeFechaCompromisoForSave(String(r?.FechaCompromiso || ''));
+            const estadoR = String(r?.Estado ?? '').trim().toLowerCase();
+            const fechaOk = !fechaEsperada || fechaR === fechaEsperada;
+            const estadoOk = !estadoEsperado || estadoR === estadoEsperado;
+            return fechaOk && estadoOk;
+          };
+
+          let conservar = duplicados.filter(coincide)
+            .sort((a, b) => Number(b?.IdHitoLicitacion || 0) - Number(a?.IdHitoLicitacion || 0))[0];
+
+          // Fallback: si ninguno coincide, conservar el de mayor IdHitoLicitacion.
+          if (!conservar) {
+            conservar = [...duplicados].sort((a, b) =>
+              Number(b?.IdHitoLicitacion || 0) - Number(a?.IdHitoLicitacion || 0))[0];
+          }
+
+          const idConservar = Number(conservar?.IdHitoLicitacion || 0);
+          const aEliminar = duplicados.filter(r => Number(r?.IdHitoLicitacion || 0) !== idConservar);
+          console.log('[HITOS][limpieza] hito', idHito, '-> conservar', idConservar,
+            'fecha esperada', fechaEsperada, ', eliminar', aEliminar.map(r => ({ id: r?.IdHitoLicitacion, fecha: r?.FechaCompromiso })));
+
+          // Actualizar el modelo local para apuntar al registro vigente
+          if (idConservar) {
+            hito.IdHitoLicitacion = idConservar;
+          }
+
+          // Eliminar los demás registros en serie para no saturar el backend
+          const eliminarSiguiente = (index: number) => {
+            if (index >= aEliminar.length) {
+              done();
+              return;
+            }
+            const registro = aEliminar[index];
+            const id = Number(registro?.IdHitoLicitacion || 0);
+            if (!id) {
+              eliminarSiguiente(index + 1);
+              return;
+            }
+            this.http.delete<any>(pag + id).subscribe({
+              next: () => {
+                console.log('[HITOS][limpieza] registro huérfano eliminado', id);
+                eliminarSiguiente(index + 1);
+              },
+              error: (err) => {
+                console.warn('[HITOS][limpieza] no se pudo eliminar el registro', id, err);
+                eliminarSiguiente(index + 1);
+              }
+            });
+          };
+          eliminarSiguiente(0);
+        },
+        error: (err) => {
+          console.warn('[HITOS][limpieza] no se pudo consultar hitos para limpiar duplicados', err);
+          done();
+        }
+      });
   }
 
   private eliminarHito(hito: any) {

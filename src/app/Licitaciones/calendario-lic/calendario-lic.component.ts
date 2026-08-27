@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { DatePipe, CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MainComponent } from '../../main/main.component';
+import { LicitacionFechaHitoService } from '../../services/licitacion-fecha-hito.service';
+import { LicitacionHoraService } from '../../services/licitacion-hora.service';
 
 declare var jQuery: any;
 declare var $: any;
@@ -15,6 +17,7 @@ interface LicitacionCalendario {
   backgroundColor: string;
   textColor?: string;
   title?: string;
+  FechaCompromiso?: string;
   HoraCompromiso?: string;
   Estado?: string;
 }
@@ -36,8 +39,10 @@ interface CalendarEventRecord {
 
 interface HitoLicitacion {
   IdLicitacion: number;
+  IdHito?: number;
   NombreLicitacion?: string;
   DescripcionLicitacion?: string;
+  FechaCompromiso?: string;
   HoraCompromiso?: string;
 }
 
@@ -65,7 +70,11 @@ export class CalendarioLicComponent implements OnInit {
   private loadingDateData = false; // Prevenir llamadas duplicadas
   private hitoColorMap: Map<string, string> = new Map(); // Mapa de nombre de hito a color
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private licitacionFechaHitoService: LicitacionFechaHitoService,
+    private licitacionHoraService: LicitacionHoraService
+  ) { }
 
   ngOnInit() {
     // Primero cargar los colores de los hitos, luego inicializar el calendario
@@ -149,21 +158,28 @@ export class CalendarioLicComponent implements OnInit {
         const normalizedData = this.normalizeCalendarEvents(data);
         // Aplicar colores correctos de los hitos
         normalizedData.forEach(event => {
-          const hitoName = (event.title || event.NombreHito || '').trim();
-          const hitoColor = this.hitoColorMap.get(hitoName);
+          const hitoColor = this.resolveHitoColor(event.title || event.NombreHito);
           if (hitoColor) {
-            console.log(`Aplicando color ${hitoColor} a evento "${hitoName}" (color anterior: ${event.backgroundColor || event.color})`);
             event.backgroundColor = hitoColor;
             event.color = hitoColor;
-          } else {
-            console.warn(`No se encontró color para evento "${hitoName}"`);
           }
         });
         // Eliminar hitos duplicados reales usando los campos visibles del evento
         const uniqueData = this.removeDuplicateHitos(normalizedData);
         console.log('Unique calendar data:', uniqueData);
-        this.createFullCalendar(uniqueData, component);
-        this.setupCalendarControls();
+        // Filtrar eventos obsoletos: el backend no borra los registros antiguos
+        // cuando se cambia la fecha de un hito, por lo que el hito aparece en la
+        // fecha vieja y en la nueva. Se cruza con el endpoint de hitos de cada
+        // licitación para quedarse solo con la fecha vigente (mayor IdHitoLicitacion).
+        this.filterOutdatedHitoEvents(uniqueData).then(filtered => {
+          console.log('Calendar data después de filtrar fechas obsoletas:', filtered.length);
+          this.createFullCalendar(filtered, component);
+          this.setupCalendarControls();
+        }).catch(() => {
+          // Si falla la consulta de hitos, mostrar lo que hay (mejor duplicado que vacío)
+          this.createFullCalendar(uniqueData, component);
+          this.setupCalendarControls();
+        });
       },
       error: (error) => {
         console.error('Error loading calendar data:', error);
@@ -172,6 +188,163 @@ export class CalendarioLicComponent implements OnInit {
         this.setupCalendarControls();
       }
     });
+  }
+
+  // Filtra los eventos del calendario mensual ocultando los hitos que fueron
+  // MOVIDOS a otra fecha. La única fuente confiable de movimientos es Firestore
+  // (colección hitosHora): se escribe cada vez que el usuario edita la fecha en
+  // /Licitacion-Detalle. El backend NO es confiable para esto porque acumula un
+  // registro por cada acción (incluye huérfanos y fechas corruptas).
+  // Regla: si Firestore tiene una fecha vigente distinta a la del evento, el
+  // evento es un huérfano de una edición anterior -> se oculta. Si no hay dato
+  // en Firestore, el hito nunca se movió con este sistema -> se muestra donde el
+  // backend lo reporta.
+  private async filterOutdatedHitoEvents(events: any[]): Promise<any[]> {
+    // Extraer IDs de licitación desde el título. Formatos reales:
+    // "573:Adjudicación", "12a 573:Adjudicación" -> licitación 573
+    const licitacionIds = new Set<number>();
+    events.forEach(e => {
+      const m = String(e.title || e.NombreHito || '').match(/(\d+)\s*:/);
+      if (m) licitacionIds.add(Number(m[1]));
+    });
+    if (licitacionIds.size === 0) return events;
+
+    // 1) Fechas vigentes confirmadas desde Firestore: "licitacionId_idHito" -> fecha
+    let fechasFirestore: Record<string, string> = {};
+    try {
+      fechasFirestore = await this.licitacionFechaHitoService.obtenerTodasLasFechas();
+      console.log('[CAL] Fechas vigentes desde Firestore:', Object.keys(fechasFirestore).length, fechasFirestore);
+    } catch (err) {
+      console.warn('[CAL] No se pudieron leer fechas de Firestore, no se ocultan movimientos', err);
+      return events; // sin fuente de verdad no se puede ocultar nada con certeza
+    }
+    const firestoreKeys = Object.keys(fechasFirestore);
+    if (firestoreKeys.length === 0) return events;
+
+    // 2) Mapear nombre de hito -> IdHito por licitación (para cruzar el título
+    // del evento con la clave de Firestore). No se usa para ocultar por fecha.
+    const entries = await Promise.all([...licitacionIds].map(async (id) => {
+      try {
+        const hitos = await this.http.get<any[]>(
+          `http://trazas-nbi.com:1234/api/Licitaciones/GetHitosHitosLicitacionByLicitaciones/IdLicitacion=${id}`
+        ).toPromise();
+        return [id, hitos || []] as [number, any[]];
+      } catch {
+        return [id, []] as [number, any[]];
+      }
+    }));
+
+    // Mapa: licitacionId:nombreHito(normalizado) -> fecha vigente (solo de Firestore)
+    const vigente = new Map<string, string>();
+    for (const [licId, hitos] of entries) {
+      const idHitoPorNombre = new Map<string, number>();
+      for (const h of hitos) {
+        const key = this.normalizeTextKey(h?.NombreHito);
+        const idHito = Number(h?.IdHito || 0);
+        if (key && idHito && !idHitoPorNombre.has(key)) {
+          idHitoPorNombre.set(key, idHito);
+        }
+      }
+      idHitoPorNombre.forEach((idHito, key) => {
+        const fechaFs = fechasFirestore[`${licId}_${idHito}`];
+        if (fechaFs) vigente.set(`${licId}:${key}`, fechaFs);
+      });
+    }
+
+    // Filtrar eventos: ocultar solo si Firestore confirma que el hito quedó
+    // vigente en otra fecha.
+    const filtered = events.filter(e => {
+      const title = String(e.title || e.NombreHito || '');
+      // Aceptar prefijos como "12a 573:Adjudicación": tomar el número antes de ':'
+      const m = title.match(/(\d+)\s*:\s*(.+)$/);
+      if (!m) return true; // sin formato "id:nombre" no se puede validar -> mostrar
+      const licId = Number(m[1]);
+      const hitoName = this.normalizeTextKey(m[2]);
+      const key = `${licId}:${hitoName}`;
+      if (!vigente.has(key)) return true; // sin movimiento confirmado -> mostrar
+      const fechaEvento = this.normalizeFechaIso(e.start);
+      const fechaVigente = vigente.get(key);
+      const ok = fechaEvento === fechaVigente;
+      if (!ok) {
+        console.log(`[CAL][obsoleto] ocultando "${title}" del ${fechaEvento} (vigente: ${fechaVigente})`);
+      }
+      return ok;
+    });
+
+    console.log(`[CAL] Filtro de fechas obsoletas: ${events.length} eventos -> ${filtered.length} tras filtrar`);
+    return filtered;
+  }
+
+  // Normaliza una fecha (string ISO o Date) a yyyy-MM-dd; '' si no es válida.
+  private normalizeFechaIso(value: any): string {
+    if (!value) return '';
+    if (value instanceof Date) {
+      return isNaN(value.getTime()) ? '' : this.formatDateForCalendar(value);
+    }
+    const d = this.normalizeApiDateValue(String(value));
+    if (d instanceof Date) {
+      return isNaN(d.getTime()) ? '' : this.formatDateForCalendar(d);
+    }
+    const m = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return m ? `${m[1]}-${m[2]}-${m[3]}` : '';
+  }
+
+  // Filtra la vista diaria: colapsa duplicados del mismo hito en el día
+  // conservando el más reciente, Y oculta los hitos que Firestore confirma que
+  // fueron movidos a OTRA fecha (huérfanos de ediciones anteriores que el
+  // backend sigue devolviendo en la fecha vieja). Sin dato en Firestore, el hito
+  // se muestra donde el endpoint diario lo reporta (colapsando duplicados).
+  private async filterOutdatedDaily(data: LicitacionCalendario[], diaYmd: string): Promise<LicitacionCalendario[]> {
+    if (!data || data.length === 0) return data;
+
+    // Fechas vigentes confirmadas desde Firestore (se escriben al editar la fecha)
+    let fechasFs: Record<string, string> = {};
+    try {
+      fechasFs = await this.licitacionFechaHitoService.obtenerTodasLasFechas();
+    } catch { /* sin Firestore no se oculta nada */ }
+
+    // Para cada registro necesitamos idLicitacion e idHito (el endpoint diario no
+    // los trae). Los obtenemos del endpoint HitosLicitacion/{id}.
+    const enriched = await Promise.all(data.map(async (lic) => {
+      try {
+        const h = await this.http.get<any>(
+          `http://trazas-nbi.com:1234/api/HitosLicitacion/${lic.IdHitoLicitacion}`
+        ).toPromise();
+        return { lic, idLicitacion: Number(h?.IdLicitacion || 0), idHito: Number(h?.IdHito || 0) };
+      } catch {
+        return { lic, idLicitacion: 0, idHito: 0 };
+      }
+    }));
+
+    // Agrupar por hito (licitacion+hito si se conoce, si no por nombre+descripción)
+    const grupos = new Map<string, { lic: LicitacionCalendario; idLicitacion: number; idHito: number }[]>();
+    enriched.forEach(e => {
+      const key = (e.idLicitacion && e.idHito)
+        ? `${e.idLicitacion}_${e.idHito}`
+        : `nombre:${this.normalizeTextKey(e.lic.NombreHito)}|${this.normalizeTextKey(e.lic.Descripcion)}`;
+      if (!grupos.has(key)) grupos.set(key, []);
+      grupos.get(key)!.push(e);
+    });
+
+    const resultado: LicitacionCalendario[] = [];
+    for (const [key, grupo] of grupos) {
+      const { idLicitacion, idHito } = grupo[0];
+
+      // Ocultar SOLO si Firestore confirma que el hito fue movido a otro día.
+      const fechaVigenteFs = (idLicitacion && idHito) ? fechasFs[`${idLicitacion}_${idHito}`] : undefined;
+      if (fechaVigenteFs && fechaVigenteFs !== diaYmd) {
+        console.log(`[CAL][diario] ocultando hito ${key}: fue movido a ${fechaVigenteFs}, no ${diaYmd}`);
+        continue;
+      }
+
+      // Este día (o sin confirmación de movimiento): conservar el registro más
+      // reciente del grupo (colapsa duplicados del mismo hito en este día).
+      const reciente = [...grupo].sort((a, b) =>
+        Number(b.lic.IdHitoLicitacion || 0) - Number(a.lic.IdHitoLicitacion || 0))[0];
+      resultado.push(reciente.lic);
+    }
+
+    return resultado;
   }
 
   private setupDraggableEvents() {
@@ -317,21 +490,23 @@ export class CalendarioLicComponent implements OnInit {
     console.log('Fetching data from:', url);
     
     this.http.get<LicitacionCalendario[]>(url).subscribe({
-      next: (dataDia) => {
+      next: async (dataDia) => {
         console.log('Daily calendar data loaded:', dataDia);
         // Aplicar colores correctos de los hitos
         dataDia.forEach(lic => {
-          const hitoName = (lic.NombreHito || '').trim();
-          const hitoColor = this.hitoColorMap.get(hitoName);
+          const hitoColor = this.resolveHitoColor(lic.NombreHito);
           if (hitoColor) {
-            console.log(`Aplicando color ${hitoColor} a hito "${hitoName}" (color anterior: ${lic.backgroundColor})`);
             lic.backgroundColor = hitoColor;
-          } else {
-            console.warn(`No se encontró color para hito "${hitoName}"`);
           }
         });
-        // Eliminar hitos duplicados por nombre, mantener solo los con color
-        const uniqueData = this.removeDuplicateLicitaciones(dataDia);
+        // Filtrar registros obsoletos: el backend acumula un registro por cada
+        // edición y el endpoint diario los devuelve todos. filterOutdatedDaily
+        // ya conserva, para cada hito, solo el registro vigente (o el más
+        // reciente), por lo que NO se aplica removeDuplicateLicitaciones aquí:
+        // ese filtro colapsaba hitos DISTINTOS que caen el mismo día cuando
+        // comparten mandante/ejecutivo/descripción (ej. Consultas, General y
+        // Pres_Propuesta del mismo día), mostrando solo uno.
+        const uniqueData = await this.filterOutdatedDaily(dataDia, `${year}-${month}-${day}`);
         console.log('Unique daily data:', uniqueData);
         this.displayLicitacionDetails(uniqueData);
         this.loadingDateData = false;
@@ -392,7 +567,6 @@ export class CalendarioLicComponent implements OnInit {
     const detailsContainer = document.getElementById('licitaciones-details');
     if (!detailsContainer) return;
 
-    // Limpiar contenido anterior
     detailsContainer.innerHTML = '';
 
     if (licitaciones.length === 0) {
@@ -400,18 +574,37 @@ export class CalendarioLicComponent implements OnInit {
       return;
     }
 
-    // Crear header con fecha seleccionada
     this.createDateHeader(detailsContainer);
 
-    // Crear tarjetas para cada licitación
     for (let i = 0; i < licitaciones.length; i++) {
       try {
         const hitoData = await this.getHitoLicitacion(licitaciones[i].IdHitoLicitacion);
+        const horaFirestore = hitoData?.IdLicitacion && hitoData?.IdHito
+          ? await this.obtenerHoraHitoDesdeFirestore(hitoData.IdLicitacion, hitoData.IdHito)
+          : null;
+
+        if (horaFirestore) {
+          licitaciones[i].HoraCompromiso = horaFirestore;
+          if (hitoData) {
+            hitoData.HoraCompromiso = horaFirestore;
+          }
+        }
+
         this.createLicitacionCard(detailsContainer, licitaciones[i], hitoData);
       } catch (error) {
         console.error('Error loading hito data:', error);
         this.createLicitacionCard(detailsContainer, licitaciones[i], null);
       }
+    }
+  }
+
+  private async obtenerHoraHitoDesdeFirestore(idLicitacion: number, idHito: number): Promise<string | null> {
+    try {
+      const horas = await this.licitacionHoraService.obtenerHorasHitos(idLicitacion);
+      return horas[Number(idHito)] || null;
+    } catch (error) {
+      console.warn('No se pudo leer la hora del hito desde Firestore', error);
+      return null;
     }
   }
 
@@ -444,6 +637,64 @@ export class CalendarioLicComponent implements OnInit {
       day: 'numeric' 
     };
     return this.selectedDate.toLocaleDateString('es-ES', options);
+  }
+
+  private formatHoraCompromiso(hora?: string): string {
+    if (!hora) return '';
+    const clean = String(hora).trim();
+    if (!clean) return '';
+
+    const match = clean.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+    if (match) {
+      return `${match[1].padStart(2, '0')}:${match[2]}`;
+    }
+
+    const timeMatch = clean.match(/T?(\d{1,2}):(\d{2})(?::\d{2})?/);
+    if (timeMatch) {
+      return `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}`;
+    }
+
+    return clean;
+  }
+
+  private formatFechaCompromisoForCard(licitacion: LicitacionCalendario, hitoData?: HitoLicitacion | null): string {
+    const rawDate = (hitoData?.FechaCompromiso || licitacion.FechaCompromiso || (this.selectedDate ? this.formatDateForCalendar(this.selectedDate) : null));
+    if (!rawDate) {
+      return this.formatSelectedDate();
+    }
+
+    try {
+      const dateOnly = String(rawDate).split('T')[0];
+      const match = dateOnly.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      let parsed: Date | null = null;
+
+      if (match) {
+        const [, year, month, day] = match;
+        parsed = new Date(Number(year), Number(month) - 1, Number(day));
+      } else if (typeof rawDate === 'string') {
+        parsed = new Date(rawDate);
+      }
+
+      const options: Intl.DateTimeFormatOptions = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      };
+
+      const formattedDate = parsed && !isNaN(parsed.getTime())
+        ? parsed.toLocaleDateString('es-ES', options)
+        : this.formatSelectedDate();
+
+      const horaFromDate = typeof rawDate === 'string'
+        ? this.formatHoraCompromiso(rawDate.includes('T') ? rawDate.split('T')[1].split('.')[0] : '')
+        : '';
+
+      const hora = this.formatHoraCompromiso(hitoData?.HoraCompromiso || licitacion.HoraCompromiso) || horaFromDate;
+      return hora ? `${formattedDate}, ${hora}` : formattedDate;
+    } catch {
+      return this.formatSelectedDate();
+    }
   }
 
   private createLicitacionCard(container: HTMLElement, licitacion: LicitacionCalendario, hitoData: HitoLicitacion | null) {
@@ -501,6 +752,21 @@ export class CalendarioLicComponent implements OnInit {
                   <div class="flex-grow-1">
                     <div class="label" style="color: #6c757d; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Hito</div>
                     <div class="value" style="color: #2d3748; font-weight: 500; font-size: 0.95rem; margin-top: 2px;">${licitacion.NombreHito}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fecha y hora -->
+            <div class="col-12">
+              <div class="info-item p-3 rounded-3" style="background: white; border: 1px solid ${borderColor}; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <div class="d-flex align-items-center">
+                  <div class="icon-wrapper mr-3" style="background: ${backgroundColor}; color: white; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="label" style="color: #6c757d; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Fecha y hora</div>
+                    <div class="value" style="color: #2d3748; font-weight: 500; font-size: 0.95rem; margin-top: 2px;">${this.formatFechaCompromisoForCard(licitacion, hitoData)}</div>
                   </div>
                 </div>
               </div>
@@ -576,7 +842,7 @@ export class CalendarioLicComponent implements OnInit {
         <div class="card-footer text-center" style="background: ${mediumBg}; border-top: 1px solid ${borderColor}; padding: 1rem;">
           <small style="color: #6c757d; font-weight: 500;">
             <i class="fa fa-clock-o mr-1" style="color: ${backgroundColor};"></i>
-            Fecha programada: <span style="font-weight: 600;">${this.formatSelectedDate()}${licitacion.HoraCompromiso ? ' - ' + licitacion.HoraCompromiso : ''}</span>
+            Fecha y hora programada: <span style="font-weight: 600;">${this.formatFechaCompromisoForCard(licitacion, hitoData)}</span>
           </small>
         </div>
       </div>
@@ -758,6 +1024,41 @@ export class CalendarioLicComponent implements OnInit {
     return result;
   }
 
+  // ID numérico del registro del evento (IdHitoLicitacion o id); 0 si no existe.
+  private eventRecordId(event: any): number {
+    const raw = event?.IdHitoLicitacion ?? event?.id ?? 0;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  // Resuelve el color de un hito a partir del título del evento. Los títulos
+  // vienen como "12a 573:Adjudicación" o "573:General", mientras que el mapa de
+  // colores usa solo el nombre del hito ("Adjudicación"). Se extrae la parte
+  // después del ':' y se intentan ambas variantes (completo y sin prefijo).
+  private resolveHitoColor(rawTitle: string | undefined): string | undefined {
+    const title = String(rawTitle || '').trim();
+    if (!title) return undefined;
+
+    const direct = this.hitoColorMap.get(title);
+    if (direct) return direct;
+
+    const colonIndex = title.indexOf(':');
+    if (colonIndex >= 0) {
+      const hitoName = title.substring(colonIndex + 1).trim();
+      const byName = this.hitoColorMap.get(hitoName);
+      if (byName) return byName;
+
+      // Fallback: coincidencia por contención (nombres abreviados en el título,
+      // ej. "Apelación Tec" vs "Apelación Tecnica").
+      for (const [name, color] of this.hitoColorMap.entries()) {
+        if (hitoName.length >= 4 && (name.startsWith(hitoName) || hitoName.startsWith(name))) {
+          return color;
+        }
+      }
+    }
+    return undefined;
+  }
+
   // Eliminar licitaciones duplicadas reales (para vista diaria)
   private removeDuplicateLicitaciones(licitaciones: LicitacionCalendario[]): LicitacionCalendario[] {
     const licitacionMap = new Map<string, LicitacionCalendario[]>();
@@ -890,37 +1191,36 @@ export class CalendarioLicComponent implements OnInit {
   // Verificar si un color es gris
   private isGrayColor(color: string): boolean {
     if (!color) return true; // Sin color se considera gris
-    
+
     const normalizedColor = color.toLowerCase().trim();
-    
+
+    // Si el color es el color oficial de algún hito, NO es gris.
+    // (Ej. "Adjudicación" usa #000000, que por RGB sería clasificado como gris
+    // y eso descartaba eventos válidos al filtrar duplicados).
+    for (const hitoColor of this.hitoColorMap.values()) {
+      if (hitoColor && hitoColor.toLowerCase().trim() === normalizedColor) {
+        return false;
+      }
+    }
+
     // Rosa pastel NO es gris (para hitos terminados)
     if (normalizedColor === '#f8b4d9' || normalizedColor === 'f8b4d9') {
       return false;
     }
-    
-    // Lista de colores grises comunes
+
+    // Lista de colores grises comunes (colores que el backend asigna por
+    // defecto a registros sin color / estados terminados antiguos)
     const grayColors = [
       '#6c757d', '#999', '#999999', '#808080', '#ccc', '#cccccc',
       '#666', '#666666', '#888', '#888888', '#aaa', '#aaaaaa',
       '#dadada', '#ddd', '#dddddd', '#d3d3d3', '#a9a9a9',
       'gray', 'grey', 'lightgray', 'lightgrey', 'darkgray', 'darkgrey'
     ];
-    
+
     if (grayColors.includes(normalizedColor)) {
       return true;
     }
-    
-    // Detectar grises por análisis RGB (cuando R=G=B o muy similares)
-    if (normalizedColor.startsWith('#') && normalizedColor.length === 7) {
-      const r = parseInt(normalizedColor.substring(1, 3), 16);
-      const g = parseInt(normalizedColor.substring(3, 5), 16);
-      const b = parseInt(normalizedColor.substring(5, 7), 16);
-      
-      // Si R, G y B son iguales o muy similares (diferencia <= 15), es gris
-      const maxDiff = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
-      return maxDiff <= 15;
-    }
-    
+
     return false;
   }
 }
