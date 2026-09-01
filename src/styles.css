@@ -19,16 +19,36 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 57px; /* Ancho del menú cerrado - actualizado de 85px a 80px */
+  width: 57px; /* Ancho colapsado: solo íconos */
   height: 100vh;
   background-color: #f48826 !important;
   z-index: 1000;
   overflow-y: auto;
-  transition: width 0.3s ease;
+  overflow-x: hidden;
+  transition: width 0.25s ease;
 }
 
 .sidebar:hover {
   width: 250px;
+}
+
+/* Ocultar textos y mostrar solo íconos cuando está colapsado */
+.sidebar:not(:hover) .sidebar-nav-title .menu-text,
+.sidebar:not(:hover) .sidebar-nav > li > a .menu-text,
+.sidebar:not(:hover) .sidebar-nav-title:first-of-type {
+  display: none;
+}
+
+.sidebar:not(:hover) .sidebar-nav-title,
+.sidebar:not(:hover) .sidebar-nav > li > a {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.sidebar:not(:hover) .sidebar-nav-title .icon,
+.sidebar:not(:hover) .sidebar-nav > li > a .icon {
+  margin-right: 0;
 }
 
 .js-sidebar-content {
@@ -75,11 +95,6 @@ body {
   border-top: 1px solid rgba(255,255,255,0.1);
 }
 
-/* Hide titles when sidebar is collapsed */
-.sidebar:not(:hover) .sidebar-nav-title {
-  display: none;
-}
-
 .sidebar-nav-title:first-child {
   border-top: none;
 }
@@ -113,29 +128,6 @@ body {
   position: relative;
 }
 
-/* Collapsed sidebar styles - show only icons */
-.sidebar:not(:hover) .sidebar-nav > li > a {
-  padding: 20px 15px;
-  text-align: center;
-  font-size: 0;
-  overflow: hidden;
-  margin-bottom: 10px;
-  border-bottom: none;
-}
-
-.sidebar:not(:hover) .sidebar-nav > li > a .icon {
-  float: none;
-  margin: 0;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.sidebar:not(:hover) .sidebar-nav > li > a .icon i {
-  font-size: 18px !important;
-}
-
 .sidebar-nav > li > a:hover {
   background-color: rgba(0,0,0,0.1);
   color: white !important;
@@ -163,15 +155,6 @@ body {
 
 .sidebar-nav > li ul.show {
   display: block;
-}
-
-/* Hide submenus when sidebar is collapsed */
-.sidebar:not(:hover) .sidebar-nav > li ul {
-  display: none !important;
-}
-
-.sidebar:not(:hover) .sidebar-nav > li ul.show {
-  display: none !important;
 }
 
 .sidebar-nav > li ul li {
@@ -207,7 +190,7 @@ body {
 #ulMenuProyectos .menu-text,
 #ulMenuPrincipal .menu-text,
 #ulMenuFinanzas .menu-text {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
   font-weight: 400 !important;
   color: #ffffff !important;
 }
@@ -216,8 +199,9 @@ body {
 .nav-section-typo {
   text-transform: none !important;
   letter-spacing: normal !important;
-  /* Evitar que tome el 12px de .sidebar-nav-title */
   font-size: 16px !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+  font-weight: 700 !important;
 }
 
 /* Ítems de menú dentro de cada bloque (esto es lo que llamas "sub menu" vs el título h5) */
@@ -255,13 +239,11 @@ body {
 /* Submenús: padding según especificación */
 #ulMenuLicitaciones ul li a,
 #ulMenuProyectos ul li a,
-#ulMenuFinanzas ul li a,
-#ulMenuPrincipal li a {
+#ulMenuFinanzas ul li a {
   padding: 5px 0px 5px 40px !important;
 }
 
-/* Submenús (texto) a 13px */
-#ulMenuLicitaciones ul li a,
+/* Submenús (texto) a 1l li a,
 #ulMenuProyectos ul li a,
 #ulMenuFinanzas ul li a {
   font-size: 13px !important;
@@ -283,7 +265,7 @@ body {
 
 /* Page controls navbar (header) */
 .page-controls {
-  margin-left: 80px; /* Actualizado de 85px a 80px */
+  margin-left: 57px;
   background: transparent !important;
   border-bottom: none;
   min-height: 60px;
@@ -307,7 +289,7 @@ body {
 
 /* Content area */
 .content-wrap {
-  margin-left: 65px; /* Actualizado de 85px a 80px */
+  margin-left: 57px;
   min-height: 100vh;
   background-color: #f5f5f5;
   

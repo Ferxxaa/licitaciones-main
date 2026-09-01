@@ -17,6 +17,24 @@ li a {
     background-color: #6e7178 !important;
 }
 
+/* FIX: ulMenuPrincipal (Tareas) es un <ul> de primer nivel, no un submenú anidado
+   dentro de un <li>, así que la regla de arriba (.sidebar-nav>li ul) no le aplica.
+   Sin esto, hereda un fondo naranjo por defecto de otro CSS (bootstrap/tema). */
+#ulMenuPrincipal,
+#ulMenuPrincipal li,
+#ulMenuPrincipal li a {
+    background-color: transparent !important;
+}
+
+/* FIX: mismo problema que ulMenuPrincipal, pero para Licitaciones.
+   Se usa ">" (hijo directo) para NO tocar el submenú anidado de "Administración"
+   (Areas, Mandantes, Hitos, etc.), que debe seguir gris via .sidebar-nav>li ul */
+#ulMenuLicitaciones,
+#ulMenuLicitaciones > li,
+#ulMenuLicitaciones > li > a {
+    background-color: transparent !important;
+}
+
 /* Menu enhancements for better user experience */
 .sidebar-nav a {
     cursor: pointer;
@@ -212,4 +230,79 @@ li a {
 #ulMenuPrincipal li a,
 #ulMenuPrincipal li a .menu-text {
     font-size: 13px !important;
+}
+
+/* Bloques de menú coloreados de punta a punta, con espacio real entre ellos */
+.sidebar-nav-title {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-radius: 0;
+    margin-top: 14px;
+    padding: 10px 18px;
+}
+
+.js-sidebar-content > .sidebar-nav-title:first-of-type {
+    margin-top: 0;
+}
+
+/* Centrar íconos cuando el sidebar está colapsado (solo íconos) */
+.sidebar:not(:hover) .sidebar-nav-title,
+.sidebar:not(:hover) .sidebar-nav > li > a {
+    justify-content: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.sidebar:not(:hover) .sidebar-nav-title .icon,
+.sidebar:not(:hover) .sidebar-nav > li > a .icon {
+    margin-right: 0 !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    float: none !important;
+}
+
+.sidebar-section-home,
+#ulMenuHome,
+#ulMenuHome li,
+#ulMenuHome > li > a {
+    background-color: #696666 !important;
+}
+
+.sidebar-section-proyectos,
+#ulMenuProyectos,
+#ulMenuProyectos > li,
+#ulMenuProyectos > li > a {
+    background-color: #026AA7 !important;
+}
+
+.sidebar-section-tareas,
+#ulMenuPrincipal,
+#ulMenuPrincipal li,
+#ulMenuPrincipal li a {
+    background-color: #800080 !important;
+}
+
+.sidebar-section-licitaciones,
+#ulMenuLicitaciones,
+#ulMenuLicitaciones > li,
+#ulMenuLicitaciones > li > a {
+    background-color: #f48826 !important;
+}
+
+.sidebar-section-finanzas,
+#ulMenuFinanzas,
+#ulMenuFinanzas > li,
+#ulMenuFinanzas > li > a {
+    background-color: #43bb05 !important;
+}
+
+/* El submenú expandido (ej. Administración) debe verse negro, ganándole al color del bloque */
+#ulMenuHome > li > a[aria-expanded="true"],
+#ulMenuProyectos > li > a[aria-expanded="true"],
+#ulMenuPrincipal li a[aria-expanded="true"],
+#ulMenuLicitaciones > li > a[aria-expanded="true"],
+#ulMenuFinanzas > li > a[aria-expanded="true"] {
+    background-color: #000000 !important;
+    color: #ffffff !important;
 }
