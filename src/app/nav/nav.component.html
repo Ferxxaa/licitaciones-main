@@ -1,20 +1,4 @@
 <nav id="sidebar" class="sidebar" role="navigation">
-        <style>
-            .sidebar-nav a {
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
-            }
-            .sidebar-nav .icon {
-                margin-right: 18px;
-                min-width: 20px;
-                text-align: left;
-            }
-            .sidebar-nav .menu-text {
-                text-align: left;
-                white-space: nowrap;
-            }
-        </style>
         <div class="js-sidebar-content">
             <header class="logo hidden-sm-down">
                 <a [routerLink]="['/Home']">
@@ -141,40 +125,34 @@
                 </ul>
             </div>
             <!-- Menú principal restaurado -->
-            <h5 class="sidebar-nav-title" style="margin:12px 0 0 18px; padding:0; background:transparent; color:#f48826; font-size:13px; text-transform:uppercase; letter-spacing:1px;">Menu</h5>
+            <h5 class="sidebar-nav-title menu-heading">Menu</h5>
             <h5 class="sidebar-nav-title nav-section-typo sidebar-section-home" (click)="toggleSection('home')">
-                <span class="icon" style="font-size: 1.3em; color: #fff; margin-right: 16px; min-width: 32px; text-align: left;">
+                <span class="icon">
                     <i class="fa fa-desktop"></i>
                 </span>
-                <span class="menu-text" style="font-size: 1em; color: #fff; font-weight: normal;">Home</span>
+                <span class="menu-text">Home</span>
             </h5>
             <ul id="ulMenuHome" class="sidebar-nav" *ngIf="showHome">
                 <li>
                     <a [routerLink]="['/Home']">
-                        <span class="icon"><i class="fa fa-home"></i></span>
                         <span class="menu-text">Home</span>
                     </a>
                 </li>
                 <li *ngIf="SubGerenteProy">
-                    <a href="#" (click)="toggleSection('administracion'); $event.preventDefault(); $event.stopPropagation()" role="button" [attr.aria-expanded]="showAdmin" aria-controls="sidebar-Administracion" style="cursor:pointer;">
-                        <span class="icon"><i class="fa fa-cog"></i></span>
-                        <span class="menu-text">Administración</span>
+                    <a href="http://proyectos.trazas-nbi.com/Usuarios">
+                        <span class="menu-text">Administración de Usuarios</span>
                     </a>
-                    <ul class="ng-managed-collapse" [ngClass]="{'collapse': true, 'show': showAdmin}" id="sidebar-Administracion">
-                        <li>
-                            <a href="http://proyectos.trazas-nbi.com/Usuarios"><span class="menu-text">Administración de Usuarios</span></a>
-                        </li>
-                        <li>
-                            <a href="http://proyectos.trazas-nbi.com/Perfiles"><span class="menu-text">Perfiles de Usuarios</span></a>
-                        </li>
-                    </ul>
+                </li>
+                <li *ngIf="SubGerenteProy">
+                    <a href="http://proyectos.trazas-nbi.com/Perfiles">
+                        <span class="menu-text">Perfiles de Usuarios</span></a>
                 </li>
             </ul>
                 <h5 class="sidebar-nav-title nav-section-typo sidebar-section-licitaciones" (click)="toggleSection('licitaciones')">
-                    <span class="icon" style="font-size: 1.3em; color: #fff; margin-right: 16px; min-width: 32px; text-align: left;">
+                    <span class="icon">
                         <i class="fa fa-briefcase"></i>
                     </span>
-                    <span class="menu-text" style="font-size: 1em; color: #fff; font-weight: normal;">Licitaciones</span>
+                    <span class="menu-text">Licitaciones</span>
                 </h5>
                 <ul id="ulMenuLicitaciones" class="sidebar-nav" *ngIf="showLicitaciones">
             <li>
@@ -210,10 +188,10 @@
             </li>
         </ul>
                         <h5 class="sidebar-nav-title nav-section-typo sidebar-section-tareas" (click)="toggleSection('tareas')">
-                            <span class="icon" style="font-size: 1.3em; color: #fff; margin-right: 16px; min-width: 32px; text-align: left;">
+                            <span class="icon">
                                 <i class="fa fa-list"></i>
                             </span>
-                            <span class="menu-text" style="font-size: 1em; color: #fff; font-weight: normal;">Tareas</span>
+                            <span class="menu-text">Tareas</span>
                         </h5>
                         <ul id="ulMenuPrincipal" class="sidebar-nav" *ngIf="showTareas">
                 <li *ngIf="interno()">
@@ -242,49 +220,46 @@
                 </li>
             </ul>
                 <h5 class="sidebar-nav-title nav-section-typo sidebar-section-proyectos" (click)="toggleSection('proyectos')">
-                    <span class="icon" style="font-size: 1.3em; color: #fff; margin-right: 16px; min-width: 32px; text-align: left;">
+                    <span class="icon">
                         <i class="fa fa-tasks"></i>
                     </span>
-                    <span class="menu-text" style="font-size: 1em; color: #fff; font-weight: normal;">Proyectos</span>
+                    <span class="menu-text">Proyectos</span>
                 </h5>
                 <ul id="ulMenuProyectos" class="sidebar-nav" *ngIf="showProyectos">
             <li>
                 <a href="#sidebar-Proyectos" data-toggle="collapse" data-parent="#sidebar" role="button" aria-expanded="false" aria-controls="sidebar-Proyectos">
-                    <span class="icon"><i class="glyphicon glyphicon-align-right"></i></span>
-                    <span class="menu-text">Proyectos</span>
+                    <span class="icon"><i class="fa fa-tasks"></i></span>
+                    <span class="menu-text">Crear / Editar</span>
                 </a>
                 <ul class="collapse" id="sidebar-Proyectos">
                     <li *ngIf="SubGerenteProy">
-                        <a href="http://proyectos.trazas-nbi.com/Proyectos-ProyectoMatriz"><span class="menu-text">Crear / Editar proyecto matriz</span></a>
+                        <a href="http://proyectos.trazas-nbi.com/Proyectos-ProyectoMatriz"><span class="menu-text">Proyecto Matriz</span></a>
                     </li>
                     <li *ngIf="DirectorProy || SubGerenteProy">
-                        <a href="http://proyectos.trazas-nbi.com/Proyectos-Proyecto"><span class="menu-text">Crear / Editar proyecto</span></a>
-                    </li>
-                    <li *ngIf="SubGerenteProy">
-                        <a href="http://proyectos.trazas-nbi.com/Proyectos-ValidarProyecto"><span class="menu-text">Validar Proyecto</span></a>
+                        <a href="http://proyectos.trazas-nbi.com/Proyectos-Proyecto"><span class="menu-text">Proyectos</span></a>
                     </li>
                     <li>
-                        <a href="http://proyectos.trazas-nbi.com/Proyectos-SubProyecto"><span class="menu-text">Crear / Editar Sub - Proyecto</span></a>
-                    </li>
-                    <li *ngIf="DirectorProy || SubGerenteProy">
-                        <a href="http://proyectos.trazas-nbi.com/Proyectos-ValidarSubProyectos"><span class="menu-text">Validar Sub-Proyecto</span></a>
+                        <a href="http://proyectos.trazas-nbi.com/Proyectos-SubProyecto"><span class="menu-text">Sub-Proyectos</span></a>
                     </li>
                     <li>
-                        <a href="http://proyectos.trazas-nbi.com/Proyectos-MisProyectos"><span class="menu-text">Mis Proyectos/Sub Proyectos</span></a>
+                        <a href="http://proyectos.trazas-nbi.com/Configuracion-SubProyecto"><span class="menu-text">Ritmos</span></a>
                     </li>
                 </ul>
             </li>
             <li>
-                <a href="#sidebar-Configuración" data-toggle="collapse" data-parent="#sidebar">
-                    <span class="icon"><i class="fa fa-tasks"></i></span>
-                    <span class="menu-text">Configuración</span>
+                <a href="#sidebar-ValidacionProyectos" data-toggle="collapse" data-parent="#sidebar" role="button" aria-expanded="false" aria-controls="sidebar-ValidacionProyectos">
+                    <span class="icon"><i class="fa fa-check-circle"></i></span>
+                    <span class="menu-text">Validación</span>
                 </a>
-                <ul class="collapse" id="sidebar-Configuración" aria-expanded="false" style="height: 0px;">
-                    <li>
-                        <a href="http://proyectos.trazas-nbi.com/Configuracion-SubProyecto"><span class="menu-text">Crear / Editar ritmo, ponderado y presupuesto</span></a>
+                <ul class="collapse" id="sidebar-ValidacionProyectos">
+                    <li *ngIf="SubGerenteProy">
+                        <a href="http://proyectos.trazas-nbi.com/Proyectos-ValidarProyecto"><span class="menu-text">Validación Proyecto</span></a>
                     </li>
                     <li *ngIf="DirectorProy || SubGerenteProy">
-                        <a href="http://proyectos.trazas-nbi.com/Configuracion-ValidacionSubProyecto"><span class="menu-text">Validar ritmo, ponderado y presupuesto</span></a>
+                        <a href="http://proyectos.trazas-nbi.com/Proyectos-ValidarSubProyectos"><span class="menu-text">Validación Subproyectos</span></a>
+                    </li>
+                    <li *ngIf="DirectorProy || SubGerenteProy">
+                        <a href="http://proyectos.trazas-nbi.com/Configuracion-ValidacionSubProyecto"><span class="menu-text">Validación Ritmos</span></a>
                     </li>
                 </ul>
             </li>
@@ -296,10 +271,10 @@
             </li>
         </ul>
                 <h5 class="sidebar-nav-title nav-section-typo sidebar-section-finanzas" (click)="toggleSection('finanzas')">
-                    <span class="icon" style="font-size: 1.3em; color: #fff; margin-right: 16px; min-width: 32px; text-align: left;">
+                    <span class="icon">
                         <i class="fa fa-bank"></i>
                     </span>
-                    <span class="menu-text" style="font-size: 1em; color: #fff; font-weight: normal;">Finanzas</span>
+                    <span class="menu-text">Finanzas</span>
                 </h5>
                 <ul id="ulMenuFinanzas" class="sidebar-nav" *ngIf="showFinanzas">
             <li>

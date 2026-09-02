@@ -426,6 +426,106 @@ body {
   padding: 12px;
 }
 
+/* Navigation rebuilt to match the finance sidebar in both states. */
+.sidebar {
+  width: 57px;
+  background-color: #585859 !important;
+  transition: width 0.2s ease;
+}
+
+.sidebar:hover {
+  width: 190px;
+}
+
+.sidebar .logo {
+  height: 74px;
+  padding: 7px 10px;
+  overflow: hidden;
+  text-align: center;
+  background-color: #585859;
+}
+
+.sidebar .logo a {
+  display: block;
+  height: 60px;
+  overflow: hidden;
+}
+
+.sidebar .logo img {
+  width: 150px;
+  max-width: none;
+  height: auto;
+}
+
+.sidebar:not(:hover) .logo {
+  padding: 7px 6px;
+}
+
+.sidebar:not(:hover) .logo a {
+  width: 45px;
+  margin: 0 auto;
+}
+
+.sidebar:not(:hover) .js-sidebar-content > .collapse,
+.sidebar:not(:hover) .js-sidebar-content > .menu-heading,
+.sidebar:not(:hover) .js-sidebar-content > ul {
+  display: none !important;
+}
+
+.sidebar:hover .sidebar-nav-title,
+.sidebar:hover .sidebar-nav > li > a {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 12px;
+  margin: 0;
+  line-height: 22px;
+}
+
+.sidebar:hover .sidebar-nav-title .icon,
+.sidebar:hover .sidebar-nav > li > a .icon {
+  position: static;
+  flex: 0 0 22px;
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+  margin: 0 10px 0 0;
+  line-height: 22px;
+  text-align: center;
+  float: none;
+}
+
+.sidebar:hover .sidebar-nav-title .menu-text,
+.sidebar:hover .sidebar-nav > li > a .menu-text {
+  display: inline;
+  white-space: nowrap;
+}
+
+.sidebar:hover .sidebar-nav {
+  padding: 0 0 10px;
+}
+
+.sidebar:hover .sidebar-nav > li {
+  margin: 0;
+}
+
+.sidebar:hover .sidebar-nav > li > ul {
+  padding: 0;
+}
+
+.sidebar:hover .sidebar-nav > li > ul > li > a {
+  min-height: 31px;
+  padding: 5px 8px 5px 34px;
+  line-height: 21px;
+}
+
+.page-controls,
+.content-wrap {
+  margin-left: 57px;
+}
+
 /* Modal styles */
 .modal {
   z-index: 1050;

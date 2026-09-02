@@ -16,7 +16,7 @@ declare var jQuery: any;
 })
 export class NavComponent implements OnInit, AfterViewInit, OnDestroy {
       public esHome: boolean = false;
-      public showHome: boolean = false;
+      public showHome: boolean = true;
 
   private sidebarMouseLeaveHandler?: (e: MouseEvent) => void;
 
@@ -267,7 +267,7 @@ export class NavComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showTareas = false;
     this.showFinanzas = false;
     this.showProyectos = false;
-    this.showHome = false;
+    this.showHome = true;
     this.showAdmin = false;
 
     // Cerrar submenús internos manejados por Angular
