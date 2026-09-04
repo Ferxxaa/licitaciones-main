@@ -32,7 +32,8 @@ export class LicitacionFechaHitoService {
     return `${idLicitacion}_${idHito}`;
   }
 
-  // Guarda/actualiza la fecha vigente de un hito. fecha en formato yyyy-MM-dd.
+  // Guarda/actualiza la fecha vigente de un hito. Una cadena vacía representa
+  // explícitamente un hito sin fecha.
   async guardarFechaHito(idLicitacion: number, idHito: number, fecha: string, hora?: string): Promise<void> {
     const payload: any = {
       idLicitacion,
@@ -45,7 +46,8 @@ export class LicitacionFechaHitoService {
     await setDoc(doc(this.db, this.coleccion, this.clave(idLicitacion, idHito)), payload, { merge: true });
   }
 
-  // Devuelve un mapa "idLicitacion_idHito" -> fecha vigente (yyyy-MM-dd)
+  // Devuelve un mapa "idLicitacion_idHito" -> fecha vigente (yyyy-MM-dd).
+  // La cadena vacía es significativa: indica que el hito fue dejado sin fecha.
   async obtenerTodasLasFechas(): Promise<Record<string, string>> {
     const snap = await getDocs(collection(this.db, this.coleccion));
     const resultado: Record<string, string> = {};
@@ -54,7 +56,9 @@ export class LicitacionFechaHitoService {
       const lic = Number(data['idLicitacion']);
       const hito = Number(data['idHito']);
       const fecha = String(data['fecha'] || '');
-      if (lic && hito && fecha) {
+      // Los documentos creados solo por el servicio de horas no tienen
+      // propiedad "fecha" y no deben marcar el hito como sin fecha.
+      if (lic && hito && Object.prototype.hasOwnProperty.call(data, 'fecha')) {
         resultado[`${lic}_${hito}`] = fecha;
       }
     });

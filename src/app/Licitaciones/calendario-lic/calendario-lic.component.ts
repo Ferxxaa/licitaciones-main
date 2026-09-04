@@ -153,9 +153,9 @@ export class CalendarioLicComponent implements OnInit {
 
     // Cargar eventos del calendario
     this.http.get<any[]>("http://trazas-nbi.com:1234/api/Calendario/").subscribe({
-      next: (data) => {
+      next: async (data) => {
         console.log('Calendar data loaded:', data);
-        const normalizedData = this.normalizeCalendarEvents(data);
+        const normalizedData = await this.enrichCalendarEventNames(this.normalizeCalendarEvents(data));
         // Aplicar colores correctos de los hitos
         normalizedData.forEach(event => {
           const hitoColor = this.resolveHitoColor(event.title || event.NombreHito);
@@ -165,7 +165,8 @@ export class CalendarioLicComponent implements OnInit {
           }
         });
         // Eliminar hitos duplicados reales usando los campos visibles del evento
-        const uniqueData = this.removeDuplicateHitos(normalizedData);
+        const eventsWithDate = normalizedData.filter(event => this.normalizeFechaIso(event.start) !== '');
+        const uniqueData = this.removeDuplicateHitos(eventsWithDate);
         console.log('Unique calendar data:', uniqueData);
         // Filtrar eventos obsoletos: el backend no borra los registros antiguos
         // cuando se cambia la fecha de un hito, por lo que el hito aparece en la
@@ -234,7 +235,8 @@ export class CalendarioLicComponent implements OnInit {
       }
     }));
 
-    // Mapa: licitacionId:nombreHito(normalizado) -> fecha vigente (solo de Firestore)
+    // Mapa: licitacionId:nombreHito(normalizado) -> fecha vigente (solo de Firestore).
+    // Una cadena vacía significa que el hito fue dejado sin fecha y debe ocultarse.
     const vigente = new Map<string, string>();
     for (const [licId, hitos] of entries) {
       const idHitoPorNombre = new Map<string, number>();
@@ -247,7 +249,9 @@ export class CalendarioLicComponent implements OnInit {
       }
       idHitoPorNombre.forEach((idHito, key) => {
         const fechaFs = fechasFirestore[`${licId}_${idHito}`];
-        if (fechaFs) vigente.set(`${licId}:${key}`, fechaFs);
+        if (Object.prototype.hasOwnProperty.call(fechasFirestore, `${licId}_${idHito}`)) {
+          vigente.set(`${licId}:${key}`, fechaFs);
+        }
       });
     }
 
@@ -320,7 +324,9 @@ export class CalendarioLicComponent implements OnInit {
     const grupos = new Map<string, { lic: LicitacionCalendario; idLicitacion: number; idHito: number }[]>();
     enriched.forEach(e => {
       const key = (e.idLicitacion && e.idHito)
-        ? `${e.idLicitacion}_${e.idHito}`
+        // El nombre también forma parte de la clave: algunos registros del
+        // endpoint pueden compartir IdHito aunque sean hitos visibles distintos.
+        ? `${e.idLicitacion}_${e.idHito}_${this.normalizeTextKey(e.lic.NombreHito)}`
         : `nombre:${this.normalizeTextKey(e.lic.NombreHito)}|${this.normalizeTextKey(e.lic.Descripcion)}`;
       if (!grupos.has(key)) grupos.set(key, []);
       grupos.get(key)!.push(e);
@@ -332,7 +338,7 @@ export class CalendarioLicComponent implements OnInit {
 
       // Ocultar SOLO si Firestore confirma que el hito fue movido a otro día.
       const fechaVigenteFs = (idLicitacion && idHito) ? fechasFs[`${idLicitacion}_${idHito}`] : undefined;
-      if (fechaVigenteFs && fechaVigenteFs !== diaYmd) {
+      if (Object.prototype.hasOwnProperty.call(fechasFs, `${idLicitacion}_${idHito}`) && fechaVigenteFs !== diaYmd) {
         console.log(`[CAL][diario] ocultando hito ${key}: fue movido a ${fechaVigenteFs}, no ${diaYmd}`);
         continue;
       }
@@ -1116,6 +1122,49 @@ export class CalendarioLicComponent implements OnInit {
     console.log('=== FIN FILTRADO VISTA DIARIA ===\n');
 
     return result;
+  }
+
+  private async enrichCalendarEventNames(events: CalendarEventRecord[]): Promise<CalendarEventRecord[]> {
+    const licitacionIds = new Set<number>();
+    events.forEach(event => {
+      const match = String(event.title || '').match(/(\d+)\s*:/);
+      if (match) licitacionIds.add(Number(match[1]));
+    });
+
+    const entries = await Promise.all([...licitacionIds].map(async id => {
+      try {
+        const hitos = await this.http.get<any[]>(
+          `http://trazas-nbi.com:1234/api/Licitaciones/GetHitosHitosLicitacionByLicitaciones/IdLicitacion=${id}`
+        ).toPromise();
+        return [id, hitos || []] as [number, any[]];
+      } catch {
+        return [id, []] as [number, any[]];
+      }
+    }));
+
+    const hitosPorLicitacion = new Map<number, any[]>();
+    entries.forEach(([id, hitos]) => hitosPorLicitacion.set(id, hitos));
+
+    return events.map(event => {
+      const title = String(event.title || '');
+      const match = title.match(/^(.*?\d+)\s*:\s*(.*)$/);
+      if (!match) return event;
+
+      const licitacionId = Number(match[1].match(/\d+/)?.[0]);
+      const fechaEvento = this.normalizeFechaIso(event.start);
+      const candidatos = (hitosPorLicitacion.get(licitacionId) || [])
+        .filter(hito => this.normalizeFechaIso(hito?.FechaCompromiso) === fechaEvento)
+        .filter(hito => String(hito?.NombreHito || '').trim());
+
+      if (candidatos.length === 0) return event;
+
+      const hito = [...candidatos].sort((a, b) =>
+        Number(b?.IdHitoLicitacion || 0) - Number(a?.IdHitoLicitacion || 0))[0];
+      return {
+        ...event,
+        title: `${match[1]}:${String(hito.NombreHito).trim()}`
+      };
+    });
   }
 
   private normalizeCalendarEvents(events: CalendarEventRecord[]): CalendarEventRecord[] {

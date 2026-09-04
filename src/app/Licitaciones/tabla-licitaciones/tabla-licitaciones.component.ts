@@ -613,8 +613,8 @@ export class TablaLicitacionesComponent implements OnInit {
     // El reordenamiento visual ya ocurre dentro de actualizarHito -> onSuccess,
     // una vez confirmado el guardado.
 
-    // Guardar automáticamente cuando sea una fecha completa
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    // Guardar automáticamente una fecha completa o el borrado de la fecha.
+    if (normalized !== '' && !/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
       console.warn('[HITOS][FechaCompromiso][change] Fecha no válida para guardar (esperado yyyy-MM-dd)', {
         normalized,
       });
@@ -1001,7 +1001,7 @@ export class TablaLicitacionesComponent implements OnInit {
       // Mutamos directamente el objeto "hito" (por referencia): así no importa
       // si mientras esta petición estaba en vuelo, this.Hitos fue reordenado
       // por otra operación — seguimos escribiendo sobre el hito correcto.
-      if (datos?.fechaCompromiso) {
+      if (datos?.fechaCompromiso !== undefined) {
         // Mantener el string que espera el backend/UI.
         hito.FechaCompromiso = datos.fechaCompromiso;
         hito.FechaCompromisoInput = this.normalizeFechaCompromisoForSave(String(datos.fechaCompromiso || ''));
